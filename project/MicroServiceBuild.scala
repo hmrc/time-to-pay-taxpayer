@@ -24,7 +24,7 @@ private object AppDependencies {
   private val hmrcTestVersion = "2.1.0"
   private val scalaTestVersion = "2.2.6"
   private val pegdownVersion = "1.6.0"
-
+  private val httpVerbsVersion = "6.2.0"
 
   val compile = Seq(
 
@@ -34,6 +34,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-health" % playHealthVersion,
     "uk.gov.hmrc" %% "play-url-binders" % playUrlBindersVersion,
     "uk.gov.hmrc" %% "play-config" % playConfigVersion,
+    "uk.gov.hmrc" %% "http-verbs" % httpVerbsVersion,
     "uk.gov.hmrc" %% "play-json-logger" % playJsonLoggerVersion,
     "uk.gov.hmrc" %% "domain" % domainVersion
   )

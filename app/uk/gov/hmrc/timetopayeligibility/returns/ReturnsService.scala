@@ -17,6 +17,8 @@
 package uk.gov.hmrc.timetopayeligibility.returns
 
 import org.joda.time.LocalDate
+import play.api.libs.json.JsResult
+import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import uk.gov.hmrc.play.http.logging.Authorization
 import uk.gov.hmrc.play.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.timetopayeligibility.{Utr, WSHttp}
@@ -37,17 +39,23 @@ object ReturnsService {
 
   case class Return(taxYearEnd: LocalDate, issuedDate: Option[LocalDate], dueDate: Option[LocalDate], receivedDate: Option[LocalDate])
 
-  def returns(returnsWsCall: (Utr => Future[Seq[Return]]))(utr: Utr)(implicit executionContext: ExecutionContext): Future[ReturnsResult] = {
-    returnsWsCall(utr).map(Right(_)).recover {
-      case nf: NotFoundException => Left(ReturnsUserNotFound(utr))
-      case e => Left(ReturnsServiceError(e.getMessage))
+  def returns(returnsWsCall: (Utr => Future[WSResponse]))(utr: Utr)(implicit executionContext: ExecutionContext): Future[ReturnsResult] = {
+    implicit val reader = ReturnsJson.reader
+
+    returnsWsCall(utr).map {
+      response => response.status match {
+        case 200 => Right(response.json.as[Seq[Return]])
+        case 404 => Left(ReturnsUserNotFound(utr))
+        case _ => Left(ReturnsServiceError(response.statusText))
+      }
     }
   }
 
-  def localCall(utr: Utr)(implicit executionContext: ExecutionContext) = {
-    implicit val reader = ReturnsJson.reader
-    implicit val headerCarrier = HeaderCarrier(authorization = Some(Authorization("user")))
+  def returnsWsCall(ws: WSClient, baseUrl: String)(utr: Utr)
+                   (implicit executionContext: ExecutionContext): Future[WSResponse] = {
 
-    WSHttp.GET[Seq[Return]](s"http://localhost:8887/sa/taxpayer/${ utr.value }/returns")
+    ws.url(s"$baseUrl/sa/taxpayer/${ utr.value }/returns")
+      .withHeaders("Authorization" -> "user")
+      .get()
   }
 }

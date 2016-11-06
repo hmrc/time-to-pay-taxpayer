@@ -16,25 +16,24 @@
 
 package uk.gov.hmrc.timetopayeligibility.controllers
 
+import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.timetopayeligibility.Utr
-import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService
-import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.ReturnsResult
+import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.{Return, ReturnsResult}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-
-import ExecutionContext.Implicits.global
-
-object EligibilityController extends EligibilityController(ReturnsService.returns(ReturnsService.localCall))
 
 class EligibilityController(returnsService: (Utr => Future[ReturnsResult]))
                            (implicit executionContext: ExecutionContext) extends BaseController {
 
   def eligibility(utr: String) = Action.async { implicit request =>
+    implicit val formatReturn = Json.format[Return]
+
     returnsService(Utr(utr)).map {
       _.fold(error => InternalServerError(error.message),
-        returns => Ok(utr)
+        returns => Ok(Json.toJson(returns))
       )
     }
   }

@@ -1,3 +1,1 @@
-# microservice specific routes
-
 GET /eligibility/:utr  uk.gov.hmrc.timetopayeligibility.controllers.EligibilityController.eligibility(utr)

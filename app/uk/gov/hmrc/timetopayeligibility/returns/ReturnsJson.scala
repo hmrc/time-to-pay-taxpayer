@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.controllers
+package uk.gov.hmrc.timetopayeligibility.returns
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.libs.json.{JsPath, Json, Reads}
+import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.Return
 
+object ReturnsJson {
 
-class EligibilityControllerSpec extends UnitSpec with WithFakeApplication{
+  val reader: Reads[Seq[Return]] = {
+    implicit val readReturn: Reads[Return] = Json.reads[Return]
 
-  val fakeRequest = FakeRequest("GET", "/")
-
-
-  "GET /" should {
-    "return 200" in {
-      val result = EligibilityController.eligibility("0987654321")(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
+    (JsPath \ "returns").read[Seq[Return]]
   }
 }

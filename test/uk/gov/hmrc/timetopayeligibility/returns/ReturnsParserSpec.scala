@@ -1,0 +1,64 @@
+/*
+ * Copyright 2016 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package uk.gov.hmrc.timetopayeligibility.returns
+
+import org.joda.time.LocalDate
+import play.api.libs.json._
+import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.Return
+
+class ReturnsParserSpec extends UnitSpec {
+
+  "a json value" should {
+    "be parsed to returns" in {
+      val json = Json.parse(
+        """{
+          |  "returns": [
+          |    {
+          |      "taxYearEnd": "2014-04-05",
+          |      "receivedDate": "2014-11-28"
+          |    },
+          |    {
+          |      "taxYearEnd": "2014-04-06",
+          |      "issuedDate": "2016-04-06",
+          |      "dueDate": "2017-01-31",
+          |      "receivedDate": "2016-04-11"
+          |    }
+          |  ]
+          |}""".stripMargin)
+
+      ReturnsJson.reader.reads(json) match {
+        case JsSuccess(returns, _) => returns shouldBe List(
+          Return(taxYearEnd = new LocalDate(2014, 4, 5), issuedDate = None, dueDate = None, receivedDate = Some(new LocalDate(2014, 11, 28))),
+          Return(taxYearEnd = new LocalDate(2014, 4, 6), issuedDate = Some(new LocalDate(2016, 4, 6)), dueDate = Some(new LocalDate(2017, 1, 31)), receivedDate = Some(new LocalDate(2016, 4, 11)))
+        )
+        case _ => fail("Could not extract returns")
+      }
+    }
+
+    "fails when returns missing in Json" in {
+      val json = Json.parse("""{
+        |  "wine": "cheese"
+        |}""".stripMargin)
+
+      ReturnsJson.reader.reads(json) match {
+        case JsSuccess(returns, _) => fail("Should not parse")
+        case JsError(errors) => errors.nonEmpty shouldBe true
+      }
+    }
+  }
+}

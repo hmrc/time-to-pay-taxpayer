@@ -25,6 +25,7 @@ import play.api.libs.ws.ahc.AhcWSClient
 import play.api.{BuiltInComponentsFromContext, LoggerConfigurator}
 import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferencesService
 import uk.gov.hmrc.timetopayeligibility.controllers.EligibilityController
 import uk.gov.hmrc.timetopayeligibility.debits.DebitsService
 import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService
@@ -45,7 +46,8 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
   lazy val wsClient = AhcWSClient()
   lazy val returns = ReturnsService.returns(ReturnsService.returnsWsCall(wsClient, ApplicationConfig.desServicesUrl)) _
   lazy val debits = DebitsService.debits(DebitsService.debitsWsCall(wsClient, ApplicationConfig.desServicesUrl)) _
-  lazy val eligibilityController = new EligibilityController(returns, debits)
+  lazy val preferences = CommunicationPreferencesService.preferences(CommunicationPreferencesService.wsCall(wsClient, ApplicationConfig.desServicesUrl)) _
+  lazy val eligibilityController = new EligibilityController(returns, debits, preferences)
   lazy val metricsController = new MetricsController(new GraphiteMetricsImpl(applicationLifecycle, configuration))
   lazy val appRoutes = new app.Routes(httpErrorHandler,  new Provider[EligibilityController] {
     override def get(): EligibilityController = eligibilityController

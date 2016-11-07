@@ -20,6 +20,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.timetopayeligibility.Utr
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferencesService.{CommunicationPreferences, CommunicationPreferencesResult}
 import uk.gov.hmrc.timetopayeligibility.debits.DebitsService.{Charge, Debit, DebitsResult, Interest}
 import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.{Return, ReturnsResult}
 
@@ -27,7 +28,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class EligibilityController(returnsService: (Utr => Future[ReturnsResult]),
-                            debitsService: (Utr => Future[DebitsResult]))
+                            debitsService: (Utr => Future[DebitsResult]),
+                            preferencesService: (Utr => Future[CommunicationPreferencesResult]) )
                            (implicit executionContext: ExecutionContext) extends BaseController {
 
   def eligibility(utrAsString: String) = Action.async { implicit request =>
@@ -35,16 +37,19 @@ class EligibilityController(returnsService: (Utr => Future[ReturnsResult]),
     implicit val formatInterest = Json.format[Interest]
     implicit val formatCharge = Json.format[Charge]
     implicit val formatDebit = Json.format[Debit]
+    implicit val formatCommunicationPreferences = Json.format[CommunicationPreferences]
 
     val utr = Utr(utrAsString)
 
     (for {
       returnsResult <- returnsService(utr)
       debitsResult <- debitsService(utr)
+      preferencesResult <- preferencesService(utr)
     } yield {
       Seq(
         returnsResult.fold(error => Json.toJson(error.message), returns => Json.toJson(returns)),
-        debitsResult.fold(error => Json.toJson(error.message), debits => Json.toJson(debits))
+        debitsResult.fold(error => Json.toJson(error.message), debits => Json.toJson(debits)),
+        preferencesResult.fold(error => Json.toJson(error.message), preferences => Json.toJson(preferences))
       )
     }).map(jsons => Ok(Json.toJson(jsons)))
   }

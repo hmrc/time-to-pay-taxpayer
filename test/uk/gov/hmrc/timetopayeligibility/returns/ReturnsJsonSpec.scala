@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.timetopayeligibility.returns
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import play.api.libs.json._
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.Return
@@ -43,8 +44,8 @@ class ReturnsJsonSpec extends UnitSpec {
 
       ReturnsJson.reader.reads(json) match {
         case JsSuccess(returns, _) => returns shouldBe List(
-          Return(taxYearEnd = new LocalDate(2014, 4, 5), issuedDate = None, dueDate = None, receivedDate = Some(new LocalDate(2014, 11, 28))),
-          Return(taxYearEnd = new LocalDate(2014, 4, 6), issuedDate = Some(new LocalDate(2016, 4, 6)), dueDate = Some(new LocalDate(2017, 1, 31)), receivedDate = Some(new LocalDate(2016, 4, 11)))
+          Return(taxYearEnd = LocalDate.of(2014, 4, 5), issuedDate = None, dueDate = None, receivedDate = Some(LocalDate.of(2014, 11, 28))),
+          Return(taxYearEnd = LocalDate.of(2014, 4, 6), issuedDate = Some(LocalDate.of(2016, 4, 6)), dueDate = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
         )
         case _ => fail("Could not extract returns")
       }

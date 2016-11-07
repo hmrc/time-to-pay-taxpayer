@@ -16,7 +16,8 @@
 
 package uk.gov.hmrc.timetopayeligibility.returns
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import play.api.libs.ws.{WSClient, WSResponse}
 import uk.gov.hmrc.timetopayeligibility.Utr
 

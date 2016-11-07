@@ -21,7 +21,7 @@ import play.api.libs.json._
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.Return
 
-class ReturnsParserSpec extends UnitSpec {
+class ReturnsJsonSpec extends UnitSpec {
 
   "a json value" should {
     "be parsed to returns" in {

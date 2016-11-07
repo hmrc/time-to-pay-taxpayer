@@ -20,21 +20,32 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.timetopayeligibility.Utr
+import uk.gov.hmrc.timetopayeligibility.debits.DebitsService.{Charge, Debit, DebitsResult, Interest}
 import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.{Return, ReturnsResult}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class EligibilityController(returnsService: (Utr => Future[ReturnsResult]))
+class EligibilityController(returnsService: (Utr => Future[ReturnsResult]),
+                            debitsService: (Utr => Future[DebitsResult]))
                            (implicit executionContext: ExecutionContext) extends BaseController {
 
-  def eligibility(utr: String) = Action.async { implicit request =>
+  def eligibility(utrAsString: String) = Action.async { implicit request =>
     implicit val formatReturn = Json.format[Return]
+    implicit val formatInterest = Json.format[Interest]
+    implicit val formatCharge = Json.format[Charge]
+    implicit val formatDebit = Json.format[Debit]
 
-    returnsService(Utr(utr)).map {
-      _.fold(error => InternalServerError(error.message),
-        returns => Ok(Json.toJson(returns))
+    val utr = Utr(utrAsString)
+
+    (for {
+      returnsResult <- returnsService(utr)
+      debitsResult <- debitsService(utr)
+    } yield {
+      Seq(
+        returnsResult.fold(error => Json.toJson(error.message), returns => Json.toJson(returns)),
+        debitsResult.fold(error => Json.toJson(error.message), debits => Json.toJson(debits))
       )
-    }
+    }).map(jsons => Ok(Json.toJson(jsons)))
   }
 }

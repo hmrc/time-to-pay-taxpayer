@@ -17,11 +17,8 @@
 package uk.gov.hmrc.timetopayeligibility.returns
 
 import org.joda.time.LocalDate
-import play.api.libs.json.JsResult
-import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
-import uk.gov.hmrc.play.http.logging.Authorization
-import uk.gov.hmrc.play.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.timetopayeligibility.{Utr, WSHttp}
+import play.api.libs.ws.{WSClient, WSResponse}
+import uk.gov.hmrc.timetopayeligibility.Utr
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -48,6 +45,8 @@ object ReturnsService {
         case 404 => Left(ReturnsUserNotFound(utr))
         case _ => Left(ReturnsServiceError(response.statusText))
       }
+    }.recover {
+      case e: Exception => Left(ReturnsServiceError(e.getMessage))
     }
   }
 

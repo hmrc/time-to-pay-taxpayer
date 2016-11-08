@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import play.api.libs.json._
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.Return
+import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
 
 class ReturnsJsonSpec extends UnitSpec {
 
@@ -42,7 +42,7 @@ class ReturnsJsonSpec extends UnitSpec {
           |  ]
           |}""".stripMargin)
 
-      ReturnsService.reader.reads(json) match {
+      Returns.reader.reads(json) match {
         case JsSuccess(returns, _) => returns shouldBe List(
           Return(taxYearEnd = LocalDate.of(2014, 4, 5), issuedDate = None, dueDate = None, receivedDate = Some(LocalDate.of(2014, 11, 28))),
           Return(taxYearEnd = LocalDate.of(2014, 4, 6), issuedDate = Some(LocalDate.of(2016, 4, 6)), dueDate = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
@@ -56,7 +56,7 @@ class ReturnsJsonSpec extends UnitSpec {
         |  "wine": "cheese"
         |}""".stripMargin)
 
-      ReturnsService.reader.reads(json) match {
+      Returns.reader.reads(json) match {
         case JsSuccess(returns, _) => fail("Should not parse")
         case JsError(errors) => errors.nonEmpty shouldBe true
       }

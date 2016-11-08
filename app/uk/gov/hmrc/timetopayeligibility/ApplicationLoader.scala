@@ -27,11 +27,11 @@ import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopayeligibility.controllers.EligibilityController
-import uk.gov.hmrc.timetopayeligibility.debits.DebitsService
-import uk.gov.hmrc.timetopayeligibility.debits.DebitsService.Debit
+import uk.gov.hmrc.timetopayeligibility.debits.Debits
+import uk.gov.hmrc.timetopayeligibility.debits.Debits.Debit
 import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService
-import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService
-import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.Return
+import uk.gov.hmrc.timetopayeligibility.returns.Returns
+import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
 
 class ApplicationLoader extends play.api.ApplicationLoader {
   def load(context: Context) = {
@@ -50,8 +50,8 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
 
   def hmrcWsCall[T] = HmrcEligibilityService.wsCall[T](wsClient, ApplicationConfig.desServicesUrl) _
 
-  lazy val returns = hmrcWsCall[Seq[Return]](ReturnsService.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
-  lazy val debits = hmrcWsCall[Seq[Debit]](DebitsService.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
+  lazy val returns = hmrcWsCall[Seq[Return]](Returns.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
+  lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
   lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
 
   lazy val eligibilityController = new EligibilityController(returns, debits, preferences)

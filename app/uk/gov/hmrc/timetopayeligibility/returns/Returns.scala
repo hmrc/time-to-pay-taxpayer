@@ -21,7 +21,7 @@ import java.time.LocalDate
 import play.api.libs.json.{JsPath, Json, Reads}
 import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.HmrcEligibilityServiceResult
 
-object ReturnsService {
+object Returns {
 
   type ReturnsResult = HmrcEligibilityServiceResult[Seq[Return]]
 

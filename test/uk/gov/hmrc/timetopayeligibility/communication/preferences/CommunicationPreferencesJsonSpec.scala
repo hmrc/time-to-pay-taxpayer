@@ -18,7 +18,6 @@ package uk.gov.hmrc.timetopayeligibility.communication.preferences
 
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferencesService.CommunicationPreferences
 
 class CommunicationPreferencesJsonSpec extends UnitSpec {
 
@@ -34,13 +33,11 @@ class CommunicationPreferencesJsonSpec extends UnitSpec {
           |  "brailleIndicator": false
           |}""".stripMargin)
 
-      CommunicationPreferencesService.reader.reads(json) match {
+      CommunicationPreferences.reader.reads(json) match {
         case JsSuccess(returns, _) => returns shouldBe CommunicationPreferences(welshLanguageIndicator = true, audioIndicator = false,
                                                                                 largePrintIndicator = false, brailleIndicator = false)
         case _ => fail("Could not extract communication preferences")
       }
-
     }
   }
-
 }

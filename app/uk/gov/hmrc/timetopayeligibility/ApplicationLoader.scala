@@ -25,8 +25,7 @@ import play.api.libs.ws.ahc.AhcWSClient
 import play.api.{BuiltInComponentsFromContext, LoggerConfigurator}
 import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferencesService
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferencesService.CommunicationPreferences
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopayeligibility.controllers.EligibilityController
 import uk.gov.hmrc.timetopayeligibility.debits.DebitsService
 import uk.gov.hmrc.timetopayeligibility.debits.DebitsService.Debit
@@ -53,7 +52,7 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
 
   lazy val returns = hmrcWsCall[Seq[Return]](ReturnsService.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
   lazy val debits = hmrcWsCall[Seq[Debit]](DebitsService.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
-  lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferencesService.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
+  lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
 
   lazy val eligibilityController = new EligibilityController(returns, debits, preferences)
 

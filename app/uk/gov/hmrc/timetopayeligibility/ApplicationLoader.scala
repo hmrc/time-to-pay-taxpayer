@@ -26,6 +26,8 @@ import play.api.{BuiltInComponentsFromContext, LoggerConfigurator}
 import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.play.health.AdminController
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferencesService
 import uk.gov.hmrc.timetopayeligibility.controllers.EligibilityController
 import uk.gov.hmrc.timetopayeligibility.debits.Debits
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.Debit
@@ -60,9 +62,12 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
   lazy val appRoutes = new app.Routes(httpErrorHandler,  new Provider[EligibilityController] {
     override def get(): EligibilityController = eligibilityController
   })
+  lazy val healthRoutes = new manualdihealth.Routes(httpErrorHandler, new Provider[AdminController] {
+    override def get(): AdminController = new AdminController(configuration)
+  })
 
   override def router = {
-    new Routes(httpErrorHandler, appRoutes, health.Routes, new Provider[MetricsController] {
+    new Routes(httpErrorHandler, appRoutes, healthRoutes, new Provider[MetricsController] {
       override def get(): MetricsController = metricsController
     })
   }

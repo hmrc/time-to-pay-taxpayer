@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.returns
+package uk.gov.hmrc.timetopayeligibility.communication.preferences
 
-import play.api.libs.json.{JsPath, Json, Reads}
-import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.Return
+import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService._
 
-object ReturnsJson {
 
-  val reader: Reads[Seq[Return]] = {
-    implicit val readReturn: Reads[Return] = Json.reads[Return]
+case class CommunicationPreferences(welshLanguageIndicator: Boolean, audioIndicator: Boolean,
+                                    largePrintIndicator: Boolean, brailleIndicator: Boolean)
 
-    (JsPath \ "returns").read[Seq[Return]]
-  }
+object CommunicationPreferences {
+
+  val reader: Reads[CommunicationPreferences] = Json.reads[CommunicationPreferences]
+
+  type CommunicationPreferencesResult = HmrcEligibilityServiceResult[CommunicationPreferences]
 }

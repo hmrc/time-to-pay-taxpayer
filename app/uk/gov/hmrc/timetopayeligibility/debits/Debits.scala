@@ -16,10 +16,20 @@
 
 package uk.gov.hmrc.timetopayeligibility.debits
 
-import play.api.libs.json.{JsPath, Json, Reads}
-import uk.gov.hmrc.timetopayeligibility.debits.DebitsService.{Charge, Debit, Interest}
+import java.time.LocalDate
 
-object DebitsJson {
+import play.api.libs.json.{JsPath, Json, Reads}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService._
+
+object Debits {
+
+  type DebitsResult = HmrcEligibilityServiceResult[Seq[Debit]]
+
+  case class Charge(originCode: String, creationDate: LocalDate)
+
+  case class Interest(creationDate: Option[LocalDate], amount: Int)
+
+  case class Debit(taxYearEnd: LocalDate, charge: Charge, relevantDueDate: LocalDate, totalOutstanding: Int, interest: Option[Interest])
 
   val reader: Reads[Seq[Debit]] = {
     implicit val readCharge: Reads[Charge] = Json.reads[Charge]

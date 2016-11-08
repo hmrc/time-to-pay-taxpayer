@@ -20,9 +20,10 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.timetopayeligibility.Utr
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferencesService.{CommunicationPreferences, CommunicationPreferencesResult}
-import uk.gov.hmrc.timetopayeligibility.debits.DebitsService.{Charge, Debit, DebitsResult, Interest}
-import uk.gov.hmrc.timetopayeligibility.returns.ReturnsService.{Return, ReturnsResult}
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences.CommunicationPreferencesResult
+import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult, Interest}
+import uk.gov.hmrc.timetopayeligibility.returns.Returns.{Return, ReturnsResult}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}

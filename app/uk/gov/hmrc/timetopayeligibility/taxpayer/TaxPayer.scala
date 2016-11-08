@@ -1,9 +1,19 @@
 package uk.gov.hmrc.timetopayeligibility.taxpayer
 
 import java.time.LocalDate
-
 import play.api.libs.json._
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+
+
+case class TaxPayer(customerName: String, addresses: Seq[Address],
+                    selfAssessment: SelfAssessmentDetails)
+
+case class SelfAssessmentDetails(utr: String, communicationPreferences: CommunicationPreferences, debits: Seq[Debit])
+
+case class Debit(debitType: String, dueDate: LocalDate)
+
+case class Address(lines: Seq[String], postCode: String)
+
 
 object TaxPayer {
 
@@ -11,21 +21,12 @@ object TaxPayer {
     implicit val writeReturn: Writes[TaxPayer] = TaxPayer.writer
     implicit val writeAddress: Writes[Address] = Address.writer
     implicit val writePreferences: Writes[CommunicationPreferences] = Json.writes[CommunicationPreferences]
-    implicit val writeSelfAssessmentDetails: Writes[SelfAssessmentDetails] = Json.writes[SelfAssessmentDetails]
     implicit val writeDebits: Writes[Debit] = Json.writes[Debit]
+    implicit val writeSelfAssessmentDetails: Writes[SelfAssessmentDetails] = Json.writes[SelfAssessmentDetails]
 
-    (JsPath \ "taxPayer").write[TaxPayer]
+    Json.writes[TaxPayer]
   }
 }
-
-case class TaxPayer(customerName: String, addresses: Seq[Address],
-                    selfAssessmentDetails: SelfAssessmentDetails, debits: Seq[Debit])
-
-
-case class SelfAssessmentDetails(utr: String, communicationPreferences: CommunicationPreferences)
-
-case class Debit(debitType: String, dueDate: LocalDate)
-
 
 object Address {
 
@@ -35,7 +36,3 @@ object Address {
   })
 
 }
-
-case class Address(lines: Seq[String], postCode: String)
-
-

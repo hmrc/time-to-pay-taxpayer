@@ -47,7 +47,7 @@ object HmrcEligibilityService {
       response => response.status match {
         case Status.OK => Right(response.json.as[T](reader))
         case Status.NOT_FOUND => Left(HmrcUserNotFoundError(utr))
-        case _ => Left(HmrcServiceError(response.statusText))
+        case _ => Left(HmrcServiceError((response.json \ "reason").asOpt[String].getOrElse(response.statusText)))
       }
     }.recover {
       case e: Exception => Left(HmrcServiceError(e.getMessage))

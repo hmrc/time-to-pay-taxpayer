@@ -61,7 +61,7 @@ class HmrcEligibilityServiceSpec extends UnitSpec with BeforeAndAfterAll with Sc
     addMapping(successfulUtr, Status.OK)
     addMapping(badJsonUtr, Status.OK, Some("""{"cheese":"cake"}"""))
     addMapping(unknownUtr, Status.NOT_FOUND)
-    addMapping(serverErrorUtr, Status.INTERNAL_SERVER_ERROR)
+    addMapping(serverErrorUtr, Status.INTERNAL_SERVER_ERROR, Some("""{"reason":"foo"}"""))
   }
 
   def addMapping(utr: Utr, statusCode: Int, body: Option[String] = None) = {
@@ -94,7 +94,7 @@ class HmrcEligibilityServiceSpec extends UnitSpec with BeforeAndAfterAll with Sc
     }
 
     "handle call when error downstream" in {
-      service(serverErrorUtr).futureValue.left.get shouldBe a[HmrcServiceError]
+      service(serverErrorUtr).futureValue shouldBe Left(HmrcServiceError("foo"))
     }
   }
 }

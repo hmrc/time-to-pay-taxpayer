@@ -27,7 +27,6 @@ import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.play.health.AdminController
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferencesService
 import uk.gov.hmrc.timetopayeligibility.controllers.EligibilityController
 import uk.gov.hmrc.timetopayeligibility.debits.Debits
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.Debit

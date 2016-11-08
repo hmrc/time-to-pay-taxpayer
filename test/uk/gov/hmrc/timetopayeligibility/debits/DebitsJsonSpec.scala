@@ -46,7 +46,7 @@ class DebitsJsonSpec extends UnitSpec {
           |}
           |""".stripMargin)
 
-      DebitsJson.reader.reads(json) match {
+      DebitsService.reader.reads(json) match {
         case JsSuccess(debits, _) => debits shouldBe List(
           Debit(taxYearEnd = LocalDate.of(2016, 4, 5),
             charge = Charge(originCode = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
@@ -87,7 +87,7 @@ class DebitsJsonSpec extends UnitSpec {
           |}
           |""".stripMargin)
 
-      DebitsJson.reader.reads(json) match {
+      DebitsService.reader.reads(json) match {
         case JsSuccess(debits, _) => debits shouldBe List(
           Debit(taxYearEnd = LocalDate.of(2016, 4, 5),
             charge = Charge(originCode = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
@@ -109,7 +109,7 @@ class DebitsJsonSpec extends UnitSpec {
         |  "wine": "cheese"
         |}""".stripMargin)
 
-      DebitsJson.reader.reads(json) match {
+      DebitsService.reader.reads(json) match {
         case JsSuccess(_, _) => fail("Should not parse")
         case JsError(errors) => errors.nonEmpty shouldBe true
       }

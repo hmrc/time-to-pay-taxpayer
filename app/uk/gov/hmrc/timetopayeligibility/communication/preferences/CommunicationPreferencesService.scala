@@ -16,46 +16,15 @@
 
 package uk.gov.hmrc.timetopayeligibility.communication.preferences
 
-import play.api.libs.ws.{WSClient, WSResponse}
-import uk.gov.hmrc.timetopayeligibility.Utr
-
-import scala.concurrent.{ExecutionContext, Future}
+import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService._
 
 object CommunicationPreferencesService {
 
-  type CommunicationPreferencesResult = Either[CommunicationPreferencesError, CommunicationPreferences]
+  val reader: Reads[CommunicationPreferences] = Json.reads[CommunicationPreferences]
 
-  sealed trait CommunicationPreferencesError {def message: String }
-
-  case class CommunicationPreferencesUserNotFound(utr: Utr) extends CommunicationPreferencesError {
-    override def message: String = s"Unable to find communication preferences for UTR ${ utr.value }"
-  }
-
-  case class CommunicationPreferencesServiceError(message: String) extends CommunicationPreferencesError
+  type CommunicationPreferencesResult = HmrcEligibilityServiceResult[CommunicationPreferences]
 
   case class CommunicationPreferences(welshLanguageIndicator: Boolean, audioIndicator: Boolean,
                                       largePrintIndicator: Boolean, brailleIndicator: Boolean)
-
-  def preferences(wsCall: (Utr => Future[WSResponse]))(utr: Utr)
-                 (implicit executionContext: ExecutionContext): Future[CommunicationPreferencesResult] = {
-    implicit val reader = CommunicationPreferencesJson.reader
-
-    wsCall(utr).map {
-      response => response.status match {
-        case 200 => Right(response.json.as[CommunicationPreferences])
-        case 404 => Left(CommunicationPreferencesUserNotFound(utr))
-        case _ => Left(CommunicationPreferencesServiceError(response.statusText))
-      }
-    }.recover {
-      case e: Exception => Left(CommunicationPreferencesServiceError(e.getMessage))
-    }
-  }
-
-  def wsCall(ws: WSClient, baseUrl: String)(utr: Utr)
-            (implicit executionContext: ExecutionContext): Future[WSResponse] = {
-
-    ws.url(s"$baseUrl/sa/taxpayer/${ utr.value }/communication-preferences")
-      .withHeaders("Authorization" -> "user")
-      .get()
-  }
 }

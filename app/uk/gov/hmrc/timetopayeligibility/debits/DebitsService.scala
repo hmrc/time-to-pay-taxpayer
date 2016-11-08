@@ -18,22 +18,12 @@ package uk.gov.hmrc.timetopayeligibility.debits
 
 import java.time.LocalDate
 
-import play.api.libs.ws.{WSClient, WSResponse}
-import uk.gov.hmrc.timetopayeligibility.Utr
-
-import scala.concurrent.{ExecutionContext, Future}
+import play.api.libs.json.{JsPath, Json, Reads}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService._
 
 object DebitsService {
 
-  type DebitsResult = Either[DebitsError, Seq[Debit]]
-
-  sealed trait DebitsError {def message: String }
-
-  case class DebitsUserNotFound(utr: Utr) extends DebitsError {
-    override def message: String = s"Unable to find debits for UTR ${ utr.value }"
-  }
-
-  case class DebitsServiceError(message: String) extends DebitsError
+  type DebitsResult = HmrcEligibilityServiceResult[Seq[Debit]]
 
   case class Charge(originCode: String, creationDate: LocalDate)
 
@@ -41,26 +31,11 @@ object DebitsService {
 
   case class Debit(taxYearEnd: LocalDate, charge: Charge, relevantDueDate: LocalDate, totalOutstanding: Int, interest: Option[Interest])
 
-  def debits(debitsWsCall: (Utr => Future[WSResponse]))(utr: Utr)(implicit executionContext: ExecutionContext): Future[DebitsResult] = {
-    implicit val reader = DebitsJson.reader
+  val reader: Reads[Seq[Debit]] = {
+    implicit val readCharge: Reads[Charge] = Json.reads[Charge]
+    implicit val readInterest: Reads[Interest] = Json.reads[Interest]
+    implicit val readReturn: Reads[Debit] = Json.reads[Debit]
 
-    debitsWsCall(utr).map {
-      response => response.status match {
-        case 200 => Right(response.json.as[Seq[Debit]])
-        case 404 => Left(DebitsUserNotFound(utr))
-        case _ => Left(DebitsServiceError(response.statusText))
-      }
-    }.recover {
-      case e: Exception => Left(DebitsServiceError(e.getMessage))
-    }
+    (JsPath \ "debits").read[Seq[Debit]]
   }
-
-  def debitsWsCall(ws: WSClient, baseUrl: String)(utr: Utr)
-                  (implicit executionContext: ExecutionContext): Future[WSResponse] = {
-
-    ws.url(s"$baseUrl/sa/taxpayer/${ utr.value }/debits")
-      .withHeaders("Authorization" -> "user")
-      .get()
-  }
-
 }

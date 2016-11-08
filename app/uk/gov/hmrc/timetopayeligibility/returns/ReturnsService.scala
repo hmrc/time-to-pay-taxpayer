@@ -18,44 +18,18 @@ package uk.gov.hmrc.timetopayeligibility.returns
 
 import java.time.LocalDate
 
-import play.api.libs.ws.{WSClient, WSResponse}
-import uk.gov.hmrc.timetopayeligibility.Utr
-
-import scala.concurrent.{ExecutionContext, Future}
+import play.api.libs.json.{JsPath, Json, Reads}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.HmrcEligibilityServiceResult
 
 object ReturnsService {
 
-  type ReturnsResult = Either[ReturnsError, Seq[Return]]
-
-  sealed trait ReturnsError {def message: String }
-
-  case class ReturnsUserNotFound(utr: Utr) extends ReturnsError {
-    override def message: String = s"Unable to find returns for UTR ${ utr.value }"
-  }
-
-  case class ReturnsServiceError(message: String) extends ReturnsError
+  type ReturnsResult = HmrcEligibilityServiceResult[Seq[Return]]
 
   case class Return(taxYearEnd: LocalDate, issuedDate: Option[LocalDate], dueDate: Option[LocalDate], receivedDate: Option[LocalDate])
 
-  def returns(returnsWsCall: (Utr => Future[WSResponse]))(utr: Utr)(implicit executionContext: ExecutionContext): Future[ReturnsResult] = {
-    implicit val reader = ReturnsJson.reader
+  val reader: Reads[Seq[Return]] = {
+    implicit val readReturn: Reads[Return] = Json.reads[Return]
 
-    returnsWsCall(utr).map {
-      response => response.status match {
-        case 200 => Right(response.json.as[Seq[Return]])
-        case 404 => Left(ReturnsUserNotFound(utr))
-        case _ => Left(ReturnsServiceError(response.statusText))
-      }
-    }.recover {
-      case e: Exception => Left(ReturnsServiceError(e.getMessage))
-    }
-  }
-
-  def returnsWsCall(ws: WSClient, baseUrl: String)(utr: Utr)
-                   (implicit executionContext: ExecutionContext): Future[WSResponse] = {
-
-    ws.url(s"$baseUrl/sa/taxpayer/${ utr.value }/returns")
-      .withHeaders("Authorization" -> "user")
-      .get()
+    (JsPath \ "returns").read[Seq[Return]]
   }
 }

@@ -42,7 +42,7 @@ class ReturnsJsonSpec extends UnitSpec {
           |  ]
           |}""".stripMargin)
 
-      ReturnsJson.reader.reads(json) match {
+      ReturnsService.reader.reads(json) match {
         case JsSuccess(returns, _) => returns shouldBe List(
           Return(taxYearEnd = LocalDate.of(2014, 4, 5), issuedDate = None, dueDate = None, receivedDate = Some(LocalDate.of(2014, 11, 28))),
           Return(taxYearEnd = LocalDate.of(2014, 4, 6), issuedDate = Some(LocalDate.of(2016, 4, 6)), dueDate = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
@@ -56,7 +56,7 @@ class ReturnsJsonSpec extends UnitSpec {
         |  "wine": "cheese"
         |}""".stripMargin)
 
-      ReturnsJson.reader.reads(json) match {
+      ReturnsService.reader.reads(json) match {
         case JsSuccess(returns, _) => fail("Should not parse")
         case JsError(errors) => errors.nonEmpty shouldBe true
       }

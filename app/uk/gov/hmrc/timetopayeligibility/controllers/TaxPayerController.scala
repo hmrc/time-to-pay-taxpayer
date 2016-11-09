@@ -21,7 +21,7 @@ import play.api.mvc._
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopayeligibility.debits.Debits._
-import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.HmrcUserNotFoundError
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.DesUserNotFoundError
 import uk.gov.hmrc.timetopayeligibility.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
 import uk.gov.hmrc.timetopayeligibility.{Utr, taxpayer}
 
@@ -56,7 +56,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
       }
     }).map {
       _.fold({
-        case HmrcUserNotFoundError(_) => NotFound
+        case DesUserNotFoundError(_) => NotFound
         case error => InternalServerError(error.message)
       }, taxPayer => Ok(Json.toJson(taxPayer)))
     }

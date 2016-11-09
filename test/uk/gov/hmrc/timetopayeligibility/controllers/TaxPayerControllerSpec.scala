@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopayeligibility.Fixtures
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.{HmrcServiceError, HmrcUserNotFoundError}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUserNotFoundError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -96,7 +96,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
     }
 
     "fail with a 500 if a downstream service is not successful" in {
-      val debitResult: DebitsResult = Left(HmrcServiceError("Foo"))
+      val debitResult: DebitsResult = Left(DesServiceError("Foo"))
 
       val controller = new TaxPayerController(
         (utr) => Future.successful(debitResult),
@@ -109,7 +109,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
 
     "fail with 404 if downstream service does not know about user" in {
       val utr = Fixtures.someUtr
-      val debitResult = Left(HmrcUserNotFoundError(utr))
+      val debitResult = Left(DesUserNotFoundError(utr))
 
       val controller = new TaxPayerController(
         (utr) => Future.successful(debitResult),

@@ -23,34 +23,34 @@ import uk.gov.hmrc.timetopayeligibility.Utr
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object HmrcEligibilityService {
+object DesService {
 
-  sealed trait HmrcError {
+  sealed trait DesError {
     def message: String
   }
 
-  case class HmrcUserNotFoundError(utr: Utr) extends HmrcError {
+  case class DesUserNotFoundError(utr: Utr) extends DesError {
     override def message: String = s"Unable to find communication preferences for UTR ${ utr.value }"
   }
 
-  case class HmrcServiceError(message: String) extends HmrcError
+  case class DesServiceError(message: String) extends DesError
 
-  type HmrcEligibilityServiceResult[T] = Either[HmrcError, T]
+  type DesServiceResult[T] = Either[DesError, T]
 
   def wsCall[T](ws: WSClient, baseUrl: String)
                (reader: Reads[T], path: (Utr => String))(utr: Utr)
-               (implicit executionContext: ExecutionContext): Future[HmrcEligibilityServiceResult[T]] = {
+               (implicit executionContext: ExecutionContext): Future[DesServiceResult[T]] = {
 
     ws.url(s"$baseUrl/${ path(utr) }")
       .withHeaders("Authorization" -> "user")
       .get().map {
       response => response.status match {
         case Status.OK => Right(response.json.as[T](reader))
-        case Status.NOT_FOUND => Left(HmrcUserNotFoundError(utr))
-        case _ => Left(HmrcServiceError((response.json \ "reason").asOpt[String].getOrElse(response.statusText)))
+        case Status.NOT_FOUND => Left(DesUserNotFoundError(utr))
+        case _ => Left(DesServiceError((response.json \ "reason").asOpt[String].getOrElse(response.statusText)))
       }
     }.recover {
-      case e: Exception => Left(HmrcServiceError(e.getMessage))
+      case e: Exception => Left(DesServiceError(e.getMessage))
     }
   }
 }

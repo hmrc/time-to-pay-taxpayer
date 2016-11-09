@@ -28,12 +28,12 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.{HmrcServiceError, HmrcUserNotFoundError}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUserNotFoundError}
 import uk.gov.hmrc.timetopayeligibility.{Fixtures, Utr}
 
 import scala.concurrent.ExecutionContext
 
-class HmrcEligibilityServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
+class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
 
   lazy val server = new WireMockServer(wireMockConfig().dynamicPort())
 
@@ -46,7 +46,7 @@ class HmrcEligibilityServiceSpec extends UnitSpec with BeforeAndAfterAll with Sc
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
-  val service = HmrcEligibilityService.wsCall(AhcWSClient(), serverUrl)(Json.reads[SimpleJson], _.value) _
+  val service = DesService.wsCall(AhcWSClient(), serverUrl)(Json.reads[SimpleJson], _.value) _
 
   val uniqueUtrs = Fixtures.uniqueUtrs(4)
   val successfulUtr = uniqueUtrs.head
@@ -80,21 +80,21 @@ class HmrcEligibilityServiceSpec extends UnitSpec with BeforeAndAfterAll with Sc
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Second))
 
-  "hmrc service" should {
+  "des service" should {
     "handle valid responses" in {
       service(successfulUtr).futureValue shouldBe Right(SimpleJson(successfulUtr.value))
     }
 
     "handle call from ws with dodgy JSON" in {
-      service(badJsonUtr).futureValue.left.get shouldBe a[HmrcServiceError]
+      service(badJsonUtr).futureValue.left.get shouldBe a[DesServiceError]
     }
 
     "handle call for unknown UTR" in {
-      service(unknownUtr).futureValue shouldBe Left(HmrcUserNotFoundError(unknownUtr))
+      service(unknownUtr).futureValue shouldBe Left(DesUserNotFoundError(unknownUtr))
     }
 
     "handle call when error downstream" in {
-      service(serverErrorUtr).futureValue shouldBe Left(HmrcServiceError("foo"))
+      service(serverErrorUtr).futureValue shouldBe Left(DesServiceError("foo"))
     }
   }
 }

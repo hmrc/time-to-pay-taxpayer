@@ -17,7 +17,7 @@
 package uk.gov.hmrc.timetopayeligibility.communication.preferences
 
 import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService._
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService._
 
 
 case class CommunicationPreferences(welshLanguageIndicator: Boolean, audioIndicator: Boolean,
@@ -27,5 +27,5 @@ object CommunicationPreferences {
 
   val reader: Reads[CommunicationPreferences] = Json.reads[CommunicationPreferences]
 
-  type CommunicationPreferencesResult = HmrcEligibilityServiceResult[CommunicationPreferences]
+  type CommunicationPreferencesResult = DesServiceResult[CommunicationPreferences]
 }

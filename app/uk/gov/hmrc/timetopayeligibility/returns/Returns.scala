@@ -19,11 +19,11 @@ package uk.gov.hmrc.timetopayeligibility.returns
 import java.time.LocalDate
 
 import play.api.libs.json.{JsPath, Json, Reads}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.HmrcEligibilityServiceResult
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.DesServiceResult
 
 object Returns {
 
-  type ReturnsResult = HmrcEligibilityServiceResult[Seq[Return]]
+  type ReturnsResult = DesServiceResult[Seq[Return]]
 
   case class Return(taxYearEnd: LocalDate, issuedDate: Option[LocalDate], dueDate: Option[LocalDate], receivedDate: Option[LocalDate])
 

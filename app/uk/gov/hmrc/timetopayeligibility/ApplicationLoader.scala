@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.health.AdminController
 import uk.gov.hmrc.timetopayeligibility.controllers.TaxPayerController
 import uk.gov.hmrc.timetopayeligibility.debits.Debits
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.Debit
-import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService
 import uk.gov.hmrc.timetopayeligibility.returns.Returns
 import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
 
@@ -49,7 +49,7 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
 
   lazy val wsClient = AhcWSClient()
 
-  def hmrcWsCall[T] = HmrcEligibilityService.wsCall[T](wsClient, ApplicationConfig.desServicesUrl) _
+  def hmrcWsCall[T] = DesService.wsCall[T](wsClient, ApplicationConfig.desServicesUrl) _
 
   lazy val returns = hmrcWsCall[Seq[Return]](Returns.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
   lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")

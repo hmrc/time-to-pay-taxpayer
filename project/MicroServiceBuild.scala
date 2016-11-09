@@ -28,7 +28,6 @@ private object AppDependencies {
   private val wiremockVersion = "1.58"
 
   val compile = Seq(
-
     ws,
     "uk.gov.hmrc" %% "microservice-bootstrap" % microserviceBootstrapVersion,
     "uk.gov.hmrc" %% "play-authorisation" % playAuthVersion,

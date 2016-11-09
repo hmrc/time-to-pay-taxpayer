@@ -19,11 +19,11 @@ package uk.gov.hmrc.timetopayeligibility.debits
 import java.time.LocalDate
 
 import play.api.libs.json.{JsPath, Json, Reads}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService._
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService._
 
 object Debits {
 
-  type DebitsResult = HmrcEligibilityServiceResult[Seq[Debit]]
+  type DebitsResult = DesServiceResult[Seq[Debit]]
 
   case class Charge(originCode: String, creationDate: LocalDate)
 

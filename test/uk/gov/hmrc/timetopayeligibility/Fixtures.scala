@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.timetopayeligibility
 
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+
 import util.Random.nextInt
 
 object Fixtures {
@@ -23,4 +25,7 @@ object Fixtures {
   def someUtr = Utr(Stream.continually(nextInt(9)).take(10).mkString)
 
   def uniqueUtrs(n: Int) = Stream.continually(someUtr).distinct.take(n)
+
+  def someCommunicationPreferences() = CommunicationPreferences(welshLanguageIndicator = true, audioIndicator = true,
+    largePrintIndicator = true, brailleIndicator = true)
 }

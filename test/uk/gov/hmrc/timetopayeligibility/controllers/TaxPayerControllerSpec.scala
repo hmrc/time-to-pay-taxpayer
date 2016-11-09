@@ -26,11 +26,11 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.mvc.Http.Status
 import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.timetopayeligibility.Fixtures
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.HmrcServiceError
+import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.{HmrcServiceError, HmrcUserNotFoundError}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
@@ -97,17 +97,27 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
     "fail with a 500 if a downstream service is not successful" in {
       val debitResult: DebitsResult = Left(HmrcServiceError("Foo"))
 
-      val preferencesResult = Right(CommunicationPreferences(welshLanguageIndicator = true, audioIndicator = true,
-        largePrintIndicator = true, brailleIndicator = true))
+      val controller = new TaxPayerController(
+        (utr) => Future.successful(debitResult),
+        (utr) => Future.successful(Right(Fixtures.someCommunicationPreferences())) )
+
+      val result = controller.taxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
+
+      result.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "fail with 404 if downstream service does not know about user" in {
+      val utr = Fixtures.someUtr
+      val debitResult = Left(HmrcUserNotFoundError(utr))
 
       val controller = new TaxPayerController(
         (utr) => Future.successful(debitResult),
-        (utr) => Future.successful(preferencesResult) )
+        (utr) => Future.successful(Right(Fixtures.someCommunicationPreferences()))
+      )
 
+      val result = controller.taxPayer(utr.value).apply(FakeRequest()).futureValue
 
-      val result = controller.taxPayer("1234567890").apply(FakeRequest()).futureValue
-
-      result.header.status shouldBe Status.INTERNAL_SERVER_ERROR
+      result.header.status shouldBe Status.NOT_FOUND
     }
   }
 

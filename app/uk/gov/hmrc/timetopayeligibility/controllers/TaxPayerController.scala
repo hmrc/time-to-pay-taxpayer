@@ -37,8 +37,8 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
     val utr = Utr(utrAsString)
 
     (for {
-      debitsResult: DebitsResult <- debitsService(utr)
-      preferencesResult: CommunicationPreferencesResult <- preferencesService(utr)
+      debitsResult <- debitsService(utr)
+      preferencesResult <- preferencesService(utr)
     } yield {
       for {
         debits <- debitsResult.right
@@ -56,7 +56,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
       }
     }).map {
       _.fold({
-        case HmrcUserNotFoundError(_) => NotFound("")
+        case HmrcUserNotFoundError(_) => NotFound
         case error => InternalServerError(error.message)
       }, taxPayer => Ok(Json.toJson(taxPayer)))
     }

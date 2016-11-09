@@ -31,6 +31,7 @@ import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationP
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult}
 import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService.{HmrcServiceError, HmrcUserNotFoundError}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {

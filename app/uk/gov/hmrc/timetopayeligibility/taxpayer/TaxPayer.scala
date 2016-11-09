@@ -31,7 +31,11 @@ object TaxPayer {
 object Address {
 
   val writer: Writes[Address] = Writes[Address](address => {
-    val addressLines = address.lines.zipWithIndex.map { p => "addressLine" + (p._2+1) -> JsString(p._1) }
+
+    val addressLines = address.lines.zipWithIndex.map {
+      case (value, index) => s"addressLine${index + 1}" -> JsString(value)
+    }
+
     JsObject(addressLines :+ ("postCode" -> JsString(address.postCode)))
   })
 

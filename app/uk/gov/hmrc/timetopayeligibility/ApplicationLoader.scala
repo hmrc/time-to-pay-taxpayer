@@ -27,7 +27,7 @@ import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.play.health.AdminController
-import uk.gov.hmrc.timetopayeligibility.controllers.EligibilityController
+import uk.gov.hmrc.timetopayeligibility.controllers.TaxPayerController
 import uk.gov.hmrc.timetopayeligibility.debits.Debits
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.Debit
 import uk.gov.hmrc.timetopayeligibility.infrastructure.HmrcEligibilityService
@@ -55,11 +55,11 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
   lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
   lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
 
-  lazy val eligibilityController = new EligibilityController(returns, debits, preferences)
+  lazy val eligibilityController = new TaxPayerController(debits, preferences)
 
   lazy val metricsController = new MetricsController(new GraphiteMetricsImpl(applicationLifecycle, configuration))
-  lazy val appRoutes = new app.Routes(httpErrorHandler,  new Provider[EligibilityController] {
-    override def get(): EligibilityController = eligibilityController
+  lazy val appRoutes = new app.Routes(httpErrorHandler,  new Provider[TaxPayerController] {
+    override def get(): TaxPayerController = eligibilityController
   })
   lazy val healthRoutes = new manualdihealth.Routes(httpErrorHandler, new Provider[AdminController] {
     override def get(): AdminController = new AdminController(configuration)

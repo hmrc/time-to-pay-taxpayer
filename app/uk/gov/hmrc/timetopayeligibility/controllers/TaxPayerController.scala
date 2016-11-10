@@ -50,7 +50,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
   private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences) = {
     TaxPayer(
       customerName = "Customer name",
-      addresses = Seq(Address(Seq("123 Fake Street", "Foo", "Bar"), "BN3 2GH")),
+      addresses = List(Address("123 Fake Street", "Foo", "Bar", "", "", "BN3 2GH")),
       selfAssessment = SelfAssessmentDetails(
         utr = utrAsString,
         communicationPreferences = preferences,

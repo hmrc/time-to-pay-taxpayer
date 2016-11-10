@@ -73,7 +73,9 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
           |             "addressLine1": "123 Fake Street",
           |             "addressLine2": "Foo",
           |             "addressLine3": "Bar",
-          |             "postCode": "BN3 2GH"
+          |             "addressLine4": "",
+          |             "addressLine5": "",
+          |             "postcode": "BN3 2GH"
           |           }
           |         ],
           |    "selfAssessment": {

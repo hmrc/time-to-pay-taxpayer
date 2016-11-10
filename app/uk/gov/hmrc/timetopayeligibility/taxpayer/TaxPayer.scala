@@ -30,14 +30,15 @@ case class Debit(originCode: String, amount: Double, dueDate: LocalDate, interes
 
 case class Interest(calculationDate: Option[LocalDate], amountAccrued: Double)
 
-case class Address(lines: Seq[String], postCode: String)
+case class Address(addressLine1: String, addressLine2: String, addressLine3: String,
+                   addressLine4: String, addressLine5: String, postcode: String)
 
 
 object TaxPayer {
 
   val writer: Writes[TaxPayer] = {
     implicit val writeReturn: Writes[TaxPayer] = TaxPayer.writer
-    implicit val writeAddress: Writes[Address] = Address.writer
+    implicit val writeAddress: Writes[Address] = Json.writes[Address]
     implicit val writePreferences: Writes[CommunicationPreferences] = Json.writes[CommunicationPreferences]
     implicit val writeInterest: Writes[Interest] = Json.writes[Interest]
     implicit val writeDebits: Writes[Debit] = Json.writes[Debit]
@@ -47,15 +48,3 @@ object TaxPayer {
   }
 }
 
-object Address {
-
-  val writer: Writes[Address] = Writes[Address](address => {
-
-    val addressLines = address.lines.zipWithIndex.map {
-      case (value, index) => s"addressLine${index + 1}" -> JsString(value)
-    }
-
-    JsObject(addressLines :+ ("postCode" -> JsString(address.postCode)))
-  })
-
-}

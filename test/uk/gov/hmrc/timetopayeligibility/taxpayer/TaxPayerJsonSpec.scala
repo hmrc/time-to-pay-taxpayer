@@ -24,50 +24,6 @@ import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationP
 
 class TaxPayerJsonSpec extends UnitSpec {
 
-  "an address" should {
-    "be serialised to json" in {
-
-      implicit val writeAddress: Writes[Address] = Address.writer
-
-      val address: Address = Address(List("123 Fake Street", "Foo", "Bar", "Baz", "Waz"), "BN3 2GH")
-      val json: JsValue = Json.toJson(address)
-
-
-      val expectedJson = Json.parse(
-        """{
-          |  "addressLine1": "123 Fake Street",
-          |  "addressLine2": "Foo",
-          |  "addressLine3": "Bar",
-          |  "addressLine4": "Baz",
-          |  "addressLine5": "Waz",
-          |  "postCode": "BN3 2GH"
-          |}""".stripMargin)
-
-
-      json shouldBe expectedJson
-    }
-
-    "serialise to json correctly with fewer line values" in {
-
-      implicit val writeAddress: Writes[Address] = Address.writer
-
-      val address: Address = Address(List("123 Fake Street", "Foo", "Bar"), "BN3 2GH")
-      val json: JsValue = Json.toJson(address)
-
-
-      val expectedJson = Json.parse(
-        """{
-          |  "addressLine1": "123 Fake Street",
-          |  "addressLine2": "Foo",
-          |  "addressLine3": "Bar",
-          |  "postCode": "BN3 2GH"
-          |}""".stripMargin)
-
-
-      json shouldBe expectedJson
-    }
-  }
-
   "a tax payer" should {
     "be serialised to json" in {
 
@@ -76,7 +32,7 @@ class TaxPayerJsonSpec extends UnitSpec {
       val prefs = CommunicationPreferences(welshLanguageIndicator = false, audioIndicator = false,
         largePrintIndicator = false, brailleIndicator = false)
 
-      val addresses = List(Address(List("123 Fake Street", "Foo", "Bar"), "BN3 2GH"))
+      val addresses = List(Address("123 Fake Street", "Foo", "Bar", "", "", "BN3 2GH"))
 
       val debits = List(Debit(originCode = "POA2", amount = 250.52, dueDate = LocalDate.of(2016, 1, 31),
         interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32))))
@@ -95,7 +51,9 @@ class TaxPayerJsonSpec extends UnitSpec {
           |             "addressLine1": "123 Fake Street",
           |             "addressLine2": "Foo",
           |             "addressLine3": "Bar",
-          |             "postCode": "BN3 2GH"
+          |             "addressLine4": "",
+          |             "addressLine5": "",
+          |             "postcode": "BN3 2GH"
           |           }
           |         ],
           |    "selfAssessment": {

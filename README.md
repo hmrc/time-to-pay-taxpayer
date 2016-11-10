@@ -17,7 +17,7 @@ Input
              "addressLine3": "Bar",
              "addressLine4": "",
              "addressLine5": "",
-             "postCode": "BN3 2GH"
+             "postcode": "BN3 2GH"
            }
          ],
     "selfAssessment": {

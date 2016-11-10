@@ -61,7 +61,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         (utr) => Future.successful(preferencesResult) )
 
 
-      val json = jsonBodyOf(controller.taxPayer("1234567890").apply(FakeRequest()).futureValue)
+      val json = jsonBodyOf(controller.getTaxPayer("1234567890").apply(FakeRequest()).futureValue)
 
       val expectedJson = Json.parse(
         """
@@ -102,7 +102,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         (utr) => Future.successful(debitResult),
         (utr) => Future.successful(Right(Fixtures.someCommunicationPreferences())) )
 
-      val result = controller.taxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
+      val result = controller.getTaxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
 
       result.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
@@ -116,7 +116,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         (utr) => Future.successful(Right(Fixtures.someCommunicationPreferences()))
       )
 
-      val result = controller.taxPayer(utr.value).apply(FakeRequest()).futureValue
+      val result = controller.getTaxPayer(utr.value).apply(FakeRequest()).futureValue
 
       result.header.status shouldBe Status.NOT_FOUND
     }

@@ -26,6 +26,7 @@ private object AppDependencies {
   private val pegdownVersion = "1.6.0"
   private val httpVerbsVersion = "6.2.0"
   private val wiremockVersion = "1.58"
+  private val catsVersion = "0.8.0"
 
   val compile = Seq(
     ws,
@@ -36,7 +37,8 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-config" % playConfigVersion,
     "uk.gov.hmrc" %% "http-verbs" % httpVerbsVersion,
     "uk.gov.hmrc" %% "play-json-logger" % playJsonLoggerVersion,
-    "uk.gov.hmrc" %% "domain" % domainVersion
+    "uk.gov.hmrc" %% "domain" % domainVersion,
+    "org.typelevel" %% "cats" % catsVersion
   )
 
   trait TestDependencies {

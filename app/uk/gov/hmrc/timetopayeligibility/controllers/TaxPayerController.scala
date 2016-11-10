@@ -16,12 +16,15 @@
 
 package uk.gov.hmrc.timetopayeligibility.controllers
 
+import cats.data.EitherT
+import cats.implicits._
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
 import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopayeligibility.debits.Debits._
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.DesUserNotFoundError
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesError, DesUserNotFoundError}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
 import uk.gov.hmrc.timetopayeligibility.{Utr, taxpayer}
 
@@ -31,35 +34,33 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
                          preferencesService: (Utr => Future[CommunicationPreferencesResult]))
                         (implicit executionContext: ExecutionContext) extends BaseController {
 
-  def taxPayer(utrAsString: String) = Action.async { implicit request =>
+  def getTaxPayer(utrAsString: String) = Action.async { implicit request =>
     implicit val writeAddress: Writes[TaxPayer] = TaxPayer.writer
 
     val utr = Utr(utrAsString)
 
-    (for {
-      debitsResult <- debitsService(utr)
-      preferencesResult <- preferencesService(utr)
-    } yield {
-      for {
-        debits <- debitsResult.right
-        preferences <- preferencesResult.right
-      } yield {
-        TaxPayer(
-          customerName = "Customer name",
-          addresses = Seq(Address(Seq("123 Fake Street", "Foo", "Bar"), "BN3 2GH")),
-          selfAssessment = SelfAssessmentDetails(
-            utr = utrAsString,
-            communicationPreferences = preferences,
-            debits = debits.map(d => taxpayer.Debit(d.charge.originCode, d.relevantDueDate))
-          )
-        )
-      }
-    }).map {
-      _.fold({
-        case DesUserNotFoundError(_) => NotFound
-        case error => InternalServerError(error.message)
-      }, taxPayer => Ok(Json.toJson(taxPayer)))
-    }
+    val result = for {
+      debits <- EitherT(debitsService(utr))
+      preferences <- EitherT(preferencesService(utr))
+    } yield taxPayer(utrAsString, debits, preferences)
+
+    result.fold(handleError, taxPayer => Ok(Json.toJson(taxPayer)))
   }
 
+  private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences) = {
+    TaxPayer(
+      customerName = "Customer name",
+      addresses = Seq(Address(Seq("123 Fake Street", "Foo", "Bar"), "BN3 2GH")),
+      selfAssessment = SelfAssessmentDetails(
+        utr = utrAsString,
+        communicationPreferences = preferences,
+        debits = debits.map(d => taxpayer.Debit(d.charge.originCode, d.relevantDueDate))
+      )
+    )
+  }
+
+  private def handleError(error: DesError): Result = error match {
+    case DesUserNotFoundError(_) => NotFound
+    case e: DesError => InternalServerError(e.message)
+  }
 }

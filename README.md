@@ -30,8 +30,11 @@ Input
       },
       "debits": [
         {
-          "originCode": "IN2",
-          "dueDate": "2014-07-31"
+          "type": "POA2",
+          "amount": 250.52,
+          "interestAccrued": 42.32,
+          "interestCalculationDate": "2016-06-01",
+          "dueDate": "2016-01-31"
         }
       ]
    }

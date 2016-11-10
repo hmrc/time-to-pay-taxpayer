@@ -28,7 +28,7 @@ import play.mvc.Http.Status
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopayeligibility.Fixtures
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult}
+import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult, Interest}
 import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUserNotFoundError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -48,10 +48,11 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val debitResult: DebitsResult = Right(Seq(Debit(
         charge = Charge(originCode = "IN2",
         creationDate = LocalDate.of(2013, 7, 31)),
-        relevantDueDate = LocalDate.of(2014, 7, 31),
+        relevantDueDate = LocalDate.of(2016, 1, 31),
         taxYearEnd = LocalDate.of(2015, 4, 1),
-        totalOutstanding = 0,
-        interest = None )))
+        totalOutstanding = 250.52,
+        interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32))
+      )))
 
       val preferencesResult = Right(CommunicationPreferences( welshLanguageIndicator = true, audioIndicator = true,
         largePrintIndicator = true, brailleIndicator = true))
@@ -86,7 +87,12 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
           |      "debits": [
           |        {
           |          "originCode": "IN2",
-          |          "dueDate": "2014-07-31"
+          |          "amount": 250.52,
+          |          "dueDate": "2016-01-31",
+          |          "interest": {
+          |             "calculationDate" : "2016-06-01",
+          |             "amountAccrued" : 42.32
+          |          }
           |        }
           |      ]
           |   }

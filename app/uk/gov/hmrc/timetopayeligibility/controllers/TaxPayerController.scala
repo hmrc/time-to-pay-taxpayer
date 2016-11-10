@@ -54,7 +54,12 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
       selfAssessment = SelfAssessmentDetails(
         utr = utrAsString,
         communicationPreferences = preferences,
-        debits = debits.map(d => taxpayer.Debit(d.charge.originCode, d.relevantDueDate))
+        debits = debits.map(d => taxpayer.Debit(
+          originCode = d.charge.originCode,
+          amount = d.totalOutstanding,
+          dueDate = d.relevantDueDate,
+          interest = d.interest.map(i => taxpayer.Interest(i.creationDate, i.amount))
+        ))
       )
     )
   }

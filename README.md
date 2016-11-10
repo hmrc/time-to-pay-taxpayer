@@ -32,9 +32,11 @@ Input
         {
           "originCode": "POA2",
           "amount": 250.52,
-          "interestAccrued": 42.32,
-          "interestCalculationDate": "2016-06-01",
           "dueDate": "2016-01-31"
+          "interest": {
+            "calculationDate" : "2016-06-01",
+            "amountAccrued" : 42.32
+          }
         }
       ]
    }

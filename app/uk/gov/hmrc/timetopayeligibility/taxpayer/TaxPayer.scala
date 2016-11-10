@@ -26,7 +26,9 @@ case class TaxPayer(customerName: String, addresses: Seq[Address],
 
 case class SelfAssessmentDetails(utr: String, communicationPreferences: CommunicationPreferences, debits: Seq[Debit])
 
-case class Debit(originCode: String, dueDate: LocalDate)
+case class Debit(originCode: String, amount: Double, dueDate: LocalDate, interest: Option[Interest])
+
+case class Interest(calculationDate: Option[LocalDate], amountAccrued: Double)
 
 case class Address(lines: Seq[String], postCode: String)
 
@@ -37,6 +39,7 @@ object TaxPayer {
     implicit val writeReturn: Writes[TaxPayer] = TaxPayer.writer
     implicit val writeAddress: Writes[Address] = Address.writer
     implicit val writePreferences: Writes[CommunicationPreferences] = Json.writes[CommunicationPreferences]
+    implicit val writeInterest: Writes[Interest] = Json.writes[Interest]
     implicit val writeDebits: Writes[Debit] = Json.writes[Debit]
     implicit val writeSelfAssessmentDetails: Writes[SelfAssessmentDetails] = Json.writes[SelfAssessmentDetails]
 

@@ -78,7 +78,9 @@ class TaxPayerJsonSpec extends UnitSpec {
 
       val addresses = List(Address(List("123 Fake Street", "Foo", "Bar"), "BN3 2GH"))
 
-      val debits = List(Debit("IN2", LocalDate.of(2014, 7, 31)))
+      val debits = List(Debit(originCode = "POA2", amount = 250.52, dueDate = LocalDate.of(2016, 1, 31),
+        interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32))))
+
 
       val taxPayer = TaxPayer(customerName = "Customer name", addresses = addresses,
         selfAssessment = SelfAssessmentDetails("1234567890", prefs, debits = debits))
@@ -106,8 +108,13 @@ class TaxPayerJsonSpec extends UnitSpec {
           |      },
           |      "debits": [
           |        {
-          |          "originCode": "IN2",
-          |          "dueDate": "2014-07-31"
+          |          "originCode": "POA2",
+          |          "amount": 250.52,
+          |          "dueDate": "2016-01-31",
+          |          "interest": {
+          |             "calculationDate" : "2016-06-01",
+          |             "amountAccrued" : 42.32
+          |          }
           |        }
           |      ]
           |}

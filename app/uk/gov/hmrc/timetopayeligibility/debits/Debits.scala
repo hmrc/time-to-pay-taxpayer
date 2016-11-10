@@ -27,9 +27,9 @@ object Debits {
 
   case class Charge(originCode: String, creationDate: LocalDate)
 
-  case class Interest(creationDate: Option[LocalDate], amount: Int)
+  case class Interest(creationDate: Option[LocalDate], amount: Double)
 
-  case class Debit(taxYearEnd: LocalDate, charge: Charge, relevantDueDate: LocalDate, totalOutstanding: Int, interest: Option[Interest])
+  case class Debit(taxYearEnd: LocalDate, charge: Charge, relevantDueDate: LocalDate, totalOutstanding: Double, interest: Option[Interest])
 
   val reader: Reads[Seq[Debit]] = {
     implicit val readCharge: Reads[Charge] = Json.reads[Charge]

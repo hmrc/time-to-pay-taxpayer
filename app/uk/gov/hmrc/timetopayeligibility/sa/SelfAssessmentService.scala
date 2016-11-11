@@ -36,17 +36,17 @@ object SelfAssessmentService {
 
   case class SaServiceError(message: String) extends SaError
 
-  type SaServiceResult[T] = Either[SaError, T]
+  type SaServiceResult = Either[SaError, Address]
 
-  def wsCall[T](ws: WSClient, baseUrl: String)
-               (reader: Reads[T], path: (Utr => String))(utr: Utr)
-               (implicit executionContext: ExecutionContext): Future[SaServiceResult[T]] = {
+  def address(ws: WSClient, baseUrl: String)
+                (path: (Utr => String))(utr: Utr)
+                (implicit executionContext: ExecutionContext): Future[SaServiceResult] = {
 
     ws.url(s"$baseUrl/${ path(utr) }")
       .withHeaders("Authorization" -> "user")
       .get().map {
       response => response.status match {
-        case Status.OK => Right(response.json.as[T](reader))
+        case Status.OK => Right(response.json.as[Address](DesignatoryDetails.reader))
         case Status.NOT_FOUND => Left(SaUserNotFoundError(utr))
         case _ => Left(SaServiceError(response.statusText))
       }

@@ -25,13 +25,15 @@ import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationP
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopayeligibility.debits.Debits._
 import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUserNotFoundError}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
 import uk.gov.hmrc.timetopayeligibility.{Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
-                         preferencesService: (Utr => Future[CommunicationPreferencesResult]))
+                         preferencesService: (Utr => Future[CommunicationPreferencesResult]),
+                         addressService: (Utr => Future[SaServiceResult]))
                         (implicit executionContext: ExecutionContext) extends BaseController {
 
   def getTaxPayer(utrAsString: String) = Action.async { implicit request =>
@@ -39,18 +41,25 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
 
     val utr = Utr(utrAsString)
 
-    val result = for {
-      debits <- EitherT(debitsService(utr))
-      preferences <- EitherT(preferencesService(utr))
-    } yield taxPayer(utrAsString, debits, preferences)
-
-    result.fold(handleError, taxPayer => Ok(Json.toJson(taxPayer)))
+    (for {
+      debits <- EitherT(debitsService(utr)).leftMap(handleError)
+      preferences <- EitherT(preferencesService(utr)).leftMap(handleError)
+      address <- EitherT(addressService(utr)).leftMap(handleError)
+    } yield {
+      Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, address)))
+    }).merge
   }
 
-  private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences) = {
+  private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences, address: Address) = {
     TaxPayer(
       customerName = "Customer name",
-      addresses = List(Address("123 Fake Street", "Foo", "Bar", "", "", "BN3 2GH")),
+      addresses = List(
+        Address(address.addressLine1,
+          address.addressLine2,
+          address.addressLine3,
+          address.addressLine4,
+          address.addressLine5,
+          address.postcode)),
       selfAssessment = SelfAssessmentDetails(
         utr = utrAsString,
         communicationPreferences = preferences,
@@ -67,5 +76,10 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
   private def handleError(error: DesError): Result = error match {
     case DesUserNotFoundError(_) => NotFound
     case e: DesError => InternalServerError(e.message)
+  }
+
+  private def handleError(error: SaError): Result = error match {
+    case SaUserNotFoundError(_) => NotFound
+    case e: SaError => InternalServerError(e.message)
   }
 }

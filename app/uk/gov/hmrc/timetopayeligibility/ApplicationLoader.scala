@@ -33,6 +33,7 @@ import uk.gov.hmrc.timetopayeligibility.debits.Debits.Debit
 import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService
 import uk.gov.hmrc.timetopayeligibility.returns.Returns
 import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
+import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService
 
 class ApplicationLoader extends play.api.ApplicationLoader {
   def load(context: Context) = {
@@ -55,7 +56,9 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
   lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
   lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr=> s"sa/taxpayer/${ utr.value }/communication-preferences")
 
-  lazy val eligibilityController = new TaxPayerController(debits, preferences)
+  lazy val saService = SelfAssessmentService.address(wsClient, ApplicationConfig.saServicesUrl)(utr=> s"sa/individual/${ utr.value }/designatory-details") _
+
+  lazy val eligibilityController = new TaxPayerController(debits, preferences, saService)
 
   lazy val metricsController = new MetricsController(new GraphiteMetricsImpl(applicationLifecycle, configuration))
   lazy val appRoutes = new app.Routes(httpErrorHandler,  new Provider[TaxPayerController] {

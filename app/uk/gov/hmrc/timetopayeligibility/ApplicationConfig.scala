@@ -21,4 +21,5 @@ import uk.gov.hmrc.play.config.ServicesConfig
 object ApplicationConfig extends ServicesConfig {
 
   lazy val desServicesUrl = baseUrl("des-services")
+  lazy val saServicesUrl = baseUrl("sa-services")
 }

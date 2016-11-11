@@ -25,6 +25,7 @@ import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationP
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopayeligibility.debits.Debits._
 import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUserNotFoundError}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
 import uk.gov.hmrc.timetopayeligibility.{Utr, taxpayer}
@@ -33,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
                          preferencesService: (Utr => Future[CommunicationPreferencesResult]),
-                         addressService: (Utr => Future[SaServiceResult]))
+                         saService: (Utr => Future[SaServiceResult]))
                         (implicit executionContext: ExecutionContext) extends BaseController {
 
   def getTaxPayer(utrAsString: String) = Action.async { implicit request =>
@@ -44,15 +45,16 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
     (for {
       debits <- EitherT(debitsService(utr)).leftMap(handleError)
       preferences <- EitherT(preferencesService(utr)).leftMap(handleError)
-      address <- EitherT(addressService(utr)).leftMap(handleError)
+      individual <- EitherT(saService(utr)).leftMap(handleError)
     } yield {
-      Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, address)))
+      Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, individual)))
     }).merge
   }
 
-  private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences, address: Address) = {
+  private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences, individual: Individual) = {
+    val address = individual.address
     TaxPayer(
-      customerName = "Customer name",
+      customerName = individual.name.toString(),
       addresses = List(
         Address(address.addressLine1,
           address.addressLine2,

@@ -30,6 +30,7 @@ import uk.gov.hmrc.timetopayeligibility.Fixtures
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult, Interest}
 import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -58,7 +59,8 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val preferencesResult = Right(CommunicationPreferences( welshLanguageIndicator = true, audioIndicator = true,
         largePrintIndicator = true, brailleIndicator = true))
 
-      val saResult = Right(Address("321 Fake Street", "Worthing", "West Sussex", "Another Line", "One More Line", "BN3 2GH"))
+      val saResult = Right(Individual(Fixtures.someIndividual(),
+        Address("321 Fake Street", "Worthing", "West Sussex", "Another Line", "One More Line", "BN3 2GH")))
 
       val controller = new TaxPayerController(
         (utr) => Future.successful(debitResult),
@@ -71,7 +73,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val expectedJson = Json.parse(
         """
           |{
-          |   "customerName": "Customer name",
+          |   "customerName": "President Donald Trump",
           |   "addresses": [
           |           {
           |             "addressLine1": "321 Fake Street",
@@ -113,7 +115,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val controller = new TaxPayerController(
         (utr) => Future.successful(debitResult),
         (utr) => Future.successful(Right(Fixtures.someCommunicationPreferences())),
-        (utr) => Future.successful(Right(Fixtures.someAddress()))
+        (utr) => Future.successful(Right(Fixtures.somePerson()))
       )
 
       val result = controller.getTaxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
@@ -128,7 +130,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val controller = new TaxPayerController(
         (utr) => Future.successful(debitResult),
         (utr) => Future.successful(Right(Fixtures.someCommunicationPreferences())),
-        (utr) => Future.successful(Right(Fixtures.someAddress()))
+        (utr) => Future.successful(Right(Fixtures.somePerson()))
       )
 
       val result = controller.getTaxPayer(utr.value).apply(FakeRequest()).futureValue

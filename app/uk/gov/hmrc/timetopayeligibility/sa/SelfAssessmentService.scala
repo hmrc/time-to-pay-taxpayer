@@ -17,9 +17,10 @@
 package uk.gov.hmrc.timetopayeligibility.sa
 
 import play.api.http.Status
-import play.api.libs.json.{JsPath, Json, Reads}
+import play.api.libs.json.{JsObject, JsPath, Json, Reads}
 import play.api.libs.ws.WSClient
 import uk.gov.hmrc.timetopayeligibility.Utr
+import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +37,7 @@ object SelfAssessmentService {
 
   case class SaServiceError(message: String) extends SaError
 
-  type SaServiceResult = Either[SaError, Address]
+  type SaServiceResult = Either[SaError, Individual]
 
   def address(ws: WSClient, baseUrl: String)
                 (path: (Utr => String))(utr: Utr)
@@ -46,7 +47,7 @@ object SelfAssessmentService {
       .withHeaders("Authorization" -> "user")
       .get().map {
       response => response.status match {
-        case Status.OK => Right(response.json.as[Address](DesignatoryDetails.reader))
+        case Status.OK => Right(response.json.as[Individual](DesignatoryDetails.reader))
         case Status.NOT_FOUND => Left(SaUserNotFoundError(utr))
         case _ => Left(SaServiceError(response.statusText))
       }
@@ -57,10 +58,19 @@ object SelfAssessmentService {
 
 }
 
-object DesignatoryDetails {
-  val reader: Reads[Address]  = {
-    implicit val readReturn: Reads[Address] = Json.reads[Address]
 
-    (JsPath \ "address").read[Address]
+object DesignatoryDetails {
+
+  case class Individual(name: Name, address: Address)
+
+  case class Name(title: String, forename: String, secondForename: Option[String], surname: String) {
+    override def toString() = Seq(title, forename, secondForename.getOrElse(""), surname).filterNot(_.isEmpty).mkString(" ")
+  }
+
+  val reader: Reads[Individual]  = {
+    implicit val readAddress: Reads[Address] = Json.reads[Address]
+    implicit val readName: Reads[Name] = Json.reads[Name]
+
+    Json.reads[Individual]
   }
 }

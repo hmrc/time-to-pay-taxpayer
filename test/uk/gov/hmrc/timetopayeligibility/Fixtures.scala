@@ -17,6 +17,7 @@
 package uk.gov.hmrc.timetopayeligibility
 
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.{Name, Individual}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
 
 import util.Random.nextInt
@@ -30,5 +31,10 @@ object Fixtures {
   def someCommunicationPreferences() = CommunicationPreferences(welshLanguageIndicator = true, audioIndicator = true,
     largePrintIndicator = true, brailleIndicator = true)
 
+  def somePerson() = Individual(someIndividual(), someAddress())
+
   def someAddress() = Address("465 Any Road", "Cheese", "Pie", "Apple", "Orange", "BN3 2GH")
+
+  def someIndividual() = Name("President", "Donald", None, "Trump")
+
 }

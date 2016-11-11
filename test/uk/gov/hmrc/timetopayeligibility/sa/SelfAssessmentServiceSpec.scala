@@ -30,6 +30,7 @@ import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopayeligibility.{Fixtures, Utr}
 import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService
+import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.{Name, Individual}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
 
 import scala.concurrent.ExecutionContext
@@ -59,10 +60,9 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
 
     addMapping(successfulUtr, Status.OK, Some("""{
                                    |  "name": {
-                                   |    "title": "Mr",
-                                   |    "forename": "Robert",
-                                   |    "secondForename": "Arthur",
-                                   |    "surname": "Builder",
+                                   |    "title": "President",
+                                   |    "forename": "Donald",
+                                   |    "surname": "Trump",
                                    |    "honours": "KCBE"
                                    |  },
                                    |  "address": {
@@ -106,8 +106,10 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
 
   "sa service" should {
     "handle valid responses" in {
-      service(successfulUtr).futureValue shouldBe Right(Address("75 King's Street", "Stamford Street",
-        "London", "Greater London", "", "WC2H 9Dl"))
+      service(successfulUtr).futureValue shouldBe Right(Individual(
+        Name("President", "Donald", None, "Trump"),
+        Address("75 King's Street", "Stamford Street", "London", "Greater London", "", "WC2H 9Dl")
+      ))
     }
   }
 

@@ -42,7 +42,13 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
 
     val utr = Utr(utrAsString)
 
+    def lookupAuthorizationHeader() = {
+      val headerResult: Either[Result, String] = request.headers.get("authorized").toRight(Unauthorized("No authorized header set"))
+      EitherT(Future.successful(headerResult))
+    }
+
     (for {
+      _ <- lookupAuthorizationHeader()
       debits <- EitherT(debitsService(utr)).leftMap(handleError)
       preferences <- EitherT(preferencesService(utr)).leftMap(handleError)
       individual <- EitherT(saService(utr)).leftMap(handleError)

@@ -45,6 +45,8 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
+  val authorizedRequest = FakeRequest().withHeaders("authorized" -> "bill-oddie")
+
   def createdController(debitsService: (Utr => Future[DebitsResult]) = _ => Future.successful(Right(Seq.empty)),
                  preferencesService: (Utr => Future[CommunicationPreferencesResult]) = _ => Future.successful(Right(Fixtures.someCommunicationPreferences())),
                  saService: (Utr => Future[SaServiceResult]) = _ => Future.successful(Right(Fixtures.somePerson()))) = {
@@ -76,7 +78,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         (utr) => Future.successful(saResult))
 
 
-      val json = jsonBodyOf(controller.getTaxPayer("1234567890").apply(FakeRequest()).futureValue)
+      val json = jsonBodyOf(controller.getTaxPayer("1234567890").apply(authorizedRequest).futureValue)
 
       val expectedJson = Json.parse(
         """
@@ -122,7 +124,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
 
       val controller = createdController(debitsService = (utr) => Future.successful(debitResult))
 
-      val result = controller.getTaxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
+      val result = controller.getTaxPayer(Fixtures.someUtr.value).apply(authorizedRequest).futureValue
 
       result.header.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
@@ -132,9 +134,15 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val debitResult = Left(DesUserNotFoundError(utr))
 
       val controller = createdController(debitsService = (utr) => Future.successful(debitResult))
-      val result = controller.getTaxPayer(utr.value).apply(FakeRequest()).futureValue
+      val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
 
       result.header.status shouldBe Status.NOT_FOUND
+    }
+
+    "fail with unauthorized when no authorized header" in {
+      val result = createdController().getTaxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
+
+      result.header.status shouldBe Status.UNAUTHORIZED
     }
   }
 

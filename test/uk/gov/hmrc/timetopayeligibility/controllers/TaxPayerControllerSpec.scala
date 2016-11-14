@@ -26,11 +26,13 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.mvc.Http.Status
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.Fixtures
+import uk.gov.hmrc.timetopayeligibility.{Fixtures, Utr}
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult, Interest}
 import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUserNotFoundError}
 import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
+import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService._
 import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -43,10 +45,16 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
+  def createdController(debitsService: (Utr => Future[DebitsResult]) = _ => Future.successful(Right(Seq.empty)),
+                 preferencesService: (Utr => Future[CommunicationPreferencesResult]) = _ => Future.successful(Right(Fixtures.someCommunicationPreferences())),
+                 saService: (Utr => Future[SaServiceResult]) = _ => Future.successful(Right(Fixtures.somePerson()))) = {
+
+    new TaxPayerController(debitsService, preferencesService, saService)
+  }
+
   "tax payer controller" should {
 
     "produce a valid tax payer" in {
-
       val debitResult: DebitsResult = Right(Seq(Debit(
         charge = Charge(originCode = "IN2",
         creationDate = LocalDate.of(2013, 7, 31)),
@@ -62,7 +70,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val saResult = Right(Individual(Fixtures.someIndividual(),
         Address("321 Fake Street", "Worthing", "West Sussex", "Another Line", "One More Line", "BN3 2GH")))
 
-      val controller = new TaxPayerController(
+      val controller = createdController(
         (utr) => Future.successful(debitResult),
         (utr) => Future.successful(preferencesResult),
         (utr) => Future.successful(saResult))
@@ -112,11 +120,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
     "fail with a 500 if a downstream service is not successful" in {
       val debitResult: DebitsResult = Left(DesServiceError("Foo"))
 
-      val controller = new TaxPayerController(
-        (utr) => Future.successful(debitResult),
-        (utr) => Future.successful(Right(Fixtures.someCommunicationPreferences())),
-        (utr) => Future.successful(Right(Fixtures.somePerson()))
-      )
+      val controller = createdController(debitsService = (utr) => Future.successful(debitResult))
 
       val result = controller.getTaxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
 
@@ -127,12 +131,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val utr = Fixtures.someUtr
       val debitResult = Left(DesUserNotFoundError(utr))
 
-      val controller = new TaxPayerController(
-        (utr) => Future.successful(debitResult),
-        (utr) => Future.successful(Right(Fixtures.someCommunicationPreferences())),
-        (utr) => Future.successful(Right(Fixtures.somePerson()))
-      )
-
+      val controller = createdController(debitsService = (utr) => Future.successful(debitResult))
       val result = controller.getTaxPayer(utr.value).apply(FakeRequest()).futureValue
 
       result.header.status shouldBe Status.NOT_FOUND

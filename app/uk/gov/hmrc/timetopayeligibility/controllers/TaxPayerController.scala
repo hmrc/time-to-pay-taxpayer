@@ -25,6 +25,7 @@ import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationP
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopayeligibility.debits.Debits._
 import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopayeligibility.returns.Returns.{Return, ReturnsResult}
 import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUserNotFoundError}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
@@ -34,6 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
                          preferencesService: (Utr => Future[CommunicationPreferencesResult]),
+                         returnsService: (Utr => Future[ReturnsResult]),
                          saService: (Utr => Future[SaServiceResult]))
                         (implicit executionContext: ExecutionContext) extends BaseController {
 
@@ -51,13 +53,15 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
       _ <- lookupAuthorizationHeader()
       debits <- EitherT(debitsService(utr)).leftMap(handleError)
       preferences <- EitherT(preferencesService(utr)).leftMap(handleError)
+      returns <- EitherT(returnsService(utr)).leftMap(handleError)
       individual <- EitherT(saService(utr)).leftMap(handleError)
     } yield {
-      Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, individual)))
+      Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
     }).merge
   }
 
-  private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences, individual: Individual) = {
+  private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences,
+                       returns: Seq[Return], individual: Individual) = {
     val address = individual.address
     TaxPayer(
       customerName = individual.name.toString(),
@@ -76,7 +80,8 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
           amount = d.totalOutstanding,
           dueDate = d.relevantDueDate,
           interest = d.interest.map(i => taxpayer.Interest(i.creationDate, i.amount))
-        ))
+        )),
+        returns = returns
       )
     )
   }

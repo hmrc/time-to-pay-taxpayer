@@ -16,8 +16,11 @@
 
 package uk.gov.hmrc.timetopayeligibility
 
+import java.time.LocalDate
+
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.{Name, Individual}
+import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
+import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.{Individual, Name}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
 
 import util.Random.nextInt
@@ -36,5 +39,13 @@ object Fixtures {
   def someAddress() = Address("465 Any Road", "Cheese", "Pie", "Apple", "Orange", "BN3 2GH")
 
   def someIndividual() = Name("President", "Donald", None, "Trump")
+
+  def someReturns() = List(
+    Return(taxYearEnd = LocalDate.of(2014, 4, 5), receivedDate = Some(LocalDate.of(2014, 11, 28))),
+    Return(taxYearEnd = LocalDate.of(2014, 4, 5),
+      issuedDate = Some(LocalDate.of(2015, 4, 6)), dueDate = Some(LocalDate.of(2016, 1, 31))),
+    Return(taxYearEnd = LocalDate.of(2014, 4, 5), issuedDate = Some(LocalDate.of(2016, 4, 6)),
+      dueDate = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
+  )
 
 }

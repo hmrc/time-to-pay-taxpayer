@@ -17,14 +17,17 @@
 package uk.gov.hmrc.timetopayeligibility.taxpayer
 
 import java.time.LocalDate
+
 import play.api.libs.json._
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
 
 
 case class TaxPayer(customerName: String, addresses: Seq[Address],
                     selfAssessment: SelfAssessmentDetails)
 
-case class SelfAssessmentDetails(utr: String, communicationPreferences: CommunicationPreferences, debits: Seq[Debit])
+case class SelfAssessmentDetails(utr: String, communicationPreferences: CommunicationPreferences,
+                                 debits: Seq[Debit], returns: Seq[Return])
 
 case class Debit(originCode: String, amount: Double, dueDate: LocalDate, interest: Option[Interest])
 
@@ -42,6 +45,7 @@ object TaxPayer {
     implicit val writePreferences: Writes[CommunicationPreferences] = Json.writes[CommunicationPreferences]
     implicit val writeInterest: Writes[Interest] = Json.writes[Interest]
     implicit val writeDebits: Writes[Debit] = Json.writes[Debit]
+    implicit val writeReturns: Writes[Return] = Json.writes[Return]
     implicit val writeSelfAssessmentDetails: Writes[SelfAssessmentDetails] = Json.writes[SelfAssessmentDetails]
 
     Json.writes[TaxPayer]

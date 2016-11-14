@@ -58,7 +58,7 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
 
   lazy val saService = SelfAssessmentService.address(wsClient, ApplicationConfig.saServicesUrl)(utr=> s"sa/individual/${ utr.value }/designatory-details") _
 
-  lazy val eligibilityController = new TaxPayerController(debits, preferences, saService)
+  lazy val eligibilityController = new TaxPayerController(debits, preferences, returns, saService)
 
   lazy val metricsController = new MetricsController(new GraphiteMetricsImpl(applicationLifecycle, configuration))
   lazy val appRoutes = new app.Routes(httpErrorHandler,  new Provider[TaxPayerController] {

@@ -25,13 +25,11 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Span}
 import play.api.http.Status
-import play.api.libs.json.Json
 import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.{Fixtures, Utr}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService
-import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.{Name, Individual}
+import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.{Individual, Name}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
+import uk.gov.hmrc.timetopayeligibility.{Fixtures, Utr}
 
 import scala.concurrent.ExecutionContext
 

@@ -24,19 +24,19 @@ import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopayeligibility.debits.Debits._
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesError, DesUnauthorizedError, DesUserNotFoundError}
 import uk.gov.hmrc.timetopayeligibility.returns.Returns.{Return, ReturnsResult}
 import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUserNotFoundError}
 import uk.gov.hmrc.timetopayeligibility.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
-import uk.gov.hmrc.timetopayeligibility.{Utr, taxpayer}
+import uk.gov.hmrc.timetopayeligibility.{AuthorizedUser, Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
-                         preferencesService: (Utr => Future[CommunicationPreferencesResult]),
-                         returnsService: (Utr => Future[ReturnsResult]),
-                         saService: (Utr => Future[SaServiceResult]))
+class TaxPayerController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsResult]),
+                         preferencesService: ((Utr, AuthorizedUser) => Future[CommunicationPreferencesResult]),
+                         returnsService: ((Utr, AuthorizedUser) => Future[ReturnsResult]),
+                         saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]))
                         (implicit executionContext: ExecutionContext) extends BaseController {
 
   def getTaxPayer(utrAsString: String) = Action.async { implicit request =>
@@ -45,16 +45,16 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
     val utr = Utr(utrAsString)
 
     def lookupAuthorizationHeader() = {
-      val headerResult: Either[Result, String] = request.headers.get("authorized").toRight(Unauthorized("No authorized header set"))
+      val headerResult: Either[Result, AuthorizedUser] = request.headers.get("authorized").map(AuthorizedUser.apply).toRight(Unauthorized("No authorized header set"))
       EitherT(Future.successful(headerResult))
     }
 
     (for {
-      _ <- lookupAuthorizationHeader()
-      debits <- EitherT(debitsService(utr)).leftMap(handleError)
-      preferences <- EitherT(preferencesService(utr)).leftMap(handleError)
-      returns <- EitherT(returnsService(utr)).leftMap(handleError)
-      individual <- EitherT(saService(utr)).leftMap(handleError)
+      authorizedUser <- lookupAuthorizationHeader()
+      debits <- EitherT(debitsService(utr, authorizedUser)).leftMap(handleError)
+      preferences <- EitherT(preferencesService(utr, authorizedUser)).leftMap(handleError)
+      returns <- EitherT(returnsService(utr, authorizedUser)).leftMap(handleError)
+      individual <- EitherT(saService(utr, authorizedUser)).leftMap(handleError)
     } yield {
       Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
     }).merge
@@ -88,6 +88,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
 
   private def handleError(error: DesError): Result = error match {
     case DesUserNotFoundError(_) => NotFound
+    case error @ DesUnauthorizedError(_, _) => Unauthorized(error.message)
     case e: DesError => InternalServerError(e.message)
   }
 

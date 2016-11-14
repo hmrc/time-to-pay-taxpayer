@@ -28,8 +28,8 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUserNotFoundError}
-import uk.gov.hmrc.timetopayeligibility.{Fixtures, Utr}
+import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopayeligibility.{AuthorizedUser, Fixtures, Utr}
 
 import scala.concurrent.ExecutionContext
 
@@ -53,6 +53,8 @@ class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
   val badJsonUtr = uniqueUtrs(1)
   val unknownUtr = uniqueUtrs(2)
   val serverErrorUtr = uniqueUtrs(3)
+  val authorizedUser = AuthorizedUser("dave.clifton")
+  val unauthorizedUser = AuthorizedUser("tony.hayers")
 
   override def beforeAll() = {
     super.beforeAll()
@@ -62,10 +64,12 @@ class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
     addMapping(badJsonUtr, Status.OK, Some("""{"cheese":"cake"}"""))
     addMapping(unknownUtr, Status.NOT_FOUND)
     addMapping(serverErrorUtr, Status.INTERNAL_SERVER_ERROR, Some("""{"reason":"foo"}"""))
+    addMapping(successfulUtr, Status.UNAUTHORIZED, authorizedUserHeaderValue = unauthorizedUser)
   }
 
-  def addMapping(utr: Utr, statusCode: Int, body: Option[String] = None) = {
+  def addMapping(utr: Utr, statusCode: Int, body: Option[String] = None, authorizedUserHeaderValue: AuthorizedUser = authorizedUser) = {
     server.addStubMapping(get(urlPathMatching(s"/${ utr.value }"))
+      .withHeader("authorization", equalTo(authorizedUserHeaderValue.value))
       .willReturn(
         aResponse()
           .withBody(body.getOrElse(s"""{"utr":"${ utr.value }"}"""))
@@ -82,19 +86,23 @@ class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
 
   "des service" should {
     "handle valid responses" in {
-      service(successfulUtr).futureValue shouldBe Right(SimpleJson(successfulUtr.value))
+      service(successfulUtr, authorizedUser).futureValue shouldBe Right(SimpleJson(successfulUtr.value))
     }
 
     "handle call from ws with dodgy JSON" in {
-      service(badJsonUtr).futureValue.left.get shouldBe a[DesServiceError]
+      service(badJsonUtr, authorizedUser).futureValue.left.get shouldBe a[DesServiceError]
     }
 
     "handle call for unknown UTR" in {
-      service(unknownUtr).futureValue shouldBe Left(DesUserNotFoundError(unknownUtr))
+      service(unknownUtr, authorizedUser).futureValue shouldBe Left(DesUserNotFoundError(unknownUtr))
     }
 
     "handle call when error downstream" in {
-      service(serverErrorUtr).futureValue shouldBe Left(DesServiceError("foo"))
+      service(serverErrorUtr, authorizedUser).futureValue shouldBe Left(DesServiceError("foo"))
+    }
+
+    "handle call from unauthorized used" in {
+      service(successfulUtr, unauthorizedUser).futureValue shouldBe Left(DesUnauthorizedError(successfulUtr, unauthorizedUser))
     }
   }
 }

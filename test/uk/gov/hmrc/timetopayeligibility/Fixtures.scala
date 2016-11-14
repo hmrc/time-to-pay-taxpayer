@@ -27,6 +27,8 @@ import util.Random.nextInt
 
 object Fixtures {
 
+  def someAuthorizedUser = AuthorizedUser("desmond.stub")
+
   def someUtr = Utr(Stream.continually(nextInt(9)).take(10).mkString)
 
   def uniqueUtrs(n: Int) = Stream.continually(someUtr).distinct.take(n)

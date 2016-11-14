@@ -19,7 +19,7 @@ package uk.gov.hmrc.timetopayeligibility.infrastructure
 import play.api.http.Status
 import play.api.libs.json.Reads
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.timetopayeligibility.Utr
+import uk.gov.hmrc.timetopayeligibility.{AuthorizedUser, Utr}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,23 +30,27 @@ object DesService {
   }
 
   case class DesUserNotFoundError(utr: Utr) extends DesError {
-    override def message: String = s"Unable to find communication preferences for UTR ${ utr.value }"
+    override def message: String = s"User with UTR [${ utr.value }] not found"
   }
 
   case class DesServiceError(message: String) extends DesError
+  case class DesUnauthorizedError(utr: Utr, user: AuthorizedUser) extends DesError {
+    override def message: String = s"User [${user.value}] not authorized to retrieve data for UTR [${ utr.value }]"
+  }
 
   type DesServiceResult[T] = Either[DesError, T]
 
   def wsCall[T](ws: WSClient, baseUrl: String)
-               (reader: Reads[T], path: (Utr => String))(utr: Utr)
+               (reader: Reads[T], path: (Utr => String))(utr: Utr, authorizedUser: AuthorizedUser)
                (implicit executionContext: ExecutionContext): Future[DesServiceResult[T]] = {
 
     ws.url(s"$baseUrl/${ path(utr) }")
-      .withHeaders("Authorization" -> "user")
+      .withHeaders("Authorization" -> authorizedUser.value)
       .get().map {
       response => response.status match {
         case Status.OK => Right(response.json.as[T](reader))
         case Status.NOT_FOUND => Left(DesUserNotFoundError(utr))
+        case Status.UNAUTHORIZED => Left(DesUnauthorizedError(utr, authorizedUser))
         case _ => Left(DesServiceError((response.json \ "reason").asOpt[String].getOrElse(response.statusText)))
       }
     }.recover {

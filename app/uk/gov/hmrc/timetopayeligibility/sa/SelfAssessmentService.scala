@@ -19,7 +19,7 @@ package uk.gov.hmrc.timetopayeligibility.sa
 import play.api.http.Status
 import play.api.libs.json.{JsObject, JsPath, Json, Reads}
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.timetopayeligibility.Utr
+import uk.gov.hmrc.timetopayeligibility.{AuthorizedUser, Utr}
 import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
 
@@ -40,7 +40,7 @@ object SelfAssessmentService {
   type SaServiceResult = Either[SaError, Individual]
 
   def address(ws: WSClient, baseUrl: String)
-                (path: (Utr => String))(utr: Utr)
+                (path: (Utr => String))(utr: Utr, authorizedUser: AuthorizedUser)
                 (implicit executionContext: ExecutionContext): Future[SaServiceResult] = {
 
     ws.url(s"$baseUrl/${ path(utr) }")

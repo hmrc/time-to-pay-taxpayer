@@ -19,3 +19,7 @@ package uk.gov.hmrc.timetopayeligibility
 case class Utr(value: String) extends AnyVal {
   override def toString = value
 }
+
+case class AuthorizedUser(value: String) extends AnyVal {
+  override def toString = value
+}

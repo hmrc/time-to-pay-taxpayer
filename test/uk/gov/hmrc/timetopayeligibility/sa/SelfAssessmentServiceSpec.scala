@@ -48,9 +48,7 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
 
   val service = SelfAssessmentService.address(AhcWSClient(), serverUrl)(_.value) _
 
-  val uniqueUtrs = Fixtures.uniqueUtrs(4)
-  val successfulUtr = uniqueUtrs.head
-
+  val successfulUtr = Fixtures.someUtr
 
   override def beforeAll() = {
     super.beforeAll()
@@ -104,7 +102,7 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
 
   "sa service" should {
     "handle valid responses" in {
-      service(successfulUtr).futureValue shouldBe Right(Individual(
+      service(successfulUtr, Fixtures.someAuthorizedUser).futureValue shouldBe Right(Individual(
         Name("President", "Donald", None, "Trump"),
         Address("75 King's Street", "Stamford Street", "London", "Greater London", "", "WC2H 9Dl")
       ))

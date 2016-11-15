@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.timetopaytaxpayer
 
-
 import javax.inject.Provider
 
 import com.kenshoo.play.metrics.MetricsController

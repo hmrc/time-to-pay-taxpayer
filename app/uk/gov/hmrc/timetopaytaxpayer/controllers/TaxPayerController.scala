@@ -34,9 +34,9 @@ import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxPayerController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsResult]),
-                         preferencesService: ((Utr, AuthorizedUser) => Future[CommunicationPreferencesResult]),
-                         returnsService: ((Utr, AuthorizedUser) => Future[ReturnsResult]),
+class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
+                         preferencesService: (Utr => Future[CommunicationPreferencesResult]),
+                         returnsService: (Utr => Future[ReturnsResult]),
                          saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]))
                         (implicit executionContext: ExecutionContext) extends BaseController {
 
@@ -52,9 +52,9 @@ class TaxPayerController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsR
 
     (for {
       authorizedUser <- lookupAuthorizationHeader()
-      debits <- EitherT(debitsService(utr, authorizedUser)).leftMap(handleError)
-      preferences <- EitherT(preferencesService(utr, authorizedUser)).leftMap(handleError)
-      returns <- EitherT(returnsService(utr, authorizedUser)).leftMap(handleError)
+      debits <- EitherT(debitsService(utr)).leftMap(handleError)
+      preferences <- EitherT(preferencesService(utr)).leftMap(handleError)
+      returns <- EitherT(returnsService(utr)).leftMap(handleError)
       individual <- EitherT(saService(utr, authorizedUser)).leftMap(handleError)
     } yield {
       Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
@@ -89,7 +89,7 @@ class TaxPayerController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsR
 
   private def handleError(error: DesError): Result = error match {
     case DesUserNotFoundError(_) => NotFound
-    case error @ DesUnauthorizedError(_, _) => Unauthorized(error.message)
+    case error @ DesUnauthorizedError(_) => Unauthorized(error.message)
     case e: DesError => InternalServerError(e.message)
   }
 

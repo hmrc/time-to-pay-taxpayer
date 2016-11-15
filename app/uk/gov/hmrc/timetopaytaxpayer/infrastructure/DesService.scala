@@ -34,23 +34,23 @@ object DesService {
   }
 
   case class DesServiceError(message: String) extends DesError
-  case class DesUnauthorizedError(utr: Utr, user: AuthorizedUser) extends DesError {
-    override def message: String = s"User [${user.value}] not authorized to retrieve data for UTR [${ utr.value }]"
+  case class DesUnauthorizedError(utr: Utr) extends DesError {
+    override def message: String = s"Unauthorized call for user with UTR [${ utr.value }] not found"
   }
 
   type DesServiceResult[T] = Either[DesError, T]
 
   def wsCall[T](ws: WSClient, baseUrl: String)
-               (reader: Reads[T], path: (Utr => String))(utr: Utr, authorizedUser: AuthorizedUser)
+               (reader: Reads[T], path: (Utr => String))(utr: Utr)
                (implicit executionContext: ExecutionContext): Future[DesServiceResult[T]] = {
 
     ws.url(s"$baseUrl/${ path(utr) }")
-      .withHeaders("Authorization" -> authorizedUser.value)
+      .withHeaders("Authorization" -> "coming-soon")
       .get().map {
       response => response.status match {
         case Status.OK => Right(response.json.as[T](reader))
         case Status.NOT_FOUND => Left(DesUserNotFoundError(utr))
-        case Status.UNAUTHORIZED => Left(DesUnauthorizedError(utr, authorizedUser))
+        case Status.UNAUTHORIZED => Left(DesUnauthorizedError(utr))
         case _ => Left(DesServiceError((response.json \ "reason").asOpt[String].getOrElse(response.statusText)))
       }
     }.recover {

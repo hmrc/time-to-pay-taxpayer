@@ -50,9 +50,9 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
   val authorizedUser = Fixtures.someAuthorizedUser
   val authorizedRequest = FakeRequest().withHeaders(HeaderNames.authorisation -> authorizedUser.value)
 
-  def createController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsResult]) = (_, _) => Future.successful(Right(Seq.empty)),
-                       preferencesService: ((Utr, AuthorizedUser) => Future[CommunicationPreferencesResult]) = (_, _) => Future.successful(Right(Fixtures.someCommunicationPreferences())),
-                       returnsService: ((Utr, AuthorizedUser) => Future[ReturnsResult]) = (_, _) => Future.successful(Right(Fixtures.someReturns())),
+  def createController(debitsService: (Utr => Future[DebitsResult]) = _ => Future.successful(Right(Seq.empty)),
+                       preferencesService: (Utr => Future[CommunicationPreferencesResult]) = _ => Future.successful(Right(Fixtures.someCommunicationPreferences())),
+                       returnsService: (Utr => Future[ReturnsResult]) = _ => Future.successful(Right(Fixtures.someReturns())),
                        saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]) = (_, _) => Future.successful(Right(Fixtures.somePerson()))) = {
 
     new TaxPayerController(debitsService, preferencesService, returnsService, saService)
@@ -77,8 +77,8 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         Address("321 Fake Street", "Worthing", "West Sussex", "Another Line", "One More Line", "BN3 2GH")))
 
       val controller = createController(
-        debitsService = (_, _) => Future.successful(debitResult),
-        preferencesService = (_, _) => Future.successful(preferencesResult),
+        debitsService = _ => Future.successful(debitResult),
+        preferencesService = _ => Future.successful(preferencesResult),
         saService = (_, _) => Future.successful(saResult))
 
 
@@ -143,7 +143,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
     "fail with a 500 if a downstream service is not successful" in {
       val debitResult: DebitsResult = Left(DesServiceError("Foo"))
 
-      val controller = createController(debitsService = (_, _) => Future.successful(debitResult))
+      val controller = createController(debitsService = _ => Future.successful(debitResult))
 
       val result = controller.getTaxPayer(Fixtures.someUtr.value).apply(authorizedRequest).futureValue
 
@@ -154,7 +154,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       val utr = Fixtures.someUtr
       val debitResult = Left(DesUserNotFoundError(utr))
 
-      val controller = createController(debitsService = (_, _) => Future.successful(debitResult))
+      val controller = createController(debitsService = _ => Future.successful(debitResult))
       val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
 
       result.header.status shouldBe Status.NOT_FOUND
@@ -162,9 +162,9 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
 
     "fail 401 if downstream DES service does not authorize user" in {
       val utr = Fixtures.someUtr
-      val debitResult = Left(DesUnauthorizedError(utr, authorizedUser))
+      val debitResult = Left(DesUnauthorizedError(utr))
 
-      val controller = createController(debitsService = (_, _) => Future.successful(debitResult))
+      val controller = createController(debitsService = _ => Future.successful(debitResult))
       val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
 
       result.header.status shouldBe Status.UNAUTHORIZED

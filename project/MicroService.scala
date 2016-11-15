@@ -28,7 +28,7 @@ trait MicroService {
   lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.sbt.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins : _*)
     .settings(playSettings : _*)
-    .settings(PlayKeys.playDefaultPort := 9856)
+    .settings(PlayKeys.playDefaultPort := 9857)
     .settings(scalaSettings: _*)
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)

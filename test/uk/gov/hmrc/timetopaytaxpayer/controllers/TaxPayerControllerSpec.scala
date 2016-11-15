@@ -81,7 +81,6 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         preferencesService = _ => Future.successful(preferencesResult),
         saService = (_, _) => Future.successful(saResult))
 
-
       val json = jsonBodyOf(controller.getTaxPayer("1234567890").apply(authorizedRequest).futureValue)
 
       val expectedJson = Json.parse(

@@ -21,5 +21,10 @@ import uk.gov.hmrc.play.config.ServicesConfig
 object ApplicationConfig extends ServicesConfig {
 
   lazy val desServicesUrl = baseUrl("des-services")
+  lazy val desAuthorizationToken = getConfString("des-services.authorizationToken")
+  lazy val desServiceEnvironment = getConfString("des-services.serviceEnvironment")
+
   lazy val saServicesUrl = baseUrl("sa-services")
+
+  def getConfString(key: String): String = getConfString(key, throw new IllegalArgumentException(s"Missing property $key"))
 }

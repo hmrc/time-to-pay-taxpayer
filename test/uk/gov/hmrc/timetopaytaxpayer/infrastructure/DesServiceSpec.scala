@@ -27,6 +27,7 @@ import org.scalatest.time.{Second, Span}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.libs.ws.ahc.AhcWSClient
+import uk.gov.hmrc.play.http.HeaderNames
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
@@ -46,7 +47,10 @@ class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
-  val service = DesService.wsCall(AhcWSClient(), serverUrl)(Json.reads[SimpleJson], _.value) _
+  val serviceEnvironment = "someEnvironment"
+  val authorizationToken = "someToken"
+  val authorizationHeader = "Bearer someToken"
+  val service = DesService.wsCall(AhcWSClient(), serverUrl, serviceEnvironment, authorizationToken)(Json.reads[SimpleJson], _.value) _
 
   val uniqueUtrs = Fixtures.uniqueUtrs(4)
   val successfulUtr = uniqueUtrs.head
@@ -66,6 +70,8 @@ class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
 
   def addMapping(utr: Utr, statusCode: Int, body: Option[String] = None) = {
     server.addStubMapping(get(urlPathMatching(s"/${ utr.value }"))
+      .withHeader("environment", equalTo(serviceEnvironment))
+      .withHeader(HeaderNames.authorisation, equalTo(authorizationHeader))
       .willReturn(
         aResponse()
           .withBody(body.getOrElse(s"""{"utr":"${ utr.value }"}"""))

@@ -40,12 +40,13 @@ object DesService {
 
   type DesServiceResult[T] = Either[DesError, T]
 
-  def wsCall[T](ws: WSClient, baseUrl: String)
+  def wsCall[T](ws: WSClient, baseUrl: String, serviceEnvironment: String, authorizationToken: String)
                (reader: Reads[T], path: (Utr => String))(utr: Utr)
                (implicit executionContext: ExecutionContext): Future[DesServiceResult[T]] = {
 
     ws.url(s"$baseUrl/${ path(utr) }")
-      .withHeaders("Authorization" -> "coming-soon")
+      .withHeaders("Authorization" -> s"Bearer $authorizationToken")
+      .withHeaders("Environment" -> serviceEnvironment)
       .get().map {
       response => response.status match {
         case Status.OK => Right(response.json.as[T](reader))

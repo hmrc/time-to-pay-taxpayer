@@ -26,6 +26,7 @@ import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.play.health.AdminController
+import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig.{desAuthorizationToken, desServiceEnvironment, desServicesUrl}
 import uk.gov.hmrc.timetopaytaxpayer.controllers.TaxPayerController
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.Debit
@@ -49,7 +50,7 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
 
   lazy val wsClient = AhcWSClient()
 
-  def hmrcWsCall[T] = DesService.wsCall[T](wsClient, ApplicationConfig.desServicesUrl) _
+  def hmrcWsCall[T] = DesService.wsCall[T](wsClient, desServicesUrl, desServiceEnvironment, desAuthorizationToken) _
 
   lazy val returns = hmrcWsCall[Seq[Return]](Returns.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
   lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")

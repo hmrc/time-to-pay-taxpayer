@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.taxpayer
+package uk.gov.hmrc.timetopaytaxpayer.taxpayer
 
 import java.time.LocalDate
 
 import play.api.libs.json.{JsValue, Json, Writes}
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 
 class TaxPayerJsonSpec extends UnitSpec {
 

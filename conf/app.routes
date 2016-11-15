@@ -1,1 +1,1 @@
-GET /tax-payer/:utr  @uk.gov.hmrc.timetopayeligibility.controllers.TaxPayerController.getTaxPayer(utr)
+GET /tax-payer/:utr  @uk.gov.hmrc.timetopaytaxpayer.controllers.TaxPayerController.getTaxPayer(utr)

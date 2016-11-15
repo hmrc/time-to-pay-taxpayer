@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.taxpayer
+package uk.gov.hmrc.timetopaytaxpayer.taxpayer
 
 import java.time.LocalDate
 
 import play.api.libs.json._
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
 
 
 case class TaxPayer(customerName: String, addresses: Seq[Address],

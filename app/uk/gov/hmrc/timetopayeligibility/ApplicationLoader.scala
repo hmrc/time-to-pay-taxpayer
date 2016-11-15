@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility
+package uk.gov.hmrc.timetopaytaxpayer
 
 
 import javax.inject.Provider
@@ -25,15 +25,15 @@ import play.api.libs.ws.ahc.AhcWSClient
 import play.api.{BuiltInComponentsFromContext, LoggerConfigurator}
 import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.play.health.AdminController
-import uk.gov.hmrc.timetopayeligibility.controllers.TaxPayerController
-import uk.gov.hmrc.timetopayeligibility.debits.Debits
-import uk.gov.hmrc.timetopayeligibility.debits.Debits.Debit
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService
-import uk.gov.hmrc.timetopayeligibility.returns.Returns
-import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
-import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService
+import uk.gov.hmrc.timetopaytaxpayer.controllers.TaxPayerController
+import uk.gov.hmrc.timetopaytaxpayer.debits.Debits
+import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.Debit
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService
+import uk.gov.hmrc.timetopaytaxpayer.returns.Returns
+import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
+import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService
 
 class ApplicationLoader extends play.api.ApplicationLoader {
   def load(context: Context) = {

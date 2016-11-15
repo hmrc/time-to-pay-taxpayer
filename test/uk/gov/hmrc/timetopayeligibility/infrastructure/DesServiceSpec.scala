@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.infrastructure
+package uk.gov.hmrc.timetopaytaxpayer.infrastructure
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -28,8 +28,8 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
-import uk.gov.hmrc.timetopayeligibility.{AuthorizedUser, Fixtures, Utr}
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
 
 import scala.concurrent.ExecutionContext
 

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.debits
+package uk.gov.hmrc.timetopaytaxpayer.debits
 
 import java.time.LocalDate
 
 import play.api.libs.json.{JsPath, Json, Reads}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService._
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService._
 
 object Debits {
 

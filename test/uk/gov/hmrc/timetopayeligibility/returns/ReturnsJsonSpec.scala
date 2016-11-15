@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.returns
+package uk.gov.hmrc.timetopaytaxpayer.returns
 
 import java.time.LocalDate
 
 import play.api.libs.json._
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
+import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
 
 class ReturnsJsonSpec extends UnitSpec {
 

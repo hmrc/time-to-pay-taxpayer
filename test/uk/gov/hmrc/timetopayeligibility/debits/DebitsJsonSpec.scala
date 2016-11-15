@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.debits
+package uk.gov.hmrc.timetopaytaxpayer.debits
 
 import java.time.LocalDate
 
 import play.api.libs.json._
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, Interest}
+import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.{Charge, Debit, Interest}
 
 class DebitsJsonSpec extends UnitSpec {
 

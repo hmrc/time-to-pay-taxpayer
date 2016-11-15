@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.communication.preferences
+package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
 
 import play.api.libs.json.{JsSuccess, Json}
 import uk.gov.hmrc.play.test.UnitSpec

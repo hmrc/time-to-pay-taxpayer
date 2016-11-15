@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.sa
+package uk.gov.hmrc.timetopaytaxpayer.sa
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -27,9 +27,9 @@ import org.scalatest.time.{Second, Span}
 import play.api.http.Status
 import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.{Individual, Name}
-import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
-import uk.gov.hmrc.timetopayeligibility.{Fixtures, Utr}
+import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.{Individual, Name}
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
+import uk.gov.hmrc.timetopaytaxpayer.{Fixtures, Utr}
 
 import scala.concurrent.ExecutionContext
 

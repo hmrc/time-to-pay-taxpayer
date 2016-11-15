@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.controllers
+package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import java.time.LocalDate
 
@@ -26,15 +26,15 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.mvc.Http.Status
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopayeligibility.{AuthorizedUser, Fixtures, Utr}
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
-import uk.gov.hmrc.timetopayeligibility.debits.Debits.{Charge, Debit, DebitsResult, Interest}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
-import uk.gov.hmrc.timetopayeligibility.returns.Returns.ReturnsResult
-import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService._
-import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
+import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.{Charge, Debit, DebitsResult, Interest}
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.ReturnsResult
+import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
+import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService._
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

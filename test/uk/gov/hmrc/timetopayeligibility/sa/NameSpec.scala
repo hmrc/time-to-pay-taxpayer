@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.sa
+package uk.gov.hmrc.timetopaytaxpayer.sa
 
 import uk.gov.hmrc.play.test.UnitSpec
 

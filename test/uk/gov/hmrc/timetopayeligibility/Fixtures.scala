@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility
+package uk.gov.hmrc.timetopaytaxpayer
 
 import java.time.LocalDate
 
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopayeligibility.returns.Returns.Return
-import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.{Individual, Name}
-import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
+import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.{Individual, Name}
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 
 import util.Random.nextInt
 

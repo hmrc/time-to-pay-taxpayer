@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.controllers
+package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import cats.data.EitherT
 import cats.implicits._
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
 import uk.gov.hmrc.play.microservice.controller.BaseController
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopayeligibility.communication.preferences.CommunicationPreferences._
-import uk.gov.hmrc.timetopayeligibility.debits.Debits._
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService.{DesError, DesUnauthorizedError, DesUserNotFoundError}
-import uk.gov.hmrc.timetopayeligibility.returns.Returns.{Return, ReturnsResult}
-import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopayeligibility.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUserNotFoundError}
-import uk.gov.hmrc.timetopayeligibility.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
-import uk.gov.hmrc.timetopayeligibility.{AuthorizedUser, Utr, taxpayer}
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
+import uk.gov.hmrc.timetopaytaxpayer.debits.Debits._
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesError, DesUnauthorizedError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.{Return, ReturnsResult}
+import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
+import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUserNotFoundError}
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility
+package uk.gov.hmrc.timetopaytaxpayer
 
 case class Utr(value: String) extends AnyVal {
   override def toString = value

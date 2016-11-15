@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.sa
+package uk.gov.hmrc.timetopaytaxpayer.sa
 
 import play.api.http.Status
 import play.api.libs.json.{JsObject, JsPath, Json, Reads}
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.timetopayeligibility.{AuthorizedUser, Utr}
-import uk.gov.hmrc.timetopayeligibility.sa.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopayeligibility.taxpayer.Address
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
+import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 
 import scala.concurrent.{ExecutionContext, Future}
 

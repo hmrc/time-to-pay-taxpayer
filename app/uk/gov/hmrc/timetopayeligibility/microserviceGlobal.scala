@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility
+package uk.gov.hmrc.timetopaytaxpayer
 
 import com.typesafe.config.Config
 import play.api.{Application, Configuration, Play}

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopayeligibility.communication.preferences
+package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
 
 import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.timetopayeligibility.infrastructure.DesService._
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService._
 
 
 case class CommunicationPreferences(welshLanguageIndicator: Boolean, audioIndicator: Boolean,

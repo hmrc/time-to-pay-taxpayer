@@ -1,8 +1,6 @@
-# time-to-pay-eligibility
+# time-to-pay-taxpayer
 
-[![Build Status](https://travis-ci.org/hmrc/time-to-pay-eligibility.svg)](https://travis-ci.org/hmrc/time-to-pay-eligibility) [ ![Download](https://api.bintray.com/packages/hmrc/releases/time-to-pay-eligibility/images/download.svg) ](https://bintray.com/hmrc/releases/time-to-pay-eligibility/_latestVersion)
-
-#### GET /time-to-pay-eligibility/tax-payer/{utr}
+#### GET /time-to-pay-taxpayer/tax-payer/{utr}
 
 Retrieves a definition of a tax payer
 

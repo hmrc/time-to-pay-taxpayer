@@ -1,5 +1,5 @@
 # Add all the application routes to the app.routes file
-->         /time-to-pay-eligibility              app.Routes
+->         /time-to-pay-taxpayer              app.Routes
 ->         /                          manualdihealth.Routes
 
 GET        /admin/metrics             @com.kenshoo.play.metrics.MetricsController.metrics

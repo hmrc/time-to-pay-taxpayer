@@ -45,7 +45,7 @@ class TaxPayerController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsR
     val utr = Utr(utrAsString)
 
     def lookupAuthorizationHeader() = {
-      val headerResult: Either[Result, AuthorizedUser] = request.headers.get("authorized").map(AuthorizedUser.apply).toRight(Unauthorized("No authorized header set"))
+      val headerResult: Either[Result, AuthorizedUser] = request.headers.get("authorization").map(AuthorizedUser.apply).toRight(Unauthorized("No authorization header set"))
       EitherT(Future.successful(headerResult))
     }
 

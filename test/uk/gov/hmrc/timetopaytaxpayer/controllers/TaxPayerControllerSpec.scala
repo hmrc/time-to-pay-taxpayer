@@ -47,7 +47,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
   implicit val materializer = ActorMaterializer()
 
   val authorizedUser = Fixtures.someAuthorizedUser
-  val authorizedRequest = FakeRequest().withHeaders("authorized" -> authorizedUser.value)
+  val authorizedRequest = FakeRequest().withHeaders("authorization" -> authorizedUser.value)
 
   def createController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsResult]) = (_, _) => Future.successful(Right(Seq.empty)),
                        preferencesService: ((Utr, AuthorizedUser) => Future[CommunicationPreferencesResult]) = (_, _) => Future.successful(Right(Fixtures.someCommunicationPreferences())),

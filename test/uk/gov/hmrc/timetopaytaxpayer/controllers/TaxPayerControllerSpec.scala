@@ -25,6 +25,7 @@ import org.scalatest.time.{Second, Span}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.mvc.Http.Status
+import uk.gov.hmrc.play.http.HeaderNames
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
@@ -47,7 +48,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
   implicit val materializer = ActorMaterializer()
 
   val authorizedUser = Fixtures.someAuthorizedUser
-  val authorizedRequest = FakeRequest().withHeaders("authorization" -> authorizedUser.value)
+  val authorizedRequest = FakeRequest().withHeaders(HeaderNames.authorisation -> authorizedUser.value)
 
   def createController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsResult]) = (_, _) => Future.successful(Right(Seq.empty)),
                        preferencesService: ((Utr, AuthorizedUser) => Future[CommunicationPreferencesResult]) = (_, _) => Future.successful(Right(Fixtures.someCommunicationPreferences())),
@@ -159,11 +160,21 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
       result.header.status shouldBe Status.NOT_FOUND
     }
 
-    "fail 401 if downstream service does not authorize user" in {
+    "fail 401 if downstream DES service does not authorize user" in {
       val utr = Fixtures.someUtr
       val debitResult = Left(DesUnauthorizedError(utr, authorizedUser))
 
       val controller = createController(debitsService = (_, _) => Future.successful(debitResult))
+      val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
+
+      result.header.status shouldBe Status.UNAUTHORIZED
+    }
+
+    "fail 401 if downstream SA service does not authorize user" in {
+      val utr = Fixtures.someUtr
+      val saResult = Left(SaUnauthorizedError(utr, authorizedUser))
+
+      val controller = createController(saService = (_, _) => Future.successful(saResult))
       val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
 
       result.header.status shouldBe Status.UNAUTHORIZED

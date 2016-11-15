@@ -28,8 +28,9 @@ import play.api.http.Status
 import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.{Individual, Name}
+import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.SaUnauthorizedError
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
-import uk.gov.hmrc.timetopaytaxpayer.{Fixtures, Utr}
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
 
 import scala.concurrent.ExecutionContext
 
@@ -49,6 +50,9 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
   val service = SelfAssessmentService.address(AhcWSClient(), serverUrl)(_.value) _
 
   val successfulUtr = Fixtures.someUtr
+
+  val authorizedUser = AuthorizedUser("dave.clifton")
+  val unauthorizedUser = AuthorizedUser("tony.hayers")
 
   override def beforeAll() = {
     super.beforeAll()
@@ -82,10 +86,13 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
                                    |     }
                                    |  }
                                    |}""".stripMargin))
+
+    addMapping(successfulUtr, Status.UNAUTHORIZED, authorizedUserHeaderValue = unauthorizedUser)
   }
 
-  def addMapping(utr: Utr, statusCode: Int, body: Option[String] = None) = {
+  def addMapping(utr: Utr, statusCode: Int, body: Option[String] = None, authorizedUserHeaderValue: AuthorizedUser = authorizedUser) = {
     server.addStubMapping(get(urlPathMatching(s"/${ utr.value }"))
+      .withHeader("Authorization", equalTo(authorizedUserHeaderValue.value))
       .willReturn(
         aResponse()
           .withBody(body.getOrElse(s"""{"utr":"${ utr.value }"}"""))
@@ -102,11 +109,14 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
 
   "sa service" should {
     "handle valid responses" in {
-      service(successfulUtr, Fixtures.someAuthorizedUser).futureValue shouldBe Right(Individual(
+      service(successfulUtr, authorizedUser).futureValue shouldBe Right(Individual(
         Name("President", "Donald", None, "Trump"),
         Address("75 King's Street", "Stamford Street", "London", "Greater London", "", "WC2H 9Dl")
       ))
     }
-  }
 
+    "handle unauthorized users" in {
+      service(successfulUtr, unauthorizedUser).futureValue shouldBe Left(SaUnauthorizedError(successfulUtr, unauthorizedUser))
+    }
+  }
 }

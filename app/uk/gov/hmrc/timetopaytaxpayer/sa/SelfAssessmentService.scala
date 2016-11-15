@@ -17,11 +17,11 @@
 package uk.gov.hmrc.timetopaytaxpayer.sa
 
 import play.api.http.Status
-import play.api.libs.json.{JsObject, JsPath, Json, Reads}
+import play.api.libs.json.{Json, Reads}
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
 import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,6 +36,9 @@ object SelfAssessmentService {
   }
 
   case class SaServiceError(message: String) extends SaError
+  case class SaUnauthorizedError(utr: Utr, user: AuthorizedUser) extends SaError {
+    override def message: String = s"User [${user.value}] not authorized to retrieve data for UTR [${ utr.value }]"
+  }
 
   type SaServiceResult = Either[SaError, Individual]
 
@@ -44,11 +47,12 @@ object SelfAssessmentService {
                 (implicit executionContext: ExecutionContext): Future[SaServiceResult] = {
 
     ws.url(s"$baseUrl/${ path(utr) }")
-      .withHeaders("Authorization" -> "user")
+      .withHeaders("Authorization" -> authorizedUser.value)
       .get().map {
       response => response.status match {
         case Status.OK => Right(response.json.as[Individual](DesignatoryDetails.reader))
         case Status.NOT_FOUND => Left(SaUserNotFoundError(utr))
+        case Status.UNAUTHORIZED => Left(SaUnauthorizedError(utr, authorizedUser))
         case _ => Left(SaServiceError(response.statusText))
       }
     }.recover {

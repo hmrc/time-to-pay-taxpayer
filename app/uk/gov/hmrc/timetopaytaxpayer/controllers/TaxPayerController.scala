@@ -20,6 +20,7 @@ import cats.data.EitherT
 import cats.implicits._
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
+import uk.gov.hmrc.play.http.HeaderNames
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
@@ -27,7 +28,7 @@ import uk.gov.hmrc.timetopaytaxpayer.debits.Debits._
 import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesError, DesUnauthorizedError, DesUserNotFoundError}
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.{Return, ReturnsResult}
 import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUserNotFoundError}
+import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUnauthorizedError, SaUserNotFoundError}
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr, taxpayer}
 
@@ -45,7 +46,7 @@ class TaxPayerController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsR
     val utr = Utr(utrAsString)
 
     def lookupAuthorizationHeader() = {
-      val headerResult: Either[Result, AuthorizedUser] = request.headers.get("authorization").map(AuthorizedUser.apply).toRight(Unauthorized("No authorization header set"))
+      val headerResult: Either[Result, AuthorizedUser] = request.headers.get(HeaderNames.authorisation).map(AuthorizedUser.apply).toRight(Unauthorized("No authorization header set"))
       EitherT(Future.successful(headerResult))
     }
 
@@ -94,6 +95,7 @@ class TaxPayerController(debitsService: ((Utr, AuthorizedUser) => Future[DebitsR
 
   private def handleError(error: SaError): Result = error match {
     case SaUserNotFoundError(_) => NotFound
+    case error @ SaUnauthorizedError(_, _) => Unauthorized(error.message)
     case e: SaError => InternalServerError(e.message)
   }
 }

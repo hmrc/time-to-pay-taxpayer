@@ -69,7 +69,7 @@ class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
 
   def addMapping(utr: Utr, statusCode: Int, body: Option[String] = None, authorizedUserHeaderValue: AuthorizedUser = authorizedUser) = {
     server.addStubMapping(get(urlPathMatching(s"/${ utr.value }"))
-      .withHeader("authorization", equalTo(authorizedUserHeaderValue.value))
+      .withHeader("Authorization", equalTo(authorizedUserHeaderValue.value))
       .willReturn(
         aResponse()
           .withBody(body.getOrElse(s"""{"utr":"${ utr.value }"}"""))

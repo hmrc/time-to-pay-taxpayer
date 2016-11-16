@@ -32,12 +32,12 @@ object SelfAssessmentService {
   }
 
   case class SaUserNotFoundError(utr: Utr) extends SaError {
-    override def message: String = s"Unable to find self assessment details for UTR ${ utr.value }"
+    override def message: String = s"Unable to find Self Assessment details for UTR ${ utr.value }"
   }
 
   case class SaServiceError(message: String) extends SaError
   case class SaUnauthorizedError(utr: Utr, user: AuthorizedUser) extends SaError {
-    override def message: String = s"User [${user.value}] not authorized to retrieve data for UTR [${ utr.value }]"
+    override def message: String = s"User [${user.value}] not authorized to retrieve Self Assessment details for UTR [${ utr.value }]"
   }
 
   type SaServiceResult = Either[SaError, Individual]
@@ -56,7 +56,7 @@ object SelfAssessmentService {
         case _ => Left(SaServiceError(response.statusText))
       }
     }.recover {
-      case e: Exception => Left(SaServiceError(e.getMessage))
+      case e: Exception => Left(SaServiceError(s"Self Assessment Service error [${e.getMessage}]"))
     }
   }
 

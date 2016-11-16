@@ -30,12 +30,12 @@ object DesService {
   }
 
   case class DesUserNotFoundError(utr: Utr) extends DesError {
-    override def message: String = s"User with UTR [${ utr.value }] not found"
+    override def message: String = s"User with UTR [${ utr.value }] not found in DES"
   }
 
   case class DesServiceError(message: String) extends DesError
   case class DesUnauthorizedError(utr: Utr) extends DesError {
-    override def message: String = s"Unauthorized call for user with UTR [${ utr.value }] not found"
+    override def message: String = s"Unauthorized DES call for user with UTR [${ utr.value }] not found"
   }
 
   type DesServiceResult[T] = Either[DesError, T]
@@ -55,7 +55,7 @@ object DesService {
         case _ => Left(DesServiceError((response.json \ "reason").asOpt[String].getOrElse(response.statusText)))
       }
     }.recover {
-      case e: Exception => Left(DesServiceError(e.getMessage))
+      case e: Exception => Left(DesServiceError(s"DES error [${e.getMessage}]"))
     }
   }
 }

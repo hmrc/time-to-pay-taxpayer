@@ -56,7 +56,7 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
   lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
   lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
 
-  lazy val saService = SelfAssessmentService.address(wsClient, ApplicationConfig.saServicesUrl)(utr=> s"sa/individual/${ utr.value }/designatory-details") _
+  lazy val saService = SelfAssessmentService.address(wsClient, ApplicationConfig.saServicesUrl)(utr=> s"sa/individual/${ utr.value }/designatory-details/taxpayer") _
 
   lazy val eligibilityController = new TaxPayerController(debits, preferences, returns, saService)
 

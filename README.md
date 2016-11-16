@@ -1,6 +1,6 @@
 # time-to-pay-taxpayer
 
-#### GET /time-to-pay-taxpayer/tax-payer/{utr}
+#### GET /tax-payer/{utr}
 
 Retrieves a definition of a tax payer
 

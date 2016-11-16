@@ -84,7 +84,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
           amount = d.totalOutstanding,
           dueDate = d.relevantDueDate,
           interest = d.interest.map(i => taxpayer.Interest(i.creationDate, i.amount)),
-          taxYearEndDate = d.taxYearEnd
+          taxYearEnd = d.taxYearEnd
         )),
         returns = returns
       )

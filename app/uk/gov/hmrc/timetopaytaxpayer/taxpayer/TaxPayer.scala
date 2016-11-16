@@ -29,7 +29,7 @@ case class TaxPayer(customerName: String, addresses: Seq[Address],
 case class SelfAssessmentDetails(utr: String, communicationPreferences: CommunicationPreferences,
                                  debits: Seq[Debit], returns: Seq[Return])
 
-case class Debit(originCode: String, amount: Double, dueDate: LocalDate, interest: Option[Interest], taxYearEndDate: LocalDate)
+case class Debit(originCode: String, amount: Double, dueDate: LocalDate, interest: Option[Interest], taxYearEnd: LocalDate)
 
 case class Interest(calculationDate: Option[LocalDate], amountAccrued: Double)
 

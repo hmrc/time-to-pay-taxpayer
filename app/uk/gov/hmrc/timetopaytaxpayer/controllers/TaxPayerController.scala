@@ -50,6 +50,9 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
       EitherT(Future.successful(headerResult))
     }
 
+    val service: Future[DebitsResult] = debitsService(utr)
+    EitherT(service).leftMap(handleError)
+
     (for {
       authorizedUser <- lookupAuthorizationHeader()
       debits <- EitherT(debitsService(utr)).leftMap(handleError)
@@ -80,7 +83,8 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
           originCode = d.charge.originCode,
           amount = d.totalOutstanding,
           dueDate = d.relevantDueDate,
-          interest = d.interest.map(i => taxpayer.Interest(i.creationDate, i.amount))
+          interest = d.interest.map(i => taxpayer.Interest(i.creationDate, i.amount)),
+          taxYearEndDate = d.taxYearEnd
         )),
         returns = returns
       )

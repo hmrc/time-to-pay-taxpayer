@@ -34,7 +34,8 @@ Output
           "interest": {
             "calculationDate" : "2016-06-01",
             "amountAccrued" : 42.32
-          }
+          },
+          "taxYearEnd": "2017-04-05"
         }
       ],
       "returns":[

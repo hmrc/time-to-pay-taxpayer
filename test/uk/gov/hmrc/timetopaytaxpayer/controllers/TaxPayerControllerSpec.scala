@@ -65,7 +65,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         charge = Charge(originCode = "IN2",
         creationDate = LocalDate.of(2013, 7, 31)),
         relevantDueDate = LocalDate.of(2016, 1, 31),
-        taxYearEnd = LocalDate.of(2015, 4, 1),
+        taxYearEnd = LocalDate.of(2017, 4, 5),
         totalOutstanding = 250.52,
         interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32))
       )))
@@ -113,7 +113,8 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
           |          "interest": {
           |             "calculationDate" : "2016-06-01",
           |             "amountAccrued" : 42.32
-          |          }
+          |          },
+          |          "taxYearEndDate": "2017-04-05"
           |        }
           |      ],
           |      "returns":[

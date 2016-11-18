@@ -95,7 +95,7 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
       .withHeader("Authorization", equalTo(authorizedUserHeaderValue.value))
       .willReturn(
         aResponse()
-          .withBody(body.getOrElse(s"""{"utr":"${ utr.value }"}"""))
+          .withBody(body.getOrElse(""))
           .withStatus(statusCode))
       .build())
   }

@@ -47,7 +47,7 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
-  val service = SelfAssessmentService.address(AhcWSClient(), serverUrl)(_.value) _
+  val service = SelfAssessmentService.address(AhcWSClient(), _.execute(), serverUrl)(_.value) _
 
   val successfulUtr = Fixtures.someUtr
 

@@ -18,6 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer
 
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
+import play.api.libs.ws.ahc.AhcWSClient
 import play.api.{Application, Configuration, Play}
 import uk.gov.hmrc.play.audit.filters.AuditFilter
 import uk.gov.hmrc.play.auth.controllers.AuthParamsControllerConfig
@@ -37,7 +38,7 @@ object AuthParamsControllerConfiguration extends AuthParamsControllerConfig {
 }
 
 object MicroserviceAuditFilter extends AuditFilter with AppName with MicroserviceFilterSupport {
-  override val auditConnector = MicroserviceAuditConnector
+  override lazy val auditConnector = new MicroserviceAuditConnector(AhcWSClient())
   override def controllerNeedsAuditing(controllerName: String) = ControllerConfiguration.paramsForController(controllerName).needsAuditing
 }
 
@@ -47,12 +48,12 @@ object MicroserviceLoggingFilter extends LoggingFilter with MicroserviceFilterSu
 
 object MicroserviceAuthFilter extends AuthorisationFilter with MicroserviceFilterSupport {
   override lazy val authParamsConfig = AuthParamsControllerConfiguration
-  override lazy val authConnector = MicroserviceAuthConnector
+  override lazy val authConnector = new MicroserviceAuthConnector(AhcWSClient())
   override def controllerNeedsAuth(controllerName: String): Boolean = ControllerConfiguration.paramsForController(controllerName).needsAuth
 }
 
 object MicroserviceGlobal extends DefaultMicroserviceGlobal with RunMode with MicroserviceFilterSupport {
-  override val auditConnector = MicroserviceAuditConnector
+  override lazy val auditConnector = new MicroserviceAuditConnector(AhcWSClient())
 
   override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig(s"microservice.metrics")
 

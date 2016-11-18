@@ -21,7 +21,7 @@ import javax.inject.Provider
 import com.kenshoo.play.metrics.MetricsController
 import play.api.ApplicationLoader._
 import play.api.libs.ws.ahc.AhcWSClient
-import play.api.{BuiltInComponentsFromContext, LoggerConfigurator}
+import play.api.{BuiltInComponentsFromContext, Logger, LoggerConfigurator}
 import prod.Routes
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
@@ -30,7 +30,7 @@ import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig.{desAuthorizationToken, d
 import uk.gov.hmrc.timetopaytaxpayer.controllers.TaxPayerController
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.Debit
-import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.{DesService, WebService}
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
 import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService
@@ -49,14 +49,15 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
   import play.api.libs.concurrent.Execution.Implicits._
 
   lazy val wsClient = AhcWSClient()
+  lazy val webServiceRequest = WebService.request(new MicroserviceAuditConnector(wsClient), Some(t => Logger.warn(t.getMessage, t))) _
 
-  def hmrcWsCall[T] = DesService.wsCall[T](wsClient, desServicesUrl, desServiceEnvironment, desAuthorizationToken) _
+  def hmrcWsCall[T] = DesService.wsCall[T](wsClient, webServiceRequest, desServicesUrl, desServiceEnvironment, desAuthorizationToken) _
 
   lazy val returns = hmrcWsCall[Seq[Return]](Returns.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
   lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
   lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
 
-  lazy val saService = SelfAssessmentService.address(wsClient, ApplicationConfig.saServicesUrl)(utr=> s"sa/individual/${ utr.value }/designatory-details/taxpayer") _
+  lazy val saService = SelfAssessmentService.address(wsClient, webServiceRequest, ApplicationConfig.saServicesUrl)(utr=> s"sa/individual/${ utr.value }/designatory-details/taxpayer") _
 
   lazy val eligibilityController = new TaxPayerController(debits, preferences, returns, saService)
 

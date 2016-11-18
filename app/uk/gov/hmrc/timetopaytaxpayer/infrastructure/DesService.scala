@@ -18,7 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer.infrastructure
 
 import play.api.http.Status
 import play.api.libs.json.Reads
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import uk.gov.hmrc.timetopaytaxpayer.Utr
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,16 +41,14 @@ object DesService {
 
   type DesServiceResult[T] = Either[DesError, T]
 
-  def wsCall[T](ws: WSClient, baseUrl: String, serviceEnvironment: String, authorizationToken: String)
+  def wsCall[T](ws: WSClient, wsRequest: (WSRequest => Future[WSResponse]), baseUrl: String, serviceEnvironment: String, authorizationToken: String)
                (reader: Reads[T], path: (Utr => String))(utr: Utr)
                (implicit executionContext: ExecutionContext): Future[DesServiceResult[T]] = {
 
-    val request = ws.url(s"$baseUrl/${ path(utr) }")
+    wsRequest(ws.url(s"$baseUrl/${ path(utr) }")
       .withHeaders("Authorization" -> s"Bearer $authorizationToken")
       .withHeaders("Environment" -> serviceEnvironment)
-      .withMethod("GET")
-
-    request.execute().map {
+      .withMethod("GET")).map {
       response => response.status match {
         case Status.OK => Right(response.json.as[T](reader))
         case Status.NOT_FOUND => Left(DesUserNotFoundError(utr))
@@ -58,7 +56,9 @@ object DesService {
         case _ => Left(DesServiceError((response.json \ "reason").asOpt[String].getOrElse(response.statusText)))
       }
     }.recover {
-      case e: Exception => Left(DesServiceError(s"DES error [${ e.getMessage }]"))
+      case e: Exception =>
+        e.printStackTrace()
+        Left(DesServiceError(s"DES error [${ e.getMessage }]"))
     }
   }
 }

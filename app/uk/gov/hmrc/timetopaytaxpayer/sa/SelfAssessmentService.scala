@@ -18,7 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer.sa
 
 import play.api.http.Status
 import play.api.libs.json.{Json, Reads}
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
@@ -42,13 +42,13 @@ object SelfAssessmentService {
 
   type SaServiceResult = Either[SaError, Individual]
 
-  def address(ws: WSClient, baseUrl: String)
+  def address(ws: WSClient, wsRequest: (WSRequest => Future[WSResponse]), baseUrl: String)
                 (path: (Utr => String))(utr: Utr, authorizedUser: AuthorizedUser)
                 (implicit executionContext: ExecutionContext): Future[SaServiceResult] = {
 
-    ws.url(s"$baseUrl/${ path(utr) }")
+    wsRequest(ws.url(s"$baseUrl/${ path(utr) }")
       .withHeaders("Authorization" -> authorizedUser.value)
-      .get().map {
+      .withMethod("GET")).map {
       response => response.status match {
         case Status.OK => Right(response.json.as[Individual](DesignatoryDetails.reader))
         case Status.NOT_FOUND => Left(SaUserNotFoundError(utr))

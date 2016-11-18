@@ -50,7 +50,7 @@ class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
   val serviceEnvironment = "someEnvironment"
   val authorizationToken = "someToken"
   val authorizationHeader = "Bearer someToken"
-  val service = DesService.wsCall(AhcWSClient(), serverUrl, serviceEnvironment, authorizationToken)(Json.reads[SimpleJson], _.value) _
+  val service = DesService.wsCall(AhcWSClient(), _.execute, serverUrl, serviceEnvironment, authorizationToken)(Json.reads[SimpleJson], _.value) _
 
   val uniqueUtrs = Fixtures.uniqueUtrs(4)
   val successfulUtr = uniqueUtrs.head

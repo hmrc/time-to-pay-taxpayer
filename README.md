@@ -11,7 +11,7 @@ To start the app either clone this repository and the 2 stub ones and run **sbt 
 
 Alternatively you can use Service Manager - **sm --start TIME_TO_PAY_TAX_PAYER_DEP -f**
 
-The app will start by default on port 9857. Stub data should be configured for the UTR 1234567890 so you should be able to hit http://localhost:9857/tax-payer/1234567890
+The app will start by default on port 9857. Stub data should be configured for the UTR 1234567890 so you should be able to GET from http://localhost:9857/tax-payer/1234567890
 
 ## GET /tax-payer/{utr}
 

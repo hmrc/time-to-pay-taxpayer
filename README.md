@@ -1,6 +1,19 @@
 # time-to-pay-taxpayer
 
-#### GET /tax-payer/{utr}
+## Run locally
+
+This app depends on 3 DES services and the SA app. Both have stub projects available:
+
+https://github.com/hmrc/self-service-time-to-pay-des-stub
+https://github.com/hmrc/sa-stub
+
+To start the app either clone this repository and the 2 stub ones and run **sbt run** or start as Play apps.
+
+Alternatively you can use Service Manager - **sm --start TIME_TO_PAY_TAX_PAYER_DEP -f**
+
+The app will start by default on port 9857. Stub data should be configured for the UTR 1234567890 so you should be able to hit http://localhost:9857/tax-payer/1234567890
+
+## GET /tax-payer/{utr}
 
 Retrieves a definition of a tax payer
 

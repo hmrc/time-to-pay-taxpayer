@@ -74,7 +74,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         largePrintIndicator = true, brailleIndicator = true))
 
       val saResult = Right(Individual(Fixtures.someIndividual(),
-        Address("321 Fake Street", "Worthing", "West Sussex", "Another Line", "One More Line", "BN3 2GH")))
+        Address("321 Fake Street", Some("Worthing"), Some("West Sussex"), Some("Another Line"), Some("One More Line"), "BN3 2GH")))
 
       val controller = createController(
         debitsService = _ => Future.successful(debitResult),

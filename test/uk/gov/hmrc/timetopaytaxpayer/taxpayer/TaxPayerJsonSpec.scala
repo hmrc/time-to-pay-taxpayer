@@ -18,7 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer.taxpayer
 
 import java.time.LocalDate
 
-import play.api.libs.json.{JsValue, Json, Writes}
+import play.api.libs.json._
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 
@@ -32,17 +32,18 @@ class TaxPayerJsonSpec extends UnitSpec {
       val prefs = CommunicationPreferences(welshLanguageIndicator = false, audioIndicator = false,
         largePrintIndicator = false, brailleIndicator = false)
 
-      val addresses = List(Address("123 Fake Street", "Foo", "Bar", "", "", "BN3 2GH"))
+      val addresses = List(Address("123 Fake Street", Some("Foo"), Some("Bar"), None, None, "BN3 2GH"))
 
       val debits = List(Debit(originCode = "POA2", amount = 250.52, dueDate = LocalDate.of(2016, 1, 31),
-        interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32)), taxYearEnd = LocalDate.of(2017,4,5)))
+        interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32)), taxYearEnd = LocalDate.of(2017, 4, 5)))
 
       val taxPayer = TaxPayer(customerName = "Customer name", addresses = addresses,
         selfAssessment = SelfAssessmentDetails("1234567890", prefs, debits, Nil))
 
       val json: JsValue = Json.toJson(taxPayer)
 
-      val expectedJson = Json.parse("""
+      val expectedJson = Json.parse(
+        """
           |{
           |   "customerName": "Customer name",
           |   "addresses": [
@@ -50,8 +51,6 @@ class TaxPayerJsonSpec extends UnitSpec {
           |             "addressLine1": "123 Fake Street",
           |             "addressLine2": "Foo",
           |             "addressLine3": "Bar",
-          |             "addressLine4": "",
-          |             "addressLine5": "",
           |             "postcode": "BN3 2GH"
           |           }
           |         ],
@@ -81,6 +80,47 @@ class TaxPayerJsonSpec extends UnitSpec {
 
       json shouldBe expectedJson
 
+    }
+  }
+
+  "address" should {
+
+    "parse json" in {
+      implicit val format: Format[Address] = Json.format[Address]
+
+      val addressJson = Json.parse(
+        """
+          |{
+          |   "addressLine1": "123 Fake Street",
+          |   "addressLine2": "Foo",
+          |   "addressLine3": "Bar",
+          |   "addressLine4": "Bar",
+          |   "addressLine5": "Bar",
+          |   "postcode": "BN3 2GH"
+          |}""".stripMargin)
+
+      format.reads(addressJson) match {
+        case JsSuccess(address: Address, _) => "happy days"
+        case JsError(e) => fail(s"Json does not parse: $e")
+      }
+    }
+
+    "parse json with missing lines" in {
+      implicit val format: Format[Address] = Json.format[Address]
+
+      val addressJson = Json.parse(
+        """
+          |{
+          |   "addressLine1": "123 Fake Street",
+          |   "addressLine2": "Foo",
+          |   "addressLine3": "Bar",
+          |   "postcode": "BN3 2GH"
+          |}""".stripMargin)
+
+      format.reads(addressJson) match {
+        case JsSuccess(address: Address, _) => "happy days"
+        case JsError(e) => fail(s"Json does not parse: $e")
+      }
     }
 
   }

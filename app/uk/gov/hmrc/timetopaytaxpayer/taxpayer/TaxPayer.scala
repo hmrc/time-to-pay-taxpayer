@@ -33,9 +33,8 @@ case class Debit(originCode: String, amount: Double, dueDate: LocalDate, interes
 
 case class Interest(calculationDate: Option[LocalDate], amountAccrued: Double)
 
-case class Address(addressLine1: String, addressLine2: String, addressLine3: String,
-                   addressLine4: String, addressLine5: String, postcode: String)
-
+case class Address(addressLine1: String, addressLine2: Option[String], addressLine3: Option[String],
+                   addressLine4: Option[String], addressLine5: Option[String], postcode: String)
 
 object TaxPayer {
 

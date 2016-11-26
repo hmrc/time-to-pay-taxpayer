@@ -41,7 +41,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
                         (implicit executionContext: ExecutionContext) extends BaseController {
 
   def getTaxPayer(utrAsString: String) = Action.async { implicit request =>
-    implicit val writeAddress: Writes[TaxPayer] = TaxPayer.writer
+    implicit val writeTaxPayer: Writes[TaxPayer] = TaxPayer.writer
 
     val utr = Utr(utrAsString)
 
@@ -69,13 +69,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
     val address = individual.address
     TaxPayer(
       customerName = individual.name.toString(),
-      addresses = List(
-        Address(address.addressLine1,
-          address.addressLine2,
-          address.addressLine3,
-          address.addressLine4,
-          address.addressLine5,
-          address.postcode)),
+      addresses = List(address),
       selfAssessment = SelfAssessmentDetails(
         utr = utrAsString,
         communicationPreferences = preferences,

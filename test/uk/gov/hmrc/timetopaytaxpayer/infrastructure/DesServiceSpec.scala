@@ -23,14 +23,14 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Second, Span}
+import org.scalatest.time.{Seconds, Span}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.http.HeaderNames
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesServiceError, DesUserNotFoundError}
+import uk.gov.hmrc.timetopaytaxpayer.{Fixtures, Utr}
 
 import scala.concurrent.ExecutionContext
 
@@ -84,7 +84,7 @@ class DesServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
     server.stop()
   }
 
-  override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Second))
+  override implicit val patienceConfig = PatienceConfig(timeout = Span(5, Seconds))
 
   "des service" should {
     "handle valid responses" in {

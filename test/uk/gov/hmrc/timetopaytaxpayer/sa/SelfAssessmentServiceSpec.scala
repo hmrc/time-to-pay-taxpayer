@@ -23,7 +23,7 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Second, Span}
+import org.scalatest.time.{Seconds, Span}
 import play.api.http.Status
 import play.api.libs.ws.ahc.AhcWSClient
 import uk.gov.hmrc.play.test.UnitSpec
@@ -70,7 +70,6 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
                                    |    "addressLine2": "Stamford Street",
                                    |    "addressLine3": "London",
                                    |    "addressLine4": "Greater London",
-                                   |    "addressLine5": "",
                                    |    "postcode": "WC2H 9Dl",
                                    |    "additionalDeliveryInformation": "Leave by door"
                                    |  },
@@ -105,13 +104,13 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
     server.stop()
   }
 
-  override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Second))
+  override implicit val patienceConfig = PatienceConfig(timeout = Span(5, Seconds))
 
   "sa service" should {
     "handle valid responses" in {
       service(successfulUtr, authorizedUser).futureValue shouldBe Right(Individual(
         Name("President", "Donald", None, "Trump"),
-        Address("75 King's Street", "Stamford Street", "London", "Greater London", "", "WC2H 9Dl")
+        Address("75 King's Street", Some("Stamford Street"), Some("London"), Some("Greater London"), None, "WC2H 9Dl")
       ))
     }
 

@@ -38,7 +38,7 @@ object Fixtures {
 
   def somePerson() = Individual(someIndividual(), someAddress())
 
-  def someAddress() = Address("465 Any Road", "Cheese", "Pie", "Apple", "Orange", "BN3 2GH")
+  def someAddress() = Address("465 Any Road", Some("Cheese"), Some("Pie"), Some("Apple"), None, "BN3 2GH")
 
   def someIndividual() = Name("President", "Donald", None, "Trump")
 

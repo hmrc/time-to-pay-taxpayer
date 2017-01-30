@@ -18,6 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import cats.data.EitherT
 import cats.implicits._
+import play.api.Logger
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
 import uk.gov.hmrc.play.http.HeaderNames
@@ -86,14 +87,20 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
   }
 
   private def handleError(error: DesError): Result = error match {
-    case DesUserNotFoundError(_) => NotFound
-    case error @ DesUnauthorizedError(_) => Unauthorized(error.message)
-    case e: DesError => InternalServerError(e.message)
+    case e@DesUserNotFoundError(_) => Logger.error(e.message)
+      NotFound
+    case e@DesUnauthorizedError(_) => Logger.error(e.message)
+      Unauthorized(error.message)
+    case e: DesError => Logger.error(e.message)
+      InternalServerError(e.message)
   }
 
   private def handleError(error: SaError): Result = error match {
-    case SaUserNotFoundError(_) => NotFound
-    case error @ SaUnauthorizedError(_, _) => Unauthorized(error.message)
-    case e: SaError => InternalServerError(e.message)
+    case e@SaUserNotFoundError(_) => Logger.error(e.message)
+      NotFound
+    case e@SaUnauthorizedError(_, _) => Logger.error(e.message)
+      Unauthorized(error.message)
+    case e: SaError => Logger.error(e.message)
+      InternalServerError(e.message)
   }
 }

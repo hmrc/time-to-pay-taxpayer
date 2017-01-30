@@ -14,7 +14,7 @@ Alternatively you can use Service Manager - **sm --start TIME_TO_PAY_TAX_PAYER_D
 
 The app will start by default on port 9857. Stub data should be configured for the UTR 1234567890 so you should be able to GET from http://localhost:9857/tax-payer/1234567890
 
-## GET /tax-payer/{utr}
+## GET /taxpayer/{utr}
 
 Retrieves a definition of a tax payer
 

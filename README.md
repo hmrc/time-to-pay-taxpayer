@@ -1,10 +1,13 @@
 # time-to-pay-taxpayer
 
+The Taxpayer service is used in the SSTTP project for Pay What You Owe In Instalments. It has one endpoint, a GET which will retrieve Taxpayer
+information for a given UTR.
+
 ## Run locally
 
 This app depends on 3 DES services and the SA app. Both have stub projects available:
 
-https://github.com/hmrc/self-service-time-to-pay-des-stub
+https://github.com/hmrc/self-service-time-to-pay-des-stub-scala
 
 https://github.com/hmrc/sa-stub
 

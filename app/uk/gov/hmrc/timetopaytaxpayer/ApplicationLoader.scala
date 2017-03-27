@@ -53,10 +53,16 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
 
   def hmrcWsCall[T] = DesService.wsCall[T](wsClient, webServiceRequest, desServicesUrl, desServiceEnvironment, desAuthorizationToken) _
 
+  /**
+    * Calls the 3 eligibility DES APIS; getSAReturns, getSADebits and getCommPreferences and stores their values for use in the controller response.
+    */
   lazy val returns = hmrcWsCall[Seq[Return]](Returns.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
   lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
   lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
 
+  /**
+    * Calls the SA service and returns the user's address and other personal details such as name, surname and title.
+    */
   lazy val saService = SelfAssessmentService.address(wsClient, webServiceRequest, ApplicationConfig.saServicesUrl)(utr=> s"sa/individual/${ utr.value }/designatory-details/taxpayer") _
 
   lazy val eligibilityController = new TaxPayerController(debits, preferences, returns, saService)

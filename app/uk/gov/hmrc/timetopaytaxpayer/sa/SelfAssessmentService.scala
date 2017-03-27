@@ -42,6 +42,10 @@ object SelfAssessmentService {
 
   type SaServiceResult = Either[SaError, Individual]
 
+  /**
+    * Calls a GET request to the SA service and returns the user's address and personal details if successful.
+    * Will otherwise return an error depending on the information sent.
+    */
   def address(ws: WSClient, wsRequest: (WSRequest => Future[WSResponse]), baseUrl: String)
                 (path: (Utr => String))(utr: Utr, authorizedUser: AuthorizedUser)
                 (implicit executionContext: ExecutionContext): Future[SaServiceResult] = {
@@ -61,7 +65,6 @@ object SelfAssessmentService {
   }
 
 }
-
 
 object DesignatoryDetails {
 

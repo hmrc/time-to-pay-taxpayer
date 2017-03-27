@@ -42,9 +42,9 @@ object DesService {
   type DesServiceResult[T] = Either[DesError, T]
 
   /**
-    * Calls a GET request to the given DES API endpoint and handles the response accordingly
-    * Returns the relevant data eg SAReturns, SADebits and Communication Preferences with an OK
-    * Will otherwise return any errors outlined in the DES eligibility API specifications
+    * Calls a GET request to the given DES API endpoint and handles the response accordingly.
+    * Returns the relevant data eg SAReturns, SADebits or Communication Preferences with an OK status.
+    * Will otherwise return any errors outlined in the DES eligibility API specifications.
     */
   def wsCall[T](ws: WSClient, wsRequest: (WSRequest => Future[WSResponse]), baseUrl: String, serviceEnvironment: String, authorizationToken: String)
                (reader: Reads[T], path: (Utr => String))(utr: Utr)

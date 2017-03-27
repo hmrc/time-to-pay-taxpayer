@@ -55,7 +55,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
     EitherT(service).leftMap(handleError)
 
     /**
-      * Collects the information from the DES APIs and stores them to be uesd to build a TaxPayer
+      * Collects the information from the DES APIs and attempts to build a TaxPayer.
       */
     (for {
       authorizedUser <- lookupAuthorizationHeader()
@@ -69,7 +69,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
   }
 
   /**
-    * Builds a TaxPayer object based upon the information retrieved from the DES APIs
+    * Builds a TaxPayer object based upon the information retrieved from the DES APIs.
     */
   private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences,
                        returns: Seq[Return], individual: Individual) = {
@@ -93,7 +93,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
   }
 
   /**
-    * Handles any errors that are thrown back from the DES APIs
+    * Handles any errors that are thrown back from the DES APIs.
     */
   private def handleError(error: DesError): Result = error match {
     case e@DesUserNotFoundError(_) => Logger.error(e.message)
@@ -105,7 +105,7 @@ class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
   }
 
   /**
-    * Handles any errors that are thrown back from the SA service
+    * Handles any errors that are thrown back from the SA service.
     */
   private def handleError(error: SaError): Result = error match {
     case e@SaUserNotFoundError(_) => Logger.error(e.message)

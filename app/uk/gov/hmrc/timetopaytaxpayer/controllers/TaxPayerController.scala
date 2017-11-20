@@ -21,7 +21,7 @@ import cats.implicits._
 import play.api.Logger
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
-import uk.gov.hmrc.play.http.HeaderNames
+import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.play.microservice.controller.BaseController
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
@@ -30,7 +30,7 @@ import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesError, DesUna
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.{Return, ReturnsResult}
 import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUnauthorizedError, SaUserNotFoundError}
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.{Address, SelfAssessmentDetails, TaxPayer}
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.{SelfAssessmentDetails, TaxPayer}
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}

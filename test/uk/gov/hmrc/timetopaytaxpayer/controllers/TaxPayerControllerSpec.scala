@@ -25,7 +25,7 @@ import org.scalatest.time.{Second, Span}
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.mvc.Http.Status
-import uk.gov.hmrc.play.http.HeaderNames
+import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences

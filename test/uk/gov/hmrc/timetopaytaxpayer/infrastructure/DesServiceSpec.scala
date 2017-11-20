@@ -27,7 +27,7 @@ import org.scalatest.time.{Seconds, Span}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.libs.ws.ahc.AhcWSClient
-import uk.gov.hmrc.play.http.HeaderNames
+import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesServiceError, DesUserNotFoundError}
 import uk.gov.hmrc.timetopaytaxpayer.{Fixtures, Utr}

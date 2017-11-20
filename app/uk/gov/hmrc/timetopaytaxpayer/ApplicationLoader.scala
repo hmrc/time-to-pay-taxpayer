@@ -49,7 +49,7 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
   import play.api.libs.concurrent.Execution.Implicits._
 
   lazy val wsClient = AhcWSClient()
-  lazy val webServiceRequest = WebService.request(new MicroserviceAuditConnector(wsClient), Some(t => Logger.warn(t.getMessage, t))) _
+  lazy val webServiceRequest = WebService.request(MicroserviceAuditConnector, Some(t => Logger.warn(t.getMessage, t))) _
 
   def hmrcWsCall[T] = DesService.wsCall[T](wsClient, webServiceRequest, desServicesUrl, desServiceEnvironment, desAuthorizationToken) _
 

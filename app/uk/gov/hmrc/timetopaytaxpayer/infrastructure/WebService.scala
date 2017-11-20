@@ -23,7 +23,8 @@ import play.api.mvc.Headers
 import uk.gov.hmrc.play.audit.AuditExtensions._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.model.{DataEvent, EventTypes}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -55,6 +56,6 @@ object WebService {
       case (k, v) => (k, v.headOption.getOrElse(""))
     }.toSeq
 
-    HeaderCarrier.fromHeadersAndSession(Headers(headers: _*))
+    HeaderCarrierConverter.fromHeadersAndSession(Headers(headers: _*))
   }
 }

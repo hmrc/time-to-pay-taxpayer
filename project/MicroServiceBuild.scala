@@ -15,11 +15,10 @@ private object AppDependencies {
   import play.core.PlayVersion
 
   private val microserviceBootstrapVersion = "6.13.0"
-  private val playUrlBindersVersion = "2.0.0"
-  private val playConfigVersion = "3.0.0"
-  private val domainVersion = "4.0.0"
-  private val hmrcTestVersion = "2.1.0"
-  private val scalaTestVersion = "2.2.6"
+  private val playUrlBindersVersion = "2.1.0"
+  private val domainVersion = "5.0.0"
+  private val hmrcTestVersion = "3.0.0"
+  private val scalaTestVersion = "3.0.4"
   private val pegdownVersion = "1.6.0"
   private val wiremockVersion = "1.58"
   private val catsVersion = "0.8.0"
@@ -28,7 +27,6 @@ private object AppDependencies {
     ws,
     "uk.gov.hmrc" %% "microservice-bootstrap" % microserviceBootstrapVersion,
     "uk.gov.hmrc" %% "play-url-binders" % playUrlBindersVersion,
-    "uk.gov.hmrc" %% "play-config" % playConfigVersion,
     "uk.gov.hmrc" %% "domain" % domainVersion,
     "org.typelevel" %% "cats" % catsVersion
   )

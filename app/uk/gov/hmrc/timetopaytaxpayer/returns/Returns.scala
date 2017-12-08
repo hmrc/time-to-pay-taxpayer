@@ -25,7 +25,12 @@ object Returns {
 
   type ReturnsResult = DesServiceResult[Seq[Return]]
 
-  case class Return(taxYearEnd: LocalDate, issuedDate: Option[LocalDate] = None, dueDate: Option[LocalDate] = None, receivedDate: Option[LocalDate] = None)
+  case class Return(
+    taxYearEnd: LocalDate,
+    issuedDate: Option[LocalDate] = None,
+    dueDate: Option[LocalDate] = None,
+    receivedDate: Option[LocalDate] = None
+  )
 
   val reader: Reads[Seq[Return]] = {
     implicit val readReturn: Reads[Return] = Json.reads[Return]

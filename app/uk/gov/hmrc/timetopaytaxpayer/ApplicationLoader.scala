@@ -19,15 +19,18 @@ package uk.gov.hmrc.timetopaytaxpayer
 import javax.inject.Provider
 
 import com.kenshoo.play.metrics.MetricsController
+import com.typesafe.config.ConfigFactory
 import play.api.ApplicationLoader._
 import play.api.libs.ws.ahc.AhcWSClient
-import play.api.{BuiltInComponentsFromContext, Logger, LoggerConfigurator}
+import play.api.routing.Router
+import play.api.{Application, BuiltInComponentsFromContext, Logger, LoggerConfigurator}
 import prod.Routes
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.play.health.AdminController
 import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig.{desAuthorizationToken, desServiceEnvironment, desServicesUrl}
-import uk.gov.hmrc.timetopaytaxpayer.controllers.TaxPayerController
+import uk.gov.hmrc.timetopaytaxpayer.controllers.{TaxPayerController, TestOnlyController}
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.Debit
 import uk.gov.hmrc.timetopaytaxpayer.infrastructure.{DesService, WebService}
@@ -36,10 +39,11 @@ import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
 import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService
 
 class ApplicationLoader extends play.api.ApplicationLoader {
-  def load(context: Context) = {
+  def load(context: Context): Application = {
     LoggerConfigurator(context.environment.classLoader).foreach {
       _.configure(context.environment)
     }
+
     new ApplicationModule(context).application
   }
 }
@@ -67,6 +71,8 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
 
   lazy val eligibilityController = new TaxPayerController(debits, preferences, returns, saService)
 
+  lazy val testOnlyController = new TestOnlyController()
+
   lazy val metricsController = new MetricsController(new GraphiteMetricsImpl(applicationLifecycle, configuration))
   lazy val appRoutes = new app.Routes(httpErrorHandler,  new Provider[TaxPayerController] {
     override def get(): TaxPayerController = eligibilityController
@@ -75,9 +81,38 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
     override def get(): AdminController = new AdminController(configuration)
   })
 
-  override def router = {
-    new Routes(httpErrorHandler, appRoutes, healthRoutes, new Provider[MetricsController] {
-      override def get(): MetricsController = metricsController
-    })
+
+  lazy val prodRoutes = new Routes(httpErrorHandler, appRoutes, healthRoutes, new Provider[MetricsController] {
+    override def get(): MetricsController = metricsController
+  })
+
+  lazy val testOnlyDoNotUseInAppConfRoutes: testOnlyDoNotUseInProd.Routes = new testOnlyDoNotUseInProd.Routes(
+    httpErrorHandler,
+    prodRoutes,
+    new Provider[TestOnlyController] {
+      override def get(): TestOnlyController = testOnlyController
+    }
+  )
+
+  override def router: Router = {
+    val applicationRouterKey = "application.router"
+
+    val config = ConfigFactory.load()
+
+    val applicationRouterProp = config.getString(applicationRouterKey)
+    if (applicationRouterProp == null) {
+      Logger.info("Using router with prod.routes")
+      prodRoutes
+    }
+
+    if (applicationRouterProp == "testOnlyDoNotUseInProd.routes") {
+      Logger.info("Using router with testOnlyDoNotUseInProd.routes")
+      testOnlyDoNotUseInAppConfRoutes
+    } else {
+      Logger.error(s"The option $applicationRouterKey has unsupported value: $applicationRouterProp. We support only 'testOnlyDoNotUseInProd.routes'. Using 'prodRoutes'.")
+      prodRoutes
+    }
   }
+
+
 }

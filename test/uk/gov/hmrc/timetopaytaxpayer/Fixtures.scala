@@ -22,6 +22,9 @@ import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPref
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
 import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.{Individual, Name}
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
+import cats._
+import cats.data._
+import cats.implicits._
 
 import util.Random.nextInt
 
@@ -38,9 +41,9 @@ object Fixtures {
 
   def somePerson() = Individual(someIndividual(), someAddress())
 
-  def someAddress() = Address("465 Any Road", Some("Cheese"), Some("Pie"), Some("Apple"), None, "BN3 2GH")
+  def someAddress() = Address("465 Any Road".some, "Cheese".some, "Pie".some, "Apple".some, none, "BN3 2GH".some)
 
-  def someIndividual() = Name("President", "Donald", None, "Trump")
+  def someIndividual() = Name("President".some, "Donald".some, none, "Trump")
 
   def someReturns() = List(
     Return(taxYearEnd = LocalDate.of(2014, 4, 5), receivedDate = Some(LocalDate.of(2014, 11, 28))),

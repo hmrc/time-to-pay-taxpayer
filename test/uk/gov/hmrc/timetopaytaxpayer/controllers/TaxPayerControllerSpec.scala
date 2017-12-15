@@ -39,6 +39,9 @@ import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import cats._
+import cats.data._
+import cats.implicits._
 
 class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
 
@@ -74,7 +77,14 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
         largePrintIndicator = true, brailleIndicator = true))
 
       val saResult = Right(Individual(Fixtures.someIndividual(),
-        Address("321 Fake Street", Some("Worthing"), Some("West Sussex"), Some("Another Line"), Some("One More Line"), "BN3 2GH")))
+        Address(
+          "321 Fake Street".some,
+          "Worthing".some,
+          "West Sussex".some,
+          "Another Line".some,
+          "One More Line".some,
+          "BN3 2GH".some
+        )))
 
       val controller = createController(
         debitsService = _ => Future.successful(debitResult),
@@ -85,57 +95,57 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
 
       val expectedJson = Json.parse(
         """
-          |{
-          |   "customerName": "President Donald Trump",
-          |   "addresses": [
-          |           {
-          |             "addressLine1": "321 Fake Street",
-          |             "addressLine2": "Worthing",
-          |             "addressLine3": "West Sussex",
-          |             "addressLine4": "Another Line",
-          |             "addressLine5": "One More Line",
-          |             "postcode": "BN3 2GH"
-          |           }
-          |         ],
-          |    "selfAssessment": {
-          |      "utr": "1234567890",
-          |      "communicationPreferences": {
-          |        "welshLanguageIndicator": true,
-          |        "audioIndicator": true,
-          |        "largePrintIndicator": true,
-          |        "brailleIndicator": true
-          |      },
-          |      "debits": [
-          |        {
-          |          "originCode": "IN2",
-          |          "amount": 250.52,
-          |          "dueDate": "2016-01-31",
-          |          "interest": {
-          |             "calculationDate" : "2016-06-01",
-          |             "amountAccrued" : 42.32
-          |          },
-          |          "taxYearEnd": "2017-04-05"
-          |        }
-          |      ],
-          |      "returns":[
-          |        {
-          |           "taxYearEnd":"2014-04-05",
-          |           "receivedDate":"2014-11-28"
-          |        },
-          |        {
-          |           "taxYearEnd":"2014-04-05",
-          |           "issuedDate":"2015-04-06",
-          |           "dueDate":"2016-01-31"
-          |        },
-          |        {
-          |           "taxYearEnd":"2014-04-05",
-          |           "issuedDate":"2016-04-06",
-          |           "dueDate":"2017-01-31",
-          |           "receivedDate":"2016-04-11"
-          |        }
-          |      ]
-          |   }
-          |}""".stripMargin)
+          {
+             "customerName": "President Donald Trump",
+             "addresses": [
+                     {
+                       "addressLine1": "321 Fake Street",
+                       "addressLine2": "Worthing",
+                       "addressLine3": "West Sussex",
+                       "addressLine4": "Another Line",
+                       "addressLine5": "One More Line",
+                       "postcode": "BN3 2GH"
+                     }
+                   ],
+              "selfAssessment": {
+                "utr": "1234567890",
+                "communicationPreferences": {
+                  "welshLanguageIndicator": true,
+                  "audioIndicator": true,
+                  "largePrintIndicator": true,
+                  "brailleIndicator": true
+                },
+                "debits": [
+                  {
+                    "originCode": "IN2",
+                    "amount": 250.52,
+                    "dueDate": "2016-01-31",
+                    "interest": {
+                       "calculationDate" : "2016-06-01",
+                       "amountAccrued" : 42.32
+                    },
+                    "taxYearEnd": "2017-04-05"
+                  }
+                ],
+                "returns":[
+                  {
+                     "taxYearEnd":"2014-04-05",
+                     "receivedDate":"2014-11-28"
+                  },
+                  {
+                     "taxYearEnd":"2014-04-05",
+                     "issuedDate":"2015-04-06",
+                     "dueDate":"2016-01-31"
+                  },
+                  {
+                     "taxYearEnd":"2014-04-05",
+                     "issuedDate":"2016-04-06",
+                     "dueDate":"2017-01-31",
+                     "receivedDate":"2016-04-11"
+                  }
+                ]
+             }
+          }""")
 
       json shouldBe expectedJson
     }

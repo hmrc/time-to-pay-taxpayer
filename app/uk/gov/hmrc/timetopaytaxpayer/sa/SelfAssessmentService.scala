@@ -22,6 +22,10 @@ import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
+import cats._
+import cats.data._
+import cats.implicits._
+
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -70,8 +74,21 @@ object DesignatoryDetails {
 
   case class Individual(name: Name, address: Address)
 
-  case class Name(title: String, forename: String, secondForename: Option[String], surname: String) {
-    override def toString() = Seq(title, forename, secondForename.getOrElse(""), surname).filterNot(_.isEmpty).mkString(" ")
+  //from the sa docs: All of the value fields nested under name, address, telephone and email are optional and the client should expect any of them to be unspecified.
+  //https://github.tools.tax.service.gov.uk/HMRC/sa#get-saindividualsautrdesignatory-detailstaxpayer
+  //SSTTP2-363
+  case class Name(
+    title: Option[String],
+    forename: Option[String],
+    secondForename: Option[String],
+    surname: String
+  ) {
+
+    override def toString: String = fullName
+
+    private def fullName: String = Seq(title, forename, secondForename, surname.some).collect{
+      case Some(x) => x
+    }.mkString(" ")
   }
 
   val reader: Reads[Individual]  = {

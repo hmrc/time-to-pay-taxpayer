@@ -21,6 +21,9 @@ import java.time.LocalDate
 import play.api.libs.json._
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
+import cats._
+import cats.data._
+import cats.implicits._
 
 class TaxPayerJsonSpec extends UnitSpec {
 
@@ -32,7 +35,14 @@ class TaxPayerJsonSpec extends UnitSpec {
       val prefs = CommunicationPreferences(welshLanguageIndicator = false, audioIndicator = false,
         largePrintIndicator = false, brailleIndicator = false)
 
-      val addresses = List(Address("123 Fake Street", Some("Foo"), Some("Bar"), None, None, "BN3 2GH"))
+      val addresses = List(Address(
+        "123 Fake Street".some,
+        "Foo".some,
+        "Bar".some,
+        none,
+        none,
+        "BN3 2GH".some
+      ))
 
       val debits = List(Debit(originCode = "POA2", amount = 250.52, dueDate = LocalDate.of(2016, 1, 31),
         interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32)), taxYearEnd = LocalDate.of(2017, 4, 5)))

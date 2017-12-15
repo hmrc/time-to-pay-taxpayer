@@ -17,16 +17,38 @@
 package uk.gov.hmrc.timetopaytaxpayer.sa
 
 import uk.gov.hmrc.play.test.UnitSpec
+import cats._
+import cats.data._
+import cats.implicits._
 
 class NameSpec extends UnitSpec {
 
   "Name" should {
     "print to string correctly without middle name" in {
-      DesignatoryDetails.Name("President", "Donald", None, "Trump").toString() shouldBe "President Donald Trump"
+      DesignatoryDetails.Name(
+        "President".some,
+        "Donald".some,
+        none,
+        "Trump"
+      ).toString() shouldBe "President Donald Trump"
     }
 
     "print to string correctly with middle name" in {
-      DesignatoryDetails.Name("President", "Donald", Some("John"), "Trump").toString() shouldBe "President Donald John Trump"
+      DesignatoryDetails.Name(
+        "President".some,
+        "Donald".some,
+        "John".some,
+        "Trump"
+      ).toString() shouldBe "President Donald John Trump"
+    }
+
+    "Only surname is expected to be there" in {
+      DesignatoryDetails.Name(
+        none,
+        none,
+        none,
+        "Trump"
+      ).toString() shouldBe "Trump"
     }
   }
 

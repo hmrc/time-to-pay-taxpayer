@@ -31,6 +31,9 @@ import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.{Individual, Name}
 import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.SaUnauthorizedError
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
+import cats._
+import cats.data._
+import cats.implicits._
 
 import scala.concurrent.ExecutionContext
 
@@ -109,8 +112,15 @@ class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with Sca
   "sa service" should {
     "handle valid responses" in {
       service(successfulUtr, authorizedUser).futureValue shouldBe Right(Individual(
-        Name("President", "Donald", None, "Trump"),
-        Address("75 King's Street", Some("Stamford Street"), Some("London"), Some("Greater London"), None, "WC2H 9Dl")
+        Name("President".some, "Donald".some, none, "Trump"),
+        Address(
+          "75 King's Street".some,
+          "Stamford Street".some,
+          "London".some,
+          "Greater London".some,
+          none,
+          "WC2H 9Dl".some
+        )
       ))
     }
 

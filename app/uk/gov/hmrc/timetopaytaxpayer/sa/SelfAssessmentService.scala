@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
 import cats._
 import cats.data._
 import cats.implicits._
-
+import play.api.Logger
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -53,7 +53,6 @@ object SelfAssessmentService {
   def address(ws: WSClient, wsRequest: (WSRequest => Future[WSResponse]), baseUrl: String)
                 (path: (Utr => String))(utr: Utr, authorizedUser: AuthorizedUser)
                 (implicit executionContext: ExecutionContext): Future[SaServiceResult] = {
-
     wsRequest(ws.url(s"$baseUrl/${ path(utr) }")
       .withHeaders("Authorization" -> authorizedUser.value)
       .withMethod("GET")).map {

@@ -74,7 +74,6 @@ object DesignatoryDetails {
   case class Individual(name: Name, address: Address)
 
   //from the sa docs: All of the value fields nested under name, address, telephone and email are optional and the client should expect any of them to be unspecified.
-  //https://github.tools.tax.service.gov.uk/HMRC/sa#get-saindividualsautrdesignatory-detailstaxpayer
   //SSTTP2-363
   case class Name(
     title: Option[String],

@@ -17,8 +17,9 @@
 package uk.gov.hmrc.timetopaytaxpayer
 
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.timetopaytaxpayer.config.DefaultRunMode
 
-object ApplicationConfig extends ServicesConfig {
+object ApplicationConfig extends ServicesConfig with DefaultRunMode{
 
   lazy val desServicesUrl = baseUrl("des-services")
   lazy val desAuthorizationToken = getConfString("des-services.authorizationToken")

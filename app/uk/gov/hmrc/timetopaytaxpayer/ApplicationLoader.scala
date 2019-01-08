@@ -15,10 +15,11 @@
  */
 
 package uk.gov.hmrc.timetopaytaxpayer
-
+import config.DefaultRunMode
 import com.kenshoo.play.metrics.MetricsController
 import com.typesafe.config.ConfigFactory
 import javax.inject.Provider
+
 import play.api.ApplicationLoader._
 import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
@@ -26,6 +27,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.routing.Router
 import play.api.{Application, BuiltInComponentsFromContext, Logger, LoggerConfigurator}
 import prod.Routes
+import uk.gov.hmrc.play.config.RunMode
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.play.health.HealthController
 import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig.{desAuthorizationToken, desServiceEnvironment, desServicesUrl}
@@ -52,7 +54,7 @@ class ApplicationLoader extends play.api.ApplicationLoader {
   }
 }
 
-class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(context) {
+class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(context) with DefaultRunMode {
 
   import play.api.libs.concurrent.Execution.Implicits._
 
@@ -84,7 +86,7 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
     override def get(): TaxPayerController = eligibilityController
   })
   lazy val healthRoutes = new manualdihealth.Routes(httpErrorHandler, new Provider[HealthController] {
-    override def get(): HealthController = new HealthController(configuration, )
+    override def get(): HealthController = new HealthController(configuration, environment)
   })
 
 

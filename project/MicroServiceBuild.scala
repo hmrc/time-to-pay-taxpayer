@@ -14,10 +14,10 @@ private object AppDependencies {
   import play.sbt.PlayImport._
   import play.core.PlayVersion
 
-  private val microserviceBootstrapVersion = "8.1.0"
+  private val microserviceBootstrapVersion = "9.1.0"
   private val playUrlBindersVersion = "2.1.0"
   private val domainVersion = "5.2.0"
-  private val hmrcTestVersion = "3.0.0"
+  private val hmrcTestVersion = "3.3.0"
   private val scalaTestVersion = "3.0.4"
   private val pegdownVersion = "1.6.0"
   private val wiremockVersion = "1.58"
@@ -26,7 +26,7 @@ private object AppDependencies {
   val compile = Seq(
     ws,
     "uk.gov.hmrc" %% "microservice-bootstrap" % microserviceBootstrapVersion,
-    "uk.gov.hmrc" %% "play-ui" % "7.22.0",
+    "uk.gov.hmrc" %% "play-ui" % "7.27.0-play-25",
     "uk.gov.hmrc" %% "domain" % domainVersion,
     "org.typelevel" %% "cats" % catsVersion
   )

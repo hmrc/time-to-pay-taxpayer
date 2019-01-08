@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import prod.Routes
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.play.health.AdminController
+import uk.gov.hmrc.play.health.ReverseAdminController
 import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig.{desAuthorizationToken, desServiceEnvironment, desServicesUrl}
 import uk.gov.hmrc.timetopaytaxpayer.controllers.{TaxPayerController, TestOnlyController}
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits

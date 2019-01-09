@@ -21,8 +21,8 @@ import play.api.{Configuration, Play}
 import uk.gov.hmrc.play.config.{AppName, RunMode}
 
 trait DefaultRunMode extends RunMode {
-  override protected def runModeConfiguration: Configuration = Play.current.configuration
-  override protected def mode: Mode = Play.current.mode
+   protected def runModeConfiguration: Configuration = Play.current.configuration
+   protected def mode: Mode = Play.current.mode
 }
 
 trait DefaultAppName extends AppName {

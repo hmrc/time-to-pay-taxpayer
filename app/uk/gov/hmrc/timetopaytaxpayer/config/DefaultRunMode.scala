@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
+package uk.gov.hmrc.timetopaytaxpayer.config
 
-import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService._
+import play.api.Mode.Mode
+import play.api.{Configuration, Play}
+import uk.gov.hmrc.play.config.{AppName, RunMode}
 
+trait DefaultRunMode extends RunMode {
+   protected def runModeConfiguration: Configuration = Play.current.configuration
+   protected def mode: Mode = Play.current.mode
+}
 
-case class CommunicationPreferences(welshLanguageIndicator: Boolean, audioIndicator: Boolean,
-                                    largePrintIndicator: Boolean, brailleIndicator: Boolean)
-
-object CommunicationPreferences {
-
-  val reader: Reads[CommunicationPreferences] = Json.reads[CommunicationPreferences]
-
-  type CommunicationPreferencesResult = DesServiceResult[CommunicationPreferences]
+trait DefaultAppName extends AppName {
+  override protected def appNameConfiguration: Configuration = Play.current.configuration
 }

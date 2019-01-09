@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package uk.gov.hmrc.timetopaytaxpayer
 
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.timetopaytaxpayer.config.DefaultRunMode
 
-object ApplicationConfig extends ServicesConfig {
+object ApplicationConfig extends ServicesConfig with DefaultRunMode {
 
   lazy val desServicesUrl = baseUrl("des-services")
   lazy val desAuthorizationToken = getConfString("des-services.authorizationToken")

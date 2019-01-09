@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,34 @@
  */
 
 package uk.gov.hmrc.timetopaytaxpayer
-
-import javax.inject.Provider
-
+import config.DefaultRunMode
 import com.kenshoo.play.metrics.MetricsController
 import com.typesafe.config.ConfigFactory
+import javax.inject.Provider
+
 import play.api.ApplicationLoader._
+import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
+import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.routing.Router
 import play.api.{Application, BuiltInComponentsFromContext, Logger, LoggerConfigurator}
 import prod.Routes
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.config.RunMode
 import uk.gov.hmrc.play.graphite.GraphiteMetricsImpl
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.play.health.AdminController
+import uk.gov.hmrc.play.health.HealthController
 import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig.{desAuthorizationToken, desServiceEnvironment, desServicesUrl}
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopaytaxpayer.controllers.{TaxPayerController, TestOnlyController}
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.Debit
+import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.DesServiceResult
 import uk.gov.hmrc.timetopaytaxpayer.infrastructure.{DesService, WebService}
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
 import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService
+import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.SaServiceResult
+
+import scala.concurrent.Future
 
 class ApplicationLoader extends play.api.ApplicationLoader {
   def load(context: Context): Application = {
@@ -48,26 +54,28 @@ class ApplicationLoader extends play.api.ApplicationLoader {
   }
 }
 
-class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(context) {
+class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(context) with DefaultRunMode {
 
   import play.api.libs.concurrent.Execution.Implicits._
 
   lazy val wsClient = AhcWSClient()
-  lazy val webServiceRequest = WebService.request(MicroserviceAuditConnector, Some(t => Logger.warn(t.getMessage, t))) _
+  lazy val webServiceRequest: WSRequest => Future[WSResponse] = WebService.request(MicroserviceAuditConnector, Some(t => Logger.warn(t.getMessage, t)))
 
-  def hmrcWsCall[T] = DesService.wsCall[T](wsClient, webServiceRequest, desServicesUrl, desServiceEnvironment, desAuthorizationToken) _
+  def hmrcWsCall[T]: (Reads[T], Utr => String) => Utr => Future[DesServiceResult[T]] = DesService
+    .wsCall[T](wsClient, webServiceRequest, desServicesUrl, desServiceEnvironment, desAuthorizationToken)
 
   /**
     * Calls the 3 eligibility DES APIS; getSAReturns, getSADebits and getCommPreferences and stores their values for use in the controller response.
     */
-  lazy val returns = hmrcWsCall[Seq[Return]](Returns.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
-  lazy val debits = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
-  lazy val preferences = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
+  lazy val returns: Utr => Future[DesServiceResult[Seq[Return]]] = hmrcWsCall[Seq[Return]](Returns.reader, utr => s"sa/taxpayer/${ utr.value }/returns")
+  lazy val debits: Utr => Future[DesServiceResult[Seq[Debit]]] = hmrcWsCall[Seq[Debit]](Debits.reader, utr => s"sa/taxpayer/${ utr.value }/debits")
+  lazy val preferences: Utr => Future[DesServiceResult[CommunicationPreferences]] = hmrcWsCall[CommunicationPreferences](CommunicationPreferences.reader, utr => s"sa/taxpayer/${ utr.value }/communication-preferences")
 
   /**
     * Calls the SA service and returns the user's address and other personal details such as name, surname and title.
     */
-  lazy val saService = SelfAssessmentService.address(wsClient, webServiceRequest, ApplicationConfig.saServicesUrl)(utr=> s"sa/individual/${ utr.value }/designatory-details/taxpayer") _
+  lazy val saService: (Utr, AuthorizedUser) => Future[SaServiceResult] = SelfAssessmentService
+    .address(wsClient, webServiceRequest, ApplicationConfig.saServicesUrl)(utr => s"sa/individual/${utr.value}/designatory-details/taxpayer")
 
   lazy val eligibilityController = new TaxPayerController(debits, preferences, returns, saService)
 
@@ -77,8 +85,8 @@ class ApplicationModule(context: Context) extends BuiltInComponentsFromContext(c
   lazy val appRoutes = new app.Routes(httpErrorHandler,  new Provider[TaxPayerController] {
     override def get(): TaxPayerController = eligibilityController
   })
-  lazy val healthRoutes = new manualdihealth.Routes(httpErrorHandler, new Provider[AdminController] {
-    override def get(): AdminController = new AdminController(configuration)
+  lazy val healthRoutes = new manualdihealth.Routes(httpErrorHandler, new Provider[HealthController] {
+    override def get(): HealthController = new HealthController(configuration, environment)
   })
 
 

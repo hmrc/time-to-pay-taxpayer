@@ -21,10 +21,10 @@ import javax.inject._
 import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action => PlayAction, _}
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig
 
-class TestOnlyController @Inject()()
+class TestOnlyController @Inject()(applicationConfig: ApplicationConfig)
 extends BaseController {
 
   def config() = PlayAction { r =>
@@ -36,10 +36,10 @@ extends BaseController {
 
   def connectorsConfig() = PlayAction { r =>
     Ok(Json.obj(
-      "desServicesUrl" -> ApplicationConfig.desServicesUrl,
-      "desAuthorizationToken" -> ApplicationConfig.desAuthorizationToken,
-      "desServiceEnvironment" -> ApplicationConfig.desServiceEnvironment,
-      "saServicesUrl" -> ApplicationConfig.saServicesUrl
+      "desServicesUrl" -> applicationConfig.desServicesUrl,
+      "desAuthorizationToken" -> applicationConfig.desAuthorizationToken,
+      "desServiceEnvironment" -> applicationConfig.desServiceEnvironment,
+      "saServicesUrl" -> applicationConfig.saServicesUrl
     ))
   }
 

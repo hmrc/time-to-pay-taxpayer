@@ -16,10 +16,13 @@
 
 package uk.gov.hmrc.timetopaytaxpayer
 
+import javax.inject._
+import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.timetopaytaxpayer.config.DefaultRunMode
 
-object ApplicationConfig extends ServicesConfig with DefaultRunMode {
+class ApplicationConfig @Inject()(override val runModeConfiguration: Configuration, environment: Environment) extends ServicesConfig {
+
+  override protected def mode = environment.mode
 
   lazy val desServicesUrl = baseUrl("des-services")
   lazy val desAuthorizationToken = getConfString("des-services.authorizationToken")

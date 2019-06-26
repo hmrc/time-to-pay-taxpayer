@@ -17,18 +17,15 @@
 package uk.gov.hmrc.timetopaytaxpayer
 
 import javax.inject._
-import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.config.ServicesConfig
 
-class ApplicationConfig @Inject()(override val runModeConfiguration: Configuration, environment: Environment) extends ServicesConfig {
+class ApplicationConfig @Inject()(servicesConfig:ServicesConfig) {
 
-  override protected def mode = environment.mode
-
-  lazy val desServicesUrl = baseUrl("des-services")
+  lazy val desServicesUrl = servicesConfig baseUrl("des-services")
   lazy val desAuthorizationToken = getConfString("des-services.authorizationToken")
   lazy val desServiceEnvironment = getConfString("des-services.serviceEnvironment")
 
-  lazy val saServicesUrl = baseUrl("sa-services")
+  lazy val saServicesUrl = servicesConfig.baseUrl("sa-services")
 
-  def getConfString(key: String): String = getConfString(key, throw new IllegalArgumentException(s"Missing property $key"))
+  def getConfString(key: String): String = servicesConfig.getConfString(key, throw new IllegalArgumentException(s"Missing property $key"))
 }

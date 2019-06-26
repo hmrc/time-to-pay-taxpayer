@@ -22,7 +22,7 @@ import play.api.Logger
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.play.microservice.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits._

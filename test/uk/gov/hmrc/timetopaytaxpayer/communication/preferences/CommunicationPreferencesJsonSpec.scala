@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
 
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.{JsSuccess, Json}
 
-class CommunicationPreferencesJsonSpec extends WordSpecLike with Matchers {
+class CommunicationPreferencesJsonSpec extends WordSpec with Matchers {
 
   "a json value" should {
 

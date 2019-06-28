@@ -38,12 +38,11 @@ import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import cats.free.Inject
 import cats.implicits._
-import org.scalatest.{FreeSpecLike, Matchers}
+import org.scalatest.{FreeSpec, Matchers}
 import play.api.mvc.ControllerComponents
 
-class TaxPayerControllerSpec @Inject()(cc:ControllerComponents) extends FreeSpecLike with Matchers with ScalaFutures {
+class TaxPayerControllerSpec (cc:ControllerComponents) extends FreeSpec with Matchers with ScalaFutures {
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Second))
 

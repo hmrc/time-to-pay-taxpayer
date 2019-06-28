@@ -21,9 +21,9 @@ import java.time.LocalDate
 import play.api.libs.json._
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import cats.implicits._
-import org.scalatest.{ Matchers, WordSpecLike}
+import org.scalatest.{Matchers, WordSpec}
 
-class TaxPayerJsonSpec extends WordSpecLike with Matchers {
+class TaxPayerJsonSpec extends WordSpec with Matchers {
 
   "a tax payer" should {
     "be serialised to json" in {

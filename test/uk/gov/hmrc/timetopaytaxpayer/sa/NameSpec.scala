@@ -17,9 +17,9 @@
 package uk.gov.hmrc.timetopaytaxpayer.sa
 
 import cats.implicits._
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.{Matchers, WordSpec}
 
-class NameSpec extends WordSpecLike with Matchers {
+class NameSpec extends WordSpec with Matchers {
 
   "Name" should {
     "print to string correctly without middle name" in {

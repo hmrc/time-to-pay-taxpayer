@@ -21,7 +21,7 @@ import akka.stream.ActorMaterializer
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
 import play.api.http.Status
@@ -33,7 +33,7 @@ import uk.gov.hmrc.timetopaytaxpayer.{Fixtures, Utr}
 
 import scala.concurrent.ExecutionContext
 
-class DesServiceSpec extends WordSpecLike with Matchers with BeforeAndAfterAll with ScalaFutures {
+class DesServiceSpec extends WordSpec with Matchers with BeforeAndAfterAll with ScalaFutures {
 
   lazy val server = new WireMockServer(wireMockConfig().dynamicPort())
 

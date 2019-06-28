@@ -21,7 +21,7 @@ import akka.stream.ActorMaterializer
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
-import org.scalatest.{BeforeAndAfterAll,Matchers, WordSpecLike}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
 import play.api.http.Status
@@ -34,7 +34,7 @@ import cats.implicits._
 
 import scala.concurrent.ExecutionContext
 
-class SelfAssessmentServiceSpec extends WordSpecLike with Matchers with BeforeAndAfterAll with ScalaFutures {
+class SelfAssessmentServiceSpec extends WordSpec with Matchers with BeforeAndAfterAll with ScalaFutures {
 
   lazy val server = new WireMockServer(wireMockConfig().dynamicPort())
 

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.timetopaytaxpayer
 
 import javax.inject._
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class ApplicationConfig @Inject()(servicesConfig:ServicesConfig) {
 

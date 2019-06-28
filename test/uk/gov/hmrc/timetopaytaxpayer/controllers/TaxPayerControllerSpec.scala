@@ -19,15 +19,14 @@ package uk.gov.hmrc.timetopaytaxpayer.controllers
 import java.time.LocalDate
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import akka.stream.{ActorMaterializer, Materializer}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Span}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.FakeRequest
 import play.mvc.Http.Status
 import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, UnitSpec, Utr}
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.{Charge, Debit, DebitsResult, Interest}
@@ -39,11 +38,11 @@ import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import cats._
-import cats.data._
 import cats.implicits._
+import org.scalatest.{FreeSpec, Matchers}
+import play.api.mvc.{ControllerComponents}
 
-class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
+class TaxPayerControllerSpec (cc:ControllerComponents) extends UnitSpec  with ScalaFutures with Matchers {
 
   override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Second))
 
@@ -58,7 +57,7 @@ class TaxPayerControllerSpec extends UnitSpec with ScalaFutures {
                        returnsService: (Utr => Future[ReturnsResult]) = _ => Future.successful(Right(Fixtures.someReturns())),
                        saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]) = (_, _) => Future.successful(Right(Fixtures.somePerson()))) = {
 
-    new TaxPayerController(debitsService, preferencesService, returnsService, saService)
+    new TaxPayerController(debitsService, preferencesService, returnsService, saService, cc)
   }
 
   "tax payer controller" should {

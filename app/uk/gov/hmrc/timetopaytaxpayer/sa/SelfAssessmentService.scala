@@ -54,7 +54,7 @@ object SelfAssessmentService {
                 (path: (Utr => String))(utr: Utr, authorizedUser: AuthorizedUser)
                 (implicit executionContext: ExecutionContext): Future[SaServiceResult] = {
     wsRequest(ws.url(s"$baseUrl/${ path(utr) }")
-      .withHeaders("Authorization" -> authorizedUser.value)
+      .withHttpHeaders("Authorization" -> authorizedUser.value)
       .withMethod("GET")).map {
       response => response.status match {
         case Status.OK => Right(response.json.as[Individual](DesignatoryDetails.reader))

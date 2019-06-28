@@ -14,4 +14,4 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.2.0")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-bobby" % "0.33.0")
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.19")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.23")

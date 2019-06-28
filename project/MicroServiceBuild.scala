@@ -1,7 +1,4 @@
 import sbt._
-import uk.gov.hmrc.SbtAutoBuildPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.versioning.SbtGitVersioning
 
 object MicroServiceBuild extends Build with MicroService {
 
@@ -17,15 +14,14 @@ private object AppDependencies {
   private val microserviceBootstrapVersion = "10.0.0"
   private val playUrlBindersVersion = "2.1.0"
   private val domainVersion = "5.2.0"
-  private val hmrcTestVersion = "3.3.0"
-  private val scalaTestVersion = "3.0.5"
+  private val scalaTestVersion = "3.0.7"
   private val pegdownVersion = "1.6.0"
   private val wiremockVersion = "1.58"
   private val catsVersion = "0.8.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-play-25" % "4.13.0",
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "0.40.0",
     "uk.gov.hmrc" %% "domain" % domainVersion,
     "org.typelevel" %% "cats" % catsVersion
   )
@@ -38,7 +34,6 @@ private object AppDependencies {
   object Test {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test: Seq[ModuleID] = Seq(
-        "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatest" %% "scalatest" % scalaTestVersion % scope,
         "org.pegdown" % "pegdown" % pegdownVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
@@ -53,7 +48,6 @@ private object AppDependencies {
       override lazy val scope: String = "it"
 
       override lazy val test: Seq[ModuleID] = Seq(
-        "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatest" %% "scalatest" % scalaTestVersion % scope,
         "org.pegdown" % "pegdown" % pegdownVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope

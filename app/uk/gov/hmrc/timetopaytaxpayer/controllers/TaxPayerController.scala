@@ -18,11 +18,12 @@ package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import cats.data.EitherT
 import cats.implicits._
+import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.{BackendController, BaseController}
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits._
@@ -35,11 +36,12 @@ import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxPayerController(debitsService: (Utr => Future[DebitsResult]),
+class TaxPayerController @Inject()(debitsService: (Utr => Future[DebitsResult]),
                          preferencesService: (Utr => Future[CommunicationPreferencesResult]),
                          returnsService: (Utr => Future[ReturnsResult]),
-                         saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]))
-                        (implicit executionContext: ExecutionContext) extends BaseController {
+                         saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]),
+                                   cc:ControllerComponents)
+                        (implicit executionContext: ExecutionContext) extends BackendController(cc) {
 
   def getTaxPayer(utrAsString: String) = Action.async { implicit request =>
     implicit val writeTaxPayer: Writes[TaxPayer] = TaxPayer.writer

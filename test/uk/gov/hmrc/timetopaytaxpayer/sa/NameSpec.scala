@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.sa
 
-import uk.gov.hmrc.play.test.UnitSpec
-import cats._
-import cats.data._
 import cats.implicits._
+import org.scalatest.{Matchers, WordSpecLike}
 
-class NameSpec extends UnitSpec {
+class NameSpec extends WordSpecLike with Matchers {
 
   "Name" should {
     "print to string correctly without middle name" in {

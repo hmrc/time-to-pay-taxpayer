@@ -18,11 +18,11 @@ package uk.gov.hmrc.timetopaytaxpayer.returns
 
 import java.time.LocalDate
 
+import org.scalatest.{ Matchers, WordSpecLike}
 import play.api.libs.json._
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
 
-class ReturnsJsonSpec extends UnitSpec {
+class ReturnsJsonSpec extends WordSpecLike with Matchers {
 
   "a json value" should {
     "be parsed to returns" in {

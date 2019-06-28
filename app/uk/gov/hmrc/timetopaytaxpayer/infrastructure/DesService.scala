@@ -51,8 +51,8 @@ object DesService {
                (implicit executionContext: ExecutionContext): Future[DesServiceResult[T]] = {
 
     wsRequest(ws.url(s"$baseUrl/${ path(utr) }")
-      .withHeaders("Authorization" -> s"Bearer $authorizationToken")
-      .withHeaders("Environment" -> serviceEnvironment)
+      .withHttpHeaders("Authorization" -> s"Bearer $authorizationToken")
+      .withHttpHeaders("Environment" -> serviceEnvironment)
       .withMethod("GET")).map {
       response => response.status match {
         case Status.OK => Right(response.json.as[T](reader))

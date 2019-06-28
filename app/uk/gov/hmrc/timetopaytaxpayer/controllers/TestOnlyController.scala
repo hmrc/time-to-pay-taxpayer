@@ -17,24 +17,23 @@
 package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import javax.inject._
-
 import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action => PlayAction, _}
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import play.api.mvc._
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig
 
-class TestOnlyController @Inject()(applicationConfig: ApplicationConfig)
-extends BaseController {
+class TestOnlyController @Inject()(applicationConfig: ApplicationConfig, cc:ControllerComponents)
+extends BackendController(cc) {
 
-  def config() = PlayAction { r =>
+  def config() = cc.actionBuilder { r =>
     val result: JsValue = Json.parse(
       ConfigFactory.load().root().render(ConfigRenderOptions.concise())
     )
     Results.Ok(result)
   }
 
-  def connectorsConfig() = PlayAction { r =>
+  def connectorsConfig() = cc.actionBuilder { r =>
     Ok(Json.obj(
       "desServicesUrl" -> applicationConfig.desServicesUrl,
       "desAuthorizationToken" -> applicationConfig.desAuthorizationToken,

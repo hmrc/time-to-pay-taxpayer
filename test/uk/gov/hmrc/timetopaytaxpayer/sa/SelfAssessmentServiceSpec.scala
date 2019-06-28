@@ -21,23 +21,20 @@ import akka.stream.ActorMaterializer
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
-import org.scalatest.BeforeAndAfterAll
+import org.scalatest.{BeforeAndAfterAll,Matchers, WordSpecLike}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
 import play.api.http.Status
 import play.api.libs.ws.ahc.AhcWSClient
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.{Individual, Name}
 import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.SaUnauthorizedError
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, Utr}
-import cats._
-import cats.data._
 import cats.implicits._
 
 import scala.concurrent.ExecutionContext
 
-class SelfAssessmentServiceSpec extends UnitSpec with BeforeAndAfterAll with ScalaFutures {
+class SelfAssessmentServiceSpec extends WordSpecLike with Matchers with BeforeAndAfterAll with ScalaFutures {
 
   lazy val server = new WireMockServer(wireMockConfig().dynamicPort())
 

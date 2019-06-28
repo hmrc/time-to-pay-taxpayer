@@ -18,11 +18,11 @@ package uk.gov.hmrc.timetopaytaxpayer.debits
 
 import java.time.LocalDate
 
+import org.scalatest.{ Matchers, WordSpecLike}
 import play.api.libs.json._
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.{Charge, Debit, Interest}
 
-class DebitsJsonSpec extends UnitSpec {
+class DebitsJsonSpec extends WordSpecLike with Matchers {
 
   "a json value" should {
     "be parsed to debits" in {

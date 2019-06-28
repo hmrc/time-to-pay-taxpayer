@@ -19,13 +19,11 @@ package uk.gov.hmrc.timetopaytaxpayer.taxpayer
 import java.time.LocalDate
 
 import play.api.libs.json._
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import cats._
-import cats.data._
 import cats.implicits._
+import org.scalatest.{ Matchers, WordSpecLike}
 
-class TaxPayerJsonSpec extends UnitSpec {
+class TaxPayerJsonSpec extends WordSpecLike with Matchers {
 
   "a tax payer" should {
     "be serialised to json" in {

@@ -44,21 +44,22 @@ class ReturnsJsonSpec extends WordSpec with Matchers {
 
       Returns.reader.reads(json) match {
         case JsSuccess(returns, _) => returns shouldBe List(
-          Return(taxYearEnd = LocalDate.of(2014, 4, 5), issuedDate = None, dueDate = None, receivedDate = Some(LocalDate.of(2014, 11, 28))),
-          Return(taxYearEnd = LocalDate.of(2014, 4, 6), issuedDate = Some(LocalDate.of(2016, 4, 6)), dueDate = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
+          Return(taxYearEnd   = LocalDate.of(2014, 4, 5), issuedDate = None, dueDate = None, receivedDate = Some(LocalDate.of(2014, 11, 28))),
+          Return(taxYearEnd   = LocalDate.of(2014, 4, 6), issuedDate = Some(LocalDate.of(2016, 4, 6)), dueDate = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
         )
         case _ => fail("Could not extract returns")
       }
     }
 
     "fails when returns missing in Json" in {
-      val json = Json.parse("""{
-        |  "wine": "cheese"
-        |}""".stripMargin)
+      val json = Json.parse(
+        """{
+          |  "wine": "cheese"
+          |}""".stripMargin)
 
       Returns.reader.reads(json) match {
         case JsSuccess(returns, _) => fail("Should not parse")
-        case JsError(errors) => errors.nonEmpty shouldBe true
+        case JsError(errors)       => errors.nonEmpty shouldBe true
       }
     }
   }

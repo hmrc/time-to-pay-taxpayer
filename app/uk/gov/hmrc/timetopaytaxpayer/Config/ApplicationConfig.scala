@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer
+package uk.gov.hmrc.timetopaytaxpayer.Config
 
 import javax.inject._
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-class ApplicationConfig @Inject()(servicesConfig:ServicesConfig) {
+class ApplicationConfig @Inject() (servicesConfig: ServicesConfig) {
 
-  lazy val desServicesUrl = servicesConfig baseUrl("des-services")
+  lazy val desServicesUrl = servicesConfig baseUrl ("des-services")
   lazy val desAuthorizationToken = getConfString("des-services.authorizationToken")
   lazy val desServiceEnvironment = getConfString("des-services.serviceEnvironment")
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer
+package support
 
 import java.nio.charset.Charset
 
@@ -23,12 +23,14 @@ import akka.util.ByteString
 import org.scalatest.{Matchers, OptionValues, WordSpecLike}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
+import scala.language.implicitConversions
+import scala.language.postfixOps
 
 trait UnitSpec extends WordSpecLike with Matchers with OptionValues {
 
+  import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.duration._
   import scala.concurrent.{Await, Future}
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   implicit val defaultTimeout = 5 seconds
 
@@ -47,7 +49,7 @@ trait UnitSpec extends WordSpecLike with Matchers with OptionValues {
     Json.parse(bodyOf(result))
   }
 
-  def jsonBodyOf(resultF:Future[Result])(implicit mat: Materializer): Future[JsValue] = {
+  def jsonBodyOf(resultF: Future[Result])(implicit mat: Materializer): Future[JsValue] = {
     resultF.map(jsonBodyOf)
   }
 

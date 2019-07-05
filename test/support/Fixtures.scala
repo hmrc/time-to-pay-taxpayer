@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer
+package support
 
 import java.time.LocalDate
 
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
-import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.{Individual, Name}
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
-import cats._
-import cats.data._
-import cats.implicits._
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.DesignatoryDetails.{Individual, Name}
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
 
-import util.Random.nextInt
+import scala.util.Random.nextInt
 
 object Fixtures {
 
@@ -37,20 +35,20 @@ object Fixtures {
   def uniqueUtrs(n: Int) = Stream.continually(someUtr).distinct.take(n)
 
   def someCommunicationPreferences() = CommunicationPreferences(welshLanguageIndicator = true, audioIndicator = true,
-    largePrintIndicator = true, brailleIndicator = true)
+                                                                largePrintIndicator    = true, brailleIndicator = true)
 
   def somePerson() = Individual(someIndividual(), someAddress())
 
-  def someAddress() = Address("465 Any Road".some, "Cheese".some, "Pie".some, "Apple".some, none, "BN3 2GH".some)
+  def someAddress() = Address(Some("465 Any Road"), Some("Cheese"), Some("Pie"), Some("Apple"), None, Some("BN3 2GH"))
 
-  def someIndividual() = Name("President".some, "Donald".some, none, "Trump")
+  def someIndividual() = Name(Some("President"), Some("Donald"), None, "Trump")
 
   def someReturns() = List(
-    Return(taxYearEnd = LocalDate.of(2014, 4, 5), receivedDate = Some(LocalDate.of(2014, 11, 28))),
+    Return(taxYearEnd   = LocalDate.of(2014, 4, 5), receivedDate = Some(LocalDate.of(2014, 11, 28))),
     Return(taxYearEnd = LocalDate.of(2014, 4, 5),
-      issuedDate = Some(LocalDate.of(2015, 4, 6)), dueDate = Some(LocalDate.of(2016, 1, 31))),
-    Return(taxYearEnd = LocalDate.of(2014, 4, 5), issuedDate = Some(LocalDate.of(2016, 4, 6)),
-      dueDate = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
+           issuedDate = Some(LocalDate.of(2015, 4, 6)), dueDate = Some(LocalDate.of(2016, 1, 31))),
+    Return(taxYearEnd   = LocalDate.of(2014, 4, 5), issuedDate = Some(LocalDate.of(2016, 4, 6)),
+           dueDate      = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
   )
 
 }

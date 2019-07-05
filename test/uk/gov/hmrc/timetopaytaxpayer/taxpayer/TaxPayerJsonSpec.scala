@@ -19,9 +19,8 @@ package uk.gov.hmrc.timetopaytaxpayer.taxpayer
 import java.time.LocalDate
 
 import play.api.libs.json._
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import cats.implicits._
 import org.scalatest.{Matchers, WordSpec}
+import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 
 class TaxPayerJsonSpec extends WordSpec with Matchers {
 
@@ -31,22 +30,22 @@ class TaxPayerJsonSpec extends WordSpec with Matchers {
       implicit val writeTaxPayer: Writes[TaxPayer] = TaxPayer.writer
 
       val prefs = CommunicationPreferences(welshLanguageIndicator = false, audioIndicator = false,
-        largePrintIndicator = false, brailleIndicator = false)
+                                           largePrintIndicator    = false, brailleIndicator = false)
 
       val addresses = List(Address(
-        "123 Fake Street".some,
-        "Foo".some,
-        "Bar".some,
-        none,
-        none,
-        "BN3 2GH".some
+        Some("123 Fake Street"),
+        Some("Foo"),
+        Some("Bar"),
+        None,
+        None,
+        Some("BN3 2GH")
       ))
 
       val debits = List(Debit(originCode = "POA2", amount = 250.52, dueDate = LocalDate.of(2016, 1, 31),
-        interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32)), taxYearEnd = LocalDate.of(2017, 4, 5)))
+                              interest   = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32)), taxYearEnd = LocalDate.of(2017, 4, 5)))
 
-      val taxPayer = TaxPayer(customerName = "Customer name", addresses = addresses,
-        selfAssessment = SelfAssessmentDetails("1234567890", prefs, debits, Nil))
+      val taxPayer = TaxPayer(customerName   = "Customer name", addresses = addresses,
+                              selfAssessment = SelfAssessmentDetails("1234567890", prefs, debits, Nil))
 
       val json: JsValue = Json.toJson(taxPayer)
 
@@ -109,7 +108,7 @@ class TaxPayerJsonSpec extends WordSpec with Matchers {
 
       format.reads(addressJson) match {
         case JsSuccess(address: Address, _) => "happy days"
-        case JsError(e) => fail(s"Json does not parse: $e")
+        case JsError(e)                     => fail(s"Json does not parse: $e")
       }
     }
 
@@ -127,7 +126,7 @@ class TaxPayerJsonSpec extends WordSpec with Matchers {
 
       format.reads(addressJson) match {
         case JsSuccess(address: Address, _) => "happy days"
-        case JsError(e) => fail(s"Json does not parse: $e")
+        case JsError(e)                     => fail(s"Json does not parse: $e")
       }
     }
 

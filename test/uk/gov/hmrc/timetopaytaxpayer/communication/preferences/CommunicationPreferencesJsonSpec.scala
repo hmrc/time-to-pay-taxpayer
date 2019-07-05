@@ -35,7 +35,7 @@ class CommunicationPreferencesJsonSpec extends WordSpec with Matchers {
 
       CommunicationPreferences.reader.reads(json) match {
         case JsSuccess(returns, _) => returns shouldBe CommunicationPreferences(welshLanguageIndicator = true, audioIndicator = false,
-                                                                                largePrintIndicator = false, brailleIndicator = false)
+                                                                                largePrintIndicator    = false, brailleIndicator = false)
         case _ => fail("Could not extract communication preferences")
       }
     }

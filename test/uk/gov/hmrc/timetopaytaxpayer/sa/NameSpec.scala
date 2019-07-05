@@ -16,39 +16,38 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.sa
 
-import cats.implicits._
 import org.scalatest.{Matchers, WordSpec}
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.DesignatoryDetails
 
 class NameSpec extends WordSpec with Matchers {
 
   "Name" should {
     "print to string correctly without middle name" in {
       DesignatoryDetails.Name(
-        "President".some,
-        "Donald".some,
-        none,
+        Some("President"),
+        Some("Donald"),
+        None,
         "Trump"
       ).toString() shouldBe "President Donald Trump"
     }
 
     "print to string correctly with middle name" in {
       DesignatoryDetails.Name(
-        "President".some,
-        "Donald".some,
-        "John".some,
+        Some("President"),
+        Some("Donald"),
+        Some("John"),
         "Trump"
       ).toString() shouldBe "President Donald John Trump"
     }
 
     "Only surname is expected to be there" in {
       DesignatoryDetails.Name(
-        none,
-        none,
-        none,
+        None,
+        None,
+        None,
         "Trump"
       ).toString() shouldBe "Trump"
     }
   }
-
 
 }

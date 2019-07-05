@@ -18,7 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer.debits
 
 import java.time.LocalDate
 
-import org.scalatest.{ Matchers, WordSpecLike}
+import org.scalatest.{Matchers, WordSpecLike}
 import play.api.libs.json._
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.{Charge, Debit, Interest}
 
@@ -48,11 +48,11 @@ class DebitsJsonSpec extends WordSpecLike with Matchers {
 
       Debits.reader.reads(json) match {
         case JsSuccess(debits, _) => debits shouldBe List(
-          Debit(taxYearEnd = LocalDate.of(2016, 4, 5),
-            charge = Charge(originCode = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-            relevantDueDate = LocalDate.of(2015, 11, 5),
-            totalOutstanding = 5000,
-            interest = Some(Interest(creationDate = Some(LocalDate.of(2015, 11, 5)), amount = 500)))
+          Debit(taxYearEnd       = LocalDate.of(2016, 4, 5),
+                charge           = Charge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
+                relevantDueDate  = LocalDate.of(2015, 11, 5),
+                totalOutstanding = 5000,
+                interest         = Some(Interest(creationDate = Some(LocalDate.of(2015, 11, 5)), amount = 500)))
         )
         case _ => fail("Could not extract debit")
       }
@@ -89,25 +89,26 @@ class DebitsJsonSpec extends WordSpecLike with Matchers {
 
       Debits.reader.reads(json) match {
         case JsSuccess(debits, _) => debits shouldBe List(
-          Debit(taxYearEnd = LocalDate.of(2016, 4, 5),
-            charge = Charge(originCode = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-            relevantDueDate = LocalDate.of(2015, 11, 5),
-            totalOutstanding = 5000,
-            interest = Some(Interest(creationDate = None, amount = 500))),
-          Debit(taxYearEnd = LocalDate.of(2016, 4, 5),
-            charge = Charge(originCode = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-            relevantDueDate = LocalDate.of(2015, 11, 5),
-            totalOutstanding = 5000,
-            interest = None)
+          Debit(taxYearEnd       = LocalDate.of(2016, 4, 5),
+                charge           = Charge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
+                relevantDueDate  = LocalDate.of(2015, 11, 5),
+                totalOutstanding = 5000,
+                interest         = Some(Interest(creationDate = None, amount = 500))),
+          Debit(taxYearEnd       = LocalDate.of(2016, 4, 5),
+                charge           = Charge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
+                relevantDueDate  = LocalDate.of(2015, 11, 5),
+                totalOutstanding = 5000,
+                interest         = None)
         )
         case _ => fail("Could not extract debit")
       }
     }
 
     "fails when debits missing in Json" in {
-      val json = Json.parse("""{
-        |  "wine": "cheese"
-        |}""".stripMargin)
+      val json = Json.parse(
+        """{
+          |  "wine": "cheese"
+          |}""".stripMargin)
 
       Debits.reader.reads(json) match {
         case JsSuccess(_, _) => fail("Should not parse")

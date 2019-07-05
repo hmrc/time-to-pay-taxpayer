@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
+package support
 
-import play.api.libs.json.{Json, Reads}
+import javax.inject.{Inject, Singleton}
+import play.api.libs.json.JsValue
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.timetopaytaxpayer.Utr
 
-case class CommunicationPreferences(welshLanguageIndicator: Boolean, audioIndicator: Boolean,
-                                    largePrintIndicator: Boolean, brailleIndicator: Boolean)
+import scala.concurrent.{ExecutionContext, Future}
 
-object CommunicationPreferences {
+@Singleton
+class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) {
 
-  val reader: Reads[CommunicationPreferences] = Json.reads[CommunicationPreferences]
+  val port = 19001
+
+  def getTaxPayer(utr: Utr)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET[HttpResponse](s"http://localhost:$port/taxpayer/${utr.value}")
 
 }

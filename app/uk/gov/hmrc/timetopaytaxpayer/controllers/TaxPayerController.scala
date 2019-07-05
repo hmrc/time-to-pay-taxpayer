@@ -16,105 +16,72 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.controllers
 
-import cats.data.EitherT
-import cats.implicits._
 import javax.inject.Inject
-import play.api.Logger
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.play.bootstrap.controller.{BackendController, BaseController}
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
+import uk.gov.hmrc.timetopaytaxpayer.connectors.{DesConnector, SaConnector}
 import uk.gov.hmrc.timetopaytaxpayer.debits.Debits._
-import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesError, DesUnauthorizedError, DesUserNotFoundError}
-import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.{Return, ReturnsResult}
-import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService.{SaError, SaServiceResult, SaUnauthorizedError, SaUserNotFoundError}
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.{SelfAssessmentDetails, TaxPayer}
+import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.DesignatoryDetails.Individual
+import uk.gov.hmrc.timetopaytaxpayer.taxpayer.{Interest, SelfAssessmentDetails, TaxPayer}
 import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TaxPayerController @Inject()(debitsService: (Utr => Future[DebitsResult]),
-                         preferencesService: (Utr => Future[CommunicationPreferencesResult]),
-                         returnsService: (Utr => Future[ReturnsResult]),
-                         saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]),
-                                   cc:ControllerComponents)
-                        (implicit executionContext: ExecutionContext) extends BackendController(cc) {
+class TaxPayerController @Inject() (
+    saConnector:  SaConnector,
+    desConnector: DesConnector,
+    cc:           ControllerComponents)
+  (implicit executionContext: ExecutionContext) extends BackendController(cc) {
 
-  def getTaxPayer(utrAsString: String) = Action.async { implicit request =>
+  def getTaxPayer(utrAsString: String): Action[AnyContent] = Action.async { implicit request =>
     implicit val writeTaxPayer: Writes[TaxPayer] = TaxPayer.writer
 
     val utr = Utr(utrAsString)
 
-    def lookupAuthorizationHeader() = {
-      val headerResult: Either[Result, AuthorizedUser] = request.headers.get(HeaderNames.authorisation).map(AuthorizedUser.apply).toRight(Unauthorized("No authorization header set"))
-      EitherT(Future.successful(headerResult))
+    val possibleUser: Option[AuthorizedUser] = request.headers.get(HeaderNames.authorisation).map(AuthorizedUser.apply)
+
+    possibleUser match {
+      case None => Future.successful(Unauthorized(s"Unauthorized DES call for user with UTR [${utr.value}] not found"))
+      case Some(authorizedUser) => {
+        for {
+          returns <- desConnector.returns(utr)
+          debits <- desConnector.debits(utr)
+          preferences <- desConnector.preferences(utr)
+          individual <- saConnector.individual(utr, authorizedUser)
+        } yield {
+          Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
+        }
+      }
     }
 
-    val service: Future[DebitsResult] = debitsService(utr)
-    EitherT(service).leftMap(handleError)
-
-    /**
-      * Collects the information from the DES APIs and attempts to build a TaxPayer.
-      */
-    (for {
-      authorizedUser <- lookupAuthorizationHeader()
-      debits <- EitherT(debitsService(utr)).leftMap(handleError)
-      preferences <- EitherT(preferencesService(utr)).leftMap(handleError)
-      returns <- EitherT(returnsService(utr)).leftMap(handleError)
-      individual <- EitherT(saService(utr, authorizedUser)).leftMap(handleError)
-    } yield {
-      Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
-    }).merge
   }
 
   /**
-    * Builds a TaxPayer object based upon the information retrieved from the DES APIs.
-    */
+   * Builds a TaxPayer object based upon the information retrieved from the DES APIs.
+   */
   private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences,
                        returns: Seq[Return], individual: Individual) = {
     val address = individual.address
     TaxPayer(
-      customerName = individual.name.toString(),
-      addresses = List(address),
+      customerName   = individual.name.toString(),
+      addresses      = List(address),
       selfAssessment = SelfAssessmentDetails(
-        utr = utrAsString,
+        utr                      = utrAsString,
         communicationPreferences = preferences,
-        debits = debits.map(d => taxpayer.Debit(
+        debits                   = debits.map(d => taxpayer.Debit(
           originCode = d.charge.originCode,
-          amount = d.totalOutstanding,
-          dueDate = d.relevantDueDate,
-          interest = d.interest.map(i => taxpayer.Interest(i.creationDate, i.amount)),
+          amount     = d.totalOutstanding,
+          dueDate    = d.relevantDueDate,
+          interest   = d.interest.map(i => Interest(i.creationDate, i.amount)),
           taxYearEnd = d.taxYearEnd
         )),
-        returns = returns
+        returns                  = returns
       )
     )
   }
 
-  /**
-    * Handles any errors that are thrown back from the DES APIs.
-    */
-  private def handleError(error: DesError): Result = error match {
-    case e@DesUserNotFoundError(_) => Logger.error(e.message)
-      NotFound
-    case e@DesUnauthorizedError(_) => Logger.error(e.message)
-      Unauthorized(error.message)
-    case e: DesError => Logger.error(e.message)
-      InternalServerError(e.message)
-  }
-
-  /**
-    * Handles any errors that are thrown back from the SA service.
-    */
-  private def handleError(error: SaError): Result = error match {
-    case e@SaUserNotFoundError(_) => Logger.error(e.message)
-      NotFound
-    case e@SaUnauthorizedError(_, _) => Logger.error(e.message)
-      Unauthorized(error.message)
-    case e: SaError => Logger.error(e.message)
-      InternalServerError(e.message)
-  }
 }

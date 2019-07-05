@@ -16,184 +16,24 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.controllers
 
-import java.time.LocalDate
+import play.api.mvc.ControllerComponents
+import support.{ITSpec, TestConnector}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.timetopaytaxpayer.Utr
+import uk.gov.hmrc.timetopaytaxpayer.connectors.{DesConnector, SaConnector}
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Second, Span}
-import play.api.libs.json.{JsValue, Json}
-import play.api.test.FakeRequest
-import play.mvc.Http.Status
-import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, UnitSpec, Utr}
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
-import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.{Charge, Debit, DebitsResult, Interest}
-import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
-import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.ReturnsResult
-import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService._
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
+class TaxPayerControllerSpec extends ITSpec {
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import cats.implicits._
-import org.scalatest.{FreeSpec, Matchers}
-import play.api.mvc.{ControllerComponents}
+  val connector = fakeApplication().injector.instanceOf[TestConnector]
+  val des = fakeApplication.injector.instanceOf[DesConnector]
+  val sa = fakeApplication.injector.instanceOf[SaConnector]
+  val cc = fakeApplication.injector.instanceOf[ControllerComponents]
 
-class TaxPayerControllerSpec (cc:ControllerComponents) extends UnitSpec  with ScalaFutures with Matchers {
+  implicit def emptyHC = HeaderCarrier()
 
-  override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Second))
-
-  implicit val system = ActorSystem()
-  implicit val materializer = ActorMaterializer()
-
-  val authorizedUser = Fixtures.someAuthorizedUser
-  val authorizedRequest = FakeRequest().withHeaders(HeaderNames.authorisation -> authorizedUser.value)
-
-  def createController(debitsService: (Utr => Future[DebitsResult]) = _ => Future.successful(Right(Seq.empty)),
-                       preferencesService: (Utr => Future[CommunicationPreferencesResult]) = _ => Future.successful(Right(Fixtures.someCommunicationPreferences())),
-                       returnsService: (Utr => Future[ReturnsResult]) = _ => Future.successful(Right(Fixtures.someReturns())),
-                       saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]) = (_, _) => Future.successful(Right(Fixtures.somePerson()))) = {
-
-    new TaxPayerController(debitsService, preferencesService, returnsService, saService, cc)
-  }
-
-  "tax payer controller" should {
-
-    "produce a valid tax payer" in {
-      val debitResult: DebitsResult = Right(Seq(Debit(
-        charge = Charge(originCode = "IN2",
-        creationDate = LocalDate.of(2013, 7, 31)),
-        relevantDueDate = LocalDate.of(2016, 1, 31),
-        taxYearEnd = LocalDate.of(2017, 4, 5),
-        totalOutstanding = 250.52,
-        interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32))
-      )))
-
-      val preferencesResult = Right(CommunicationPreferences( welshLanguageIndicator = true, audioIndicator = true,
-        largePrintIndicator = true, brailleIndicator = true))
-
-      val saResult = Right(Individual(Fixtures.someIndividual(),
-        Address(
-          "321 Fake Street".some,
-          "Worthing".some,
-          "West Sussex".some,
-          "Another Line".some,
-          "One More Line".some,
-          "BN3 2GH".some
-        )))
-
-      val controller = createController(
-        debitsService = _ => Future.successful(debitResult),
-        preferencesService = _ => Future.successful(preferencesResult),
-        saService = (_, _) => Future.successful(saResult))
-
-      val json = jsonBodyOf(controller.getTaxPayer("1234567890").apply(authorizedRequest).futureValue)
-
-      val expectedJson = Json.parse(
-        """
-          {
-             "customerName": "President Donald Trump",
-             "addresses": [
-                     {
-                       "addressLine1": "321 Fake Street",
-                       "addressLine2": "Worthing",
-                       "addressLine3": "West Sussex",
-                       "addressLine4": "Another Line",
-                       "addressLine5": "One More Line",
-                       "postcode": "BN3 2GH"
-                     }
-                   ],
-              "selfAssessment": {
-                "utr": "1234567890",
-                "communicationPreferences": {
-                  "welshLanguageIndicator": true,
-                  "audioIndicator": true,
-                  "largePrintIndicator": true,
-                  "brailleIndicator": true
-                },
-                "debits": [
-                  {
-                    "originCode": "IN2",
-                    "amount": 250.52,
-                    "dueDate": "2016-01-31",
-                    "interest": {
-                       "calculationDate" : "2016-06-01",
-                       "amountAccrued" : 42.32
-                    },
-                    "taxYearEnd": "2017-04-05"
-                  }
-                ],
-                "returns":[
-                  {
-                     "taxYearEnd":"2014-04-05",
-                     "receivedDate":"2014-11-28"
-                  },
-                  {
-                     "taxYearEnd":"2014-04-05",
-                     "issuedDate":"2015-04-06",
-                     "dueDate":"2016-01-31"
-                  },
-                  {
-                     "taxYearEnd":"2014-04-05",
-                     "issuedDate":"2016-04-06",
-                     "dueDate":"2017-01-31",
-                     "receivedDate":"2016-04-11"
-                  }
-                ]
-             }
-          }""")
-
-      json shouldBe expectedJson
-    }
-
-    "fail with a 500 if a downstream service is not successful" in {
-      val debitResult: DebitsResult = Left(DesServiceError("Foo"))
-
-      val controller = createController(debitsService = _ => Future.successful(debitResult))
-
-      val result = controller.getTaxPayer(Fixtures.someUtr.value).apply(authorizedRequest).futureValue
-
-      result.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "fail with 404 if downstream service does not know about user" in {
-      val utr = Fixtures.someUtr
-      val debitResult = Left(DesUserNotFoundError(utr))
-
-      val controller = createController(debitsService = _ => Future.successful(debitResult))
-      val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
-
-      result.header.status shouldBe Status.NOT_FOUND
-    }
-
-    "fail 401 if downstream DES service does not authorize user" in {
-      val utr = Fixtures.someUtr
-      val debitResult = Left(DesUnauthorizedError(utr))
-
-      val controller = createController(debitsService = _ => Future.successful(debitResult))
-      val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
-
-      result.header.status shouldBe Status.UNAUTHORIZED
-    }
-
-    "fail 401 if downstream SA service does not authorize user" in {
-      val utr = Fixtures.someUtr
-      val saResult = Left(SaUnauthorizedError(utr, authorizedUser))
-
-      val controller = createController(saService = (_, _) => Future.successful(saResult))
-      val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
-
-      result.header.status shouldBe Status.UNAUTHORIZED
-    }
-
-    "fail with unauthorized when no authorized header" in {
-      val result = createController().getTaxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
-
-      result.header.status shouldBe Status.UNAUTHORIZED
-    }
+  "should get a 401 without any authorization header" in {
+    val response = connector.getTaxPayer(Utr("123456789")).failed.futureValue
+    response.getMessage should include ("401")
   }
 
 }

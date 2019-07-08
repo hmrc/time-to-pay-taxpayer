@@ -36,10 +36,6 @@ class SaConnector @Inject() (
     val serviceUrl = s"sa/individual/${utr.value}/designatory-details/taxpayer"
     implicit val debitsRead: Reads[Individual] = DesignatoryDetails.reader
     httpClient.GET[Individual](s"${config.saServicesUrl}/$serviceUrl")
-      .map(response => {
-        Logger.logger.info(s"SaConnector:individual successful for '${utr.value}'")
-        response
-      })
   }
 
 }

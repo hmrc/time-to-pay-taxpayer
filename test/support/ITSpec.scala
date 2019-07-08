@@ -87,10 +87,4 @@ trait ITSpec
       "microservice.services.des-services.port" -> WireMockSupport.port,
       "microservice.services.sa-services.port" -> WireMockSupport.port)).build()
 
-  def await[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
-
-  def status(of: Future[Result])(implicit timeout: Duration): Int = status(Await.result(of, timeout))
-
-  def status(of: Result) = of.header.status
-
 }

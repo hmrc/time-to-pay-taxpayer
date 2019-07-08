@@ -38,9 +38,7 @@ object DesignatoryDetails {
       surname:        String
   ) {
 
-    override def toString: String = fullName
-
-    private def fullName: String = Seq(title, forename, secondForename, Some(surname)).collect {
+    def fullName: String = Seq(title, forename, secondForename, Some(surname)).collect {
       case Some(x) => x
     }.mkString(" ")
   }

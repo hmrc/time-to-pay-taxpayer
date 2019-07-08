@@ -47,11 +47,18 @@ class TaxPayerController @Inject() (
     possibleUser match {
       case None => Future.successful(Unauthorized(s"Unauthorized DES call for user with UTR [${utr.value}] not found"))
       case Some(authorizedUser) => {
+
+        //start features before for comprehension
+        val returnsF = desConnector.returns(utr)
+        val debitsF = desConnector.debits(utr)
+        val preferencesF = desConnector.preferences(utr)
+        val individualF = saConnector.individual(utr, authorizedUser)
+
         for {
-          returns <- desConnector.returns(utr)
-          debits <- desConnector.debits(utr)
-          preferences <- desConnector.preferences(utr)
-          individual <- saConnector.individual(utr, authorizedUser)
+          returns <- returnsF
+          debits <- debitsF
+          preferences <- preferencesF
+          individual <- individualF
         } yield {
           Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
         }
@@ -67,7 +74,7 @@ class TaxPayerController @Inject() (
                        returns: Seq[Return], individual: Individual) = {
     val address = individual.address
     TaxPayer(
-      customerName   = individual.name.toString(),
+      customerName   = individual.name.fullName,
       addresses      = List(address),
       selfAssessment = SelfAssessmentDetails(
         utr                      = utrAsString,

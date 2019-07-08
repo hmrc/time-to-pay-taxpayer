@@ -28,7 +28,7 @@ class NameSpec extends WordSpec with Matchers {
         Some("Donald"),
         None,
         "Trump"
-      ).toString() shouldBe "President Donald Trump"
+      ).fullName shouldBe "President Donald Trump"
     }
 
     "print to string correctly with middle name" in {
@@ -37,7 +37,7 @@ class NameSpec extends WordSpec with Matchers {
         Some("Donald"),
         Some("John"),
         "Trump"
-      ).toString() shouldBe "President Donald John Trump"
+      ).fullName shouldBe "President Donald John Trump"
     }
 
     "Only surname is expected to be there" in {
@@ -46,7 +46,7 @@ class NameSpec extends WordSpec with Matchers {
         None,
         None,
         "Trump"
-      ).toString() shouldBe "Trump"
+      ).fullName shouldBe "Trump"
     }
   }
 

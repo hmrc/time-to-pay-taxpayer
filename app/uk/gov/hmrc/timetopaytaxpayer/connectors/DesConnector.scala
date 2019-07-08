@@ -40,34 +40,22 @@ class DesConnector @Inject() (
   lazy implicit val desHeaderCarrier: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization(s"Bearer ${config.desAuthorizationToken}")))
     .withExtraHeaders("Environment" -> config.desServiceEnvironment)
 
-  def returns(utr: Utr)(implicit ec: ExecutionContext): Future[Seq[Return]] = {
+  def returns(utr: Utr): Future[Seq[Return]] = {
     val serviceUrl = s"sa/taxpayer/${utr.value}/returns"
     implicit val returnsReads: Reads[Seq[Return]] = Returns.reader
     httpClient.GET[Seq[Return]](s"${config.desServicesUrl}/$serviceUrl")
-      .map(response => {
-        Logger.logger.info(s"DesConnector:returns successful for '${utr.value}'")
-        response
-      })
   }
 
-  def debits(utr: Utr)(implicit ec: ExecutionContext): Future[Seq[Debit]] = {
+  def debits(utr: Utr): Future[Seq[Debit]] = {
     val serviceUrl = s"sa/taxpayer/${utr.value}/debits"
     implicit val debitsRead: Reads[Seq[Debit]] = Debits.reader
     httpClient.GET[Seq[Debit]](s"${config.desServicesUrl}/$serviceUrl")
-      .map(response => {
-        Logger.logger.info(s"DesConnector:debits successful for '${utr.value}'")
-        response
-      })
   }
 
-  def preferences(utr: Utr)(implicit ec: ExecutionContext): Future[CommunicationPreferences] = {
+  def preferences(utr: Utr): Future[CommunicationPreferences] = {
     val serviceUrl = s"sa/taxpayer/${utr.value}/communication-preferences"
     implicit val debitsRead: Reads[CommunicationPreferences] = CommunicationPreferences.reader
     httpClient.GET[CommunicationPreferences](s"${config.desServicesUrl}/$serviceUrl")
-      .map(response => {
-        Logger.logger.info(s"DesConnector:preferences successful for '${utr.value}'")
-        response
-      })
   }
 
 }

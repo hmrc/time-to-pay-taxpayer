@@ -30,7 +30,11 @@ object Fixtures {
 
   def someAuthorizedUser = AuthorizedUser("desmond.stub")
 
-  def someUtr = Utr(Stream.continually(nextInt(9)).take(10).mkString)
+  val random = new scala.util.Random
+  val start = 111111111
+  val end = 999999998
+
+  def someUtr = Utr(s"1${start + random.nextInt((end - start) + 1)}")
 
   def uniqueUtrs(n: Int) = Stream.continually(someUtr).distinct.take(n)
 

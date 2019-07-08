@@ -43,7 +43,6 @@ import org.scalatestplus.play.guice.GuiceOneServerPerTest
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.mvc.Result
 import play.api.{Application, Configuration}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
@@ -80,21 +79,13 @@ trait ITSpec
     timeout  = scaled(Span(3, Seconds)),
     interval = scaled(Span(300, Millis)))
 
-  //implicit def emptyHC = HeaderCarrier()
-
   def httpClient = fakeApplication().injector.instanceOf[HttpClient]
 
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
     .configure(Map[String, Any](
-      "mongodb.uri " -> "mongodb://localhost:27017/time-to-pay-arrangement-it",
-      "microservice.services.des-arrangement-api.host" -> "localhost",
-      "microservice.services.des-arrangement-api.environment" -> "localhost",
-      "microservice.services.des-arrangement-api.port" -> WireMockSupport.port)).build()
-
-  def createBinId = {
-    System.currentTimeMillis().toString.takeRight(11)
-  }
+      "microservice.services.des-services.port" -> WireMockSupport.port,
+      "microservice.services.sa-services.port" -> WireMockSupport.port)).build()
 
   def await[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 

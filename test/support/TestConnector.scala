@@ -17,8 +17,8 @@
 package support
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.JsValue
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import play.api.test.FakeRequest
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.timetopaytaxpayer.Utr
 
@@ -29,6 +29,12 @@ class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext
 
   val port = 19001
 
-  def getTaxPayer(utr: Utr)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET[HttpResponse](s"http://localhost:$port/taxpayer/${utr.value}")
+  val authorizedUser = Fixtures.someAuthorizedUser
+
+  val headers: Seq[(String, String)] = Seq((HeaderNames.authorisation, authorizedUser.value))
+
+  def getTaxPayerNotAuthorised(utr: Utr)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET[HttpResponse](s"http://localhost:$port/taxpayer/${utr.value}")
+
+  def getTaxPayerAuthorised(utr: Utr)(implicit hc: HeaderCarrier): Future[HttpResponse] = httpClient.GET[HttpResponse](s"http://localhost:$port/taxpayer/${utr.value}", headers)
 
 }

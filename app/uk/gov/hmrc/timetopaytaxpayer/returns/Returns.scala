@@ -19,22 +19,19 @@ package uk.gov.hmrc.timetopaytaxpayer.returns
 import java.time.LocalDate
 
 import play.api.libs.json.{JsPath, Json, Reads}
-import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.DesServiceResult
 
 object Returns {
-
-  type ReturnsResult = DesServiceResult[Seq[Return]]
-
-  case class Return(
-    taxYearEnd: LocalDate,
-    issuedDate: Option[LocalDate] = None,
-    dueDate: Option[LocalDate] = None,
-    receivedDate: Option[LocalDate] = None
-  )
 
   val reader: Reads[Seq[Return]] = {
     implicit val readReturn: Reads[Return] = Json.reads[Return]
 
     (JsPath \ "returns").read[Seq[Return]]
   }
+
+  case class Return(
+      taxYearEnd:   LocalDate,
+      issuedDate:   Option[LocalDate] = None,
+      dueDate:      Option[LocalDate] = None,
+      receivedDate: Option[LocalDate] = None
+  )
 }

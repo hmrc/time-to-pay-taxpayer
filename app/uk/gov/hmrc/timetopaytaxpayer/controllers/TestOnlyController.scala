@@ -21,10 +21,10 @@ import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import uk.gov.hmrc.timetopaytaxpayer.ApplicationConfig
+import uk.gov.hmrc.timetopaytaxpayer.Config.ApplicationConfig
 
-class TestOnlyController @Inject()(applicationConfig: ApplicationConfig, cc:ControllerComponents)
-extends BackendController(cc) {
+class TestOnlyController @Inject() (applicationConfig: ApplicationConfig, cc: ControllerComponents)
+  extends BackendController(cc) {
 
   def config() = cc.actionBuilder { r =>
     val result: JsValue = Json.parse(
@@ -41,7 +41,5 @@ extends BackendController(cc) {
       "saServicesUrl" -> applicationConfig.saServicesUrl
     ))
   }
-
-
 
 }

@@ -17,8 +17,6 @@
 package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
 
 import play.api.libs.json.{Json, Reads}
-import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService._
-
 
 case class CommunicationPreferences(welshLanguageIndicator: Boolean, audioIndicator: Boolean,
                                     largePrintIndicator: Boolean, brailleIndicator: Boolean)
@@ -27,5 +25,4 @@ object CommunicationPreferences {
 
   val reader: Reads[CommunicationPreferences] = Json.reads[CommunicationPreferences]
 
-  type CommunicationPreferencesResult = DesServiceResult[CommunicationPreferences]
 }

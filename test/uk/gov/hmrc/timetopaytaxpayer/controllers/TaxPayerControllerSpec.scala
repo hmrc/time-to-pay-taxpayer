@@ -16,184 +16,171 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.controllers
 
-import java.time.LocalDate
+import play.api.Logger
+import play.api.http.Status
+import play.api.libs.json.Json
+import play.api.mvc.ControllerComponents
+import support.{Fixtures, ITSpec, TestConnector, WireMockResponses}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.timetopaytaxpayer.Utr
+import uk.gov.hmrc.timetopaytaxpayer.connectors.{DesConnector, SaConnector}
 
-import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Second, Span}
-import play.api.libs.json.{JsValue, Json}
-import play.api.test.FakeRequest
-import play.mvc.Http.Status
-import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Fixtures, UnitSpec, Utr}
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences._
-import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.{Charge, Debit, DebitsResult, Interest}
-import uk.gov.hmrc.timetopaytaxpayer.infrastructure.DesService.{DesServiceError, DesUnauthorizedError, DesUserNotFoundError}
-import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.ReturnsResult
-import uk.gov.hmrc.timetopaytaxpayer.sa.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopaytaxpayer.sa.SelfAssessmentService._
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
+class TaxPayerControllerSpec extends ITSpec {
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import cats.implicits._
-import org.scalatest.{FreeSpec, Matchers}
-import play.api.mvc.{ControllerComponents}
+  val connector = fakeApplication().injector.instanceOf[TestConnector]
+  val des = fakeApplication.injector.instanceOf[DesConnector]
+  val sa = fakeApplication.injector.instanceOf[SaConnector]
+  val cc = fakeApplication.injector.instanceOf[ControllerComponents]
 
-class TaxPayerControllerSpec (cc:ControllerComponents) extends UnitSpec  with ScalaFutures with Matchers {
+  "should get a 401 without any authorization header" in {
 
-  override implicit val patienceConfig = PatienceConfig(timeout = Span(1, Second))
+      implicit def emptyHC = HeaderCarrier()
 
-  implicit val system = ActorSystem()
-  implicit val materializer = ActorMaterializer()
-
-  val authorizedUser = Fixtures.someAuthorizedUser
-  val authorizedRequest = FakeRequest().withHeaders(HeaderNames.authorisation -> authorizedUser.value)
-
-  def createController(debitsService: (Utr => Future[DebitsResult]) = _ => Future.successful(Right(Seq.empty)),
-                       preferencesService: (Utr => Future[CommunicationPreferencesResult]) = _ => Future.successful(Right(Fixtures.someCommunicationPreferences())),
-                       returnsService: (Utr => Future[ReturnsResult]) = _ => Future.successful(Right(Fixtures.someReturns())),
-                       saService: ((Utr, AuthorizedUser) => Future[SaServiceResult]) = (_, _) => Future.successful(Right(Fixtures.somePerson()))) = {
-
-    new TaxPayerController(debitsService, preferencesService, returnsService, saService, cc)
+    val response = connector.getTaxPayerNotAuthorised(Fixtures.someUtr).failed.futureValue
+    response.getMessage should include("401")
   }
 
-  "tax payer controller" should {
+  "should get a 200 with an authorization header" in {
 
-    "produce a valid tax payer" in {
-      val debitResult: DebitsResult = Right(Seq(Debit(
-        charge = Charge(originCode = "IN2",
-        creationDate = LocalDate.of(2013, 7, 31)),
-        relevantDueDate = LocalDate.of(2016, 1, 31),
-        taxYearEnd = LocalDate.of(2017, 4, 5),
-        totalOutstanding = 250.52,
-        interest = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32))
-      )))
+    val expectedJson = Json.parse("""{
+                 	"customerName": "Mr Lester Corncrake",
+                 	"addresses": [{
+                 		"addressLine1": "123 Any Street",
+                 		"addressLine2": "Kingsland High Road",
+                 		"addressLine3": "Dalston",
+                 		"addressLine4": "Greater London",
+                 		"addressLine5": "",
+                 		"postcode": "E8 3PP"
+                 	}],
+                 	"selfAssessment": {
+                 		"utr": "3217334604",
+                 		"communicationPreferences": {
+                 			"welshLanguageIndicator": true,
+                 			"audioIndicator": false,
+                 			"largePrintIndicator": false,
+                 			"brailleIndicator": false
+                 		},
+                 		"debits": [{
+                 			"originCode": "IN1",
+                 			"amount": 2500,
+                 			"dueDate": "2019-02-25",
+                 			"taxYearEnd": "2019-04-05"
+                 		}, {
+                 			"originCode": "IN2",
+                 			"amount": 2500,
+                 			"dueDate": "2019-02-25",
+                 			"taxYearEnd": "2019-04-05"
+                 		}],
+                 		"returns": [{
+                 			"taxYearEnd": "2019-04-05",
+                 			"dueDate": "2019-01-31"
+                 		}, {
+                 			"taxYearEnd": "2018-04-05",
+                 			"dueDate": "2018-01-31",
+                 			"receivedDate": "2018-03-09"
+                 		}]
+                 	}
+                 }""")
 
-      val preferencesResult = Right(CommunicationPreferences( welshLanguageIndicator = true, audioIndicator = true,
-        largePrintIndicator = true, brailleIndicator = true))
+    val utr = Utr("3217334604")
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.commsOk(utr)
+    WireMockResponses.debitsOk(utr)
+    WireMockResponses.individualOk(utr)
+    WireMockResponses.returnsOk(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).futureValue
+    response.status shouldBe Status.OK
+    response.json shouldBe expectedJson
+    Logger.warn(response.body)
+  }
 
-      val saResult = Right(Individual(Fixtures.someIndividual(),
-        Address(
-          "321 Fake Street".some,
-          "Worthing".some,
-          "West Sussex".some,
-          "Another Line".some,
-          "One More Line".some,
-          "BN3 2GH".some
-        )))
+  "should get a 400 if comms is a 400" in {
+    val utr = Fixtures.someUtr
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.comms400(utr)
+    WireMockResponses.debitsOk(utr)
+    WireMockResponses.individualOk(utr)
+    WireMockResponses.returnsOk(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).failed.futureValue
+    response.getMessage should include("400")
+  }
 
-      val controller = createController(
-        debitsService = _ => Future.successful(debitResult),
-        preferencesService = _ => Future.successful(preferencesResult),
-        saService = (_, _) => Future.successful(saResult))
+  "should get a 404 if comms is a 404" in {
+    val utr = Fixtures.someUtr
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.comms404(utr)
+    WireMockResponses.debitsOk(utr)
+    WireMockResponses.individualOk(utr)
+    WireMockResponses.returnsOk(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).failed.futureValue
+    response.getMessage should include("404")
+  }
 
-      val json = jsonBodyOf(controller.getTaxPayer("1234567890").apply(authorizedRequest).futureValue)
+  "should get a 400 if debits is a 400" in {
+    val utr = Fixtures.someUtr
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.commsOk(utr)
+    WireMockResponses.debits400(utr)
+    WireMockResponses.individualOk(utr)
+    WireMockResponses.returnsOk(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).failed.futureValue
+    response.getMessage should include("400")
+  }
 
-      val expectedJson = Json.parse(
-        """
-          {
-             "customerName": "President Donald Trump",
-             "addresses": [
-                     {
-                       "addressLine1": "321 Fake Street",
-                       "addressLine2": "Worthing",
-                       "addressLine3": "West Sussex",
-                       "addressLine4": "Another Line",
-                       "addressLine5": "One More Line",
-                       "postcode": "BN3 2GH"
-                     }
-                   ],
-              "selfAssessment": {
-                "utr": "1234567890",
-                "communicationPreferences": {
-                  "welshLanguageIndicator": true,
-                  "audioIndicator": true,
-                  "largePrintIndicator": true,
-                  "brailleIndicator": true
-                },
-                "debits": [
-                  {
-                    "originCode": "IN2",
-                    "amount": 250.52,
-                    "dueDate": "2016-01-31",
-                    "interest": {
-                       "calculationDate" : "2016-06-01",
-                       "amountAccrued" : 42.32
-                    },
-                    "taxYearEnd": "2017-04-05"
-                  }
-                ],
-                "returns":[
-                  {
-                     "taxYearEnd":"2014-04-05",
-                     "receivedDate":"2014-11-28"
-                  },
-                  {
-                     "taxYearEnd":"2014-04-05",
-                     "issuedDate":"2015-04-06",
-                     "dueDate":"2016-01-31"
-                  },
-                  {
-                     "taxYearEnd":"2014-04-05",
-                     "issuedDate":"2016-04-06",
-                     "dueDate":"2017-01-31",
-                     "receivedDate":"2016-04-11"
-                  }
-                ]
-             }
-          }""")
+  "should get a 404 if debits is a 404" in {
+    val utr = Fixtures.someUtr
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.commsOk(utr)
+    WireMockResponses.debits404(utr)
+    WireMockResponses.individualOk(utr)
+    WireMockResponses.returnsOk(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).failed.futureValue
+    response.getMessage should include("404")
+  }
 
-      json shouldBe expectedJson
-    }
+  "should get a 400 if returns is a 400" in {
+    val utr = Fixtures.someUtr
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.commsOk(utr)
+    WireMockResponses.debitsOk(utr)
+    WireMockResponses.individualOk(utr)
+    WireMockResponses.returns400(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).failed.futureValue
+    response.getMessage should include("400")
+  }
 
-    "fail with a 500 if a downstream service is not successful" in {
-      val debitResult: DebitsResult = Left(DesServiceError("Foo"))
+  "should get a 404 if returns is a 404" in {
+    val utr = Fixtures.someUtr
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.commsOk(utr)
+    WireMockResponses.debitsOk(utr)
+    WireMockResponses.individualOk(utr)
+    WireMockResponses.returns404(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).failed.futureValue
+    response.getMessage should include("404")
+  }
 
-      val controller = createController(debitsService = _ => Future.successful(debitResult))
+  "should get a 401 if individual is a 404" in {
+    val utr = Fixtures.someUtr
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.commsOk(utr)
+    WireMockResponses.debitsOk(utr)
+    WireMockResponses.individual401(utr)
+    WireMockResponses.returnsOk(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).failed.futureValue
+    response.getMessage should include("401")
+  }
 
-      val result = controller.getTaxPayer(Fixtures.someUtr.value).apply(authorizedRequest).futureValue
-
-      result.header.status shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-
-    "fail with 404 if downstream service does not know about user" in {
-      val utr = Fixtures.someUtr
-      val debitResult = Left(DesUserNotFoundError(utr))
-
-      val controller = createController(debitsService = _ => Future.successful(debitResult))
-      val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
-
-      result.header.status shouldBe Status.NOT_FOUND
-    }
-
-    "fail 401 if downstream DES service does not authorize user" in {
-      val utr = Fixtures.someUtr
-      val debitResult = Left(DesUnauthorizedError(utr))
-
-      val controller = createController(debitsService = _ => Future.successful(debitResult))
-      val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
-
-      result.header.status shouldBe Status.UNAUTHORIZED
-    }
-
-    "fail 401 if downstream SA service does not authorize user" in {
-      val utr = Fixtures.someUtr
-      val saResult = Left(SaUnauthorizedError(utr, authorizedUser))
-
-      val controller = createController(saService = (_, _) => Future.successful(saResult))
-      val result = controller.getTaxPayer(utr.value).apply(authorizedRequest).futureValue
-
-      result.header.status shouldBe Status.UNAUTHORIZED
-    }
-
-    "fail with unauthorized when no authorized header" in {
-      val result = createController().getTaxPayer(Fixtures.someUtr.value).apply(FakeRequest()).futureValue
-
-      result.header.status shouldBe Status.UNAUTHORIZED
-    }
+  "should get a 500 if individual is a 500" in {
+    val utr = Fixtures.someUtr
+    implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("authorization-value")))
+    WireMockResponses.commsOk(utr)
+    WireMockResponses.debitsOk(utr)
+    WireMockResponses.individual401(utr)
+    WireMockResponses.returnsOk(utr)
+    val response = connector.getTaxPayerNotAuthorised(utr).failed.futureValue
+    response.getMessage should include("500")
   }
 
 }

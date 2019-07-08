@@ -21,10 +21,6 @@ import java.time.LocalDate
 import play.api.libs.json._
 import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
-import cats._
-import cats.data._
-import cats.implicits._
-
 
 case class TaxPayer(customerName: String, addresses: Seq[Address],
                     selfAssessment: SelfAssessmentDetails)
@@ -37,12 +33,12 @@ case class Debit(originCode: String, amount: Double, dueDate: LocalDate, interes
 case class Interest(calculationDate: Option[LocalDate], amountAccrued: Double)
 
 case class Address(
-  addressLine1: Option[String],
-  addressLine2: Option[String],
-  addressLine3: Option[String],
-  addressLine4: Option[String],
-  addressLine5: Option[String],
-  postcode: Option[String]
+    addressLine1: Option[String],
+    addressLine2: Option[String],
+    addressLine3: Option[String],
+    addressLine4: Option[String],
+    addressLine5: Option[String],
+    postcode:     Option[String]
 )
 
 object TaxPayer {

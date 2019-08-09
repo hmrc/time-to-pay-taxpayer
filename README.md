@@ -25,7 +25,7 @@ The app will start by default on port 9857. Stub data should be configured for t
 
 ## GET /taxpayer/{utr}
 
-Retrieves a definition of a tax payer
+Retrieves a definition of a tax payer 
 
 Output
 ```

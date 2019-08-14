@@ -77,7 +77,8 @@ trait ITSpec
 
   override implicit val patienceConfig = PatienceConfig(
     timeout  = scaled(Span(3, Seconds)),
-    interval = scaled(Span(300, Millis)))
+    interval = scaled(Span(300, Millis))
+  )
 
   def httpClient = fakeApplication().injector.instanceOf[HttpClient]
 
@@ -85,6 +86,7 @@ trait ITSpec
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
     .configure(Map[String, Any](
       "microservice.services.des-services.port" -> WireMockSupport.port,
-      "microservice.services.sa-services.port" -> WireMockSupport.port)).build()
+      "microservice.services.sa-services.port" -> WireMockSupport.port
+    )).build()
 
 }

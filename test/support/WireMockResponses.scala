@@ -34,7 +34,7 @@ package support
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import uk.gov.hmrc.timetopaytaxpayer.Utr
+import timetopaytaxpayer.cor.model.Utr
 
 object WireMockResponses {
 
@@ -43,10 +43,13 @@ object WireMockResponses {
     val response = """{"returns":[{"taxYearEnd":"2019-04-05","dueDate":"2019-01-31","issueDate":"2018-02-15"},{"taxYearEnd":"2018-04-05","dueDate":"2018-01-31","issueDate":"2017-02-15","receivedDate":"2018-03-09"}]}"""
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/returns")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/returns")
+      ).willReturn(
           aResponse()
             .withStatus(200)
-            .withBody(response)))
+            .withBody(response)
+        )
+    )
   }
 
   //invalid UTR
@@ -55,19 +58,25 @@ object WireMockResponses {
     val response = """{"returns":[{"taxYearEnd":"2019-04-05","dueDate":"2019-01-31","issueDate":"2018-02-15"},{"taxYearEnd":"2018-04-05","dueDate":"2018-01-31","issueDate":"2017-02-15","receivedDate":"2018-03-09"}]}"""
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/returns")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/returns")
+      ).willReturn(
           aResponse()
             .withStatus(400)
-            .withBody("""{"reason":"Invalid UTR number","reasonCode":"err-code-goes-here"}""")))
+            .withBody("""{"reason":"Invalid UTR number","reasonCode":"err-code-goes-here"}""")
+        )
+    )
   }
 
   def returns404(utr: Utr): StubMapping = {
 
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/returns")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/returns")
+      ).willReturn(
           aResponse()
-            .withStatus(404)))
+            .withStatus(404)
+        )
+    )
   }
 
   //----------------------------------------------------------------------------------------------------------------
@@ -77,29 +86,38 @@ object WireMockResponses {
     val response = """{"debits":[{"taxYearEnd":"2019-04-05","charge":{"originCode":"IN1","creationDate":"2019-01-05"},"relevantDueDate":"2019-02-25","totalOutstanding":2500},{"taxYearEnd":"2019-04-05","charge":{"originCode":"IN2","creationDate":"2019-01-05"},"relevantDueDate":"2019-02-25","totalOutstanding":2500}]}"""
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/debits")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/debits")
+      ).willReturn(
           aResponse()
             .withStatus(200)
-            .withBody(response)))
+            .withBody(response)
+        )
+    )
   }
 
   def debits400(utr: Utr): StubMapping = {
 
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/debits")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/debits")
+      ).willReturn(
           aResponse()
             .withStatus(400)
-            .withBody("""{"reason":"Invalid UTR number","reasonCode":"err-code-goes-here"}""")))
+            .withBody("""{"reason":"Invalid UTR number","reasonCode":"err-code-goes-here"}""")
+        )
+    )
   }
 
   def debits404(utr: Utr): StubMapping = {
 
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/debits")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/debits")
+      ).willReturn(
           aResponse()
-            .withStatus(404)))
+            .withStatus(404)
+        )
+    )
   }
 
   //----------------------------------------------------------------------------------------------------------------
@@ -108,27 +126,36 @@ object WireMockResponses {
     val response = """{"welshLanguageIndicator":true,"audioIndicator":false,"largePrintIndicator":false,"brailleIndicator":false}"""
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/communication-preferences")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/communication-preferences")
+      ).willReturn(
           aResponse()
             .withStatus(200)
-            .withBody(response)))
+            .withBody(response)
+        )
+    )
   }
 
   def comms400(utr: Utr): StubMapping = {
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/communication-preferences")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/communication-preferences")
+      ).willReturn(
           aResponse()
             .withStatus(400)
-            .withBody("""{"reason":"Invalid UTR number","reasonCode":"err-code-goes-here"}""")))
+            .withBody("""{"reason":"Invalid UTR number","reasonCode":"err-code-goes-here"}""")
+        )
+    )
   }
 
   def comms404(utr: Utr): StubMapping = {
     stubFor(
       get(
-        urlEqualTo(s"/sa/taxpayer/${utr.value}/communication-preferences")).willReturn(
+        urlEqualTo(s"/sa/taxpayer/${utr.value}/communication-preferences")
+      ).willReturn(
           aResponse()
-            .withStatus(404)))
+            .withStatus(404)
+        )
+    )
   }
 
   //----------------------------------------------------------------------------------------------------------------
@@ -139,26 +166,35 @@ object WireMockResponses {
 
     stubFor(
       get(
-        urlEqualTo(s"/sa/individual/${utr.value}/designatory-details/taxpayer")).willReturn(
+        urlEqualTo(s"/sa/individual/${utr.value}/designatory-details/taxpayer")
+      ).willReturn(
           aResponse()
             .withStatus(200)
-            .withBody(response)))
+            .withBody(response)
+        )
+    )
   }
 
   def individual401(utr: Utr): StubMapping = {
     stubFor(
       get(
-        urlEqualTo(s"/sa/individual/${utr.value}/designatory-details/taxpayer")).willReturn(
+        urlEqualTo(s"/sa/individual/${utr.value}/designatory-details/taxpayer")
+      ).willReturn(
           aResponse()
-            .withStatus(401).withBody(s"Unauthorized looking up ${utr.value}")))
+            .withStatus(401).withBody(s"Unauthorized looking up ${utr.value}")
+        )
+    )
   }
 
   def individual500(utr: Utr): StubMapping = {
     stubFor(
       get(
-        urlEqualTo(s"/sa/individual/${utr.value}/designatory-details/taxpayer")).willReturn(
+        urlEqualTo(s"/sa/individual/${utr.value}/designatory-details/taxpayer")
+      ).willReturn(
           aResponse()
-            .withStatus(500).withBody(s"Server error looking up ${utr.value}")))
+            .withStatus(500).withBody(s"Server error looking up ${utr.value}")
+        )
+    )
   }
 
 }

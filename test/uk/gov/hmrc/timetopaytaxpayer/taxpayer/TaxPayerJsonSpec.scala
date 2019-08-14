@@ -20,14 +20,12 @@ import java.time.LocalDate
 
 import play.api.libs.json._
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
+import timetopaytaxpayer.cor.model._
 
 class TaxPayerJsonSpec extends WordSpec with Matchers {
 
   "a tax payer" should {
     "be serialised to json" in {
-
-      implicit val writeTaxPayer: Writes[TaxPayer] = TaxPayer.writer
 
       val prefs = CommunicationPreferences(welshLanguageIndicator = false, audioIndicator = false,
                                            largePrintIndicator    = false, brailleIndicator = false)
@@ -75,15 +73,16 @@ class TaxPayerJsonSpec extends WordSpec with Matchers {
           |          "amount": 250.52,
           |          "dueDate": "2016-01-31",
           |          "interest": {
-          |             "calculationDate" : "2016-06-01",
-          |             "amountAccrued" : 42.32
+          |             "creationDate" : "2016-06-01",
+          |             "amount" : 42.32
           |          },
           |          "taxYearEnd": "2017-04-05"
           |        }
           |      ],
           |      "returns" : [ ]
           |}
-          }""".stripMargin)
+          }""".stripMargin
+      )
 
       json shouldBe expectedJson
 
@@ -104,7 +103,8 @@ class TaxPayerJsonSpec extends WordSpec with Matchers {
           |   "addressLine4": "Bar",
           |   "addressLine5": "Bar",
           |   "postcode": "BN3 2GH"
-          |}""".stripMargin)
+          |}""".stripMargin
+      )
 
       format.reads(addressJson) match {
         case JsSuccess(address: Address, _) => "happy days"
@@ -122,7 +122,8 @@ class TaxPayerJsonSpec extends WordSpec with Matchers {
           |   "addressLine2": "Foo",
           |   "addressLine3": "Bar",
           |   "postcode": "BN3 2GH"
-          |}""".stripMargin)
+          |}""".stripMargin
+      )
 
       format.reads(addressJson) match {
         case JsSuccess(address: Address, _) => "happy days"
@@ -133,3 +134,4 @@ class TaxPayerJsonSpec extends WordSpec with Matchers {
   }
 
 }
+

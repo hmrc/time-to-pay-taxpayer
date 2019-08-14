@@ -20,9 +20,10 @@ import java.time.LocalDate
 
 import org.scalatest.{Matchers, WordSpecLike}
 import play.api.libs.json._
-import uk.gov.hmrc.timetopaytaxpayer.debits.Debits.{Charge, Debit, Interest}
+import timetopaytaxpayer.cor.model.Interest
+import timetopaytaxpayer.des.model.{DesCharge, DesDebit, DesDebits}
 
-class DebitsJsonSpec extends WordSpecLike with Matchers {
+class DesDebitsJsonSpec extends WordSpecLike with Matchers {
 
   "a json value" should {
     "be parsed to debits" in {
@@ -44,16 +45,21 @@ class DebitsJsonSpec extends WordSpecLike with Matchers {
           |    }
           |  ]
           |}
-          |""".stripMargin)
+          |""".stripMargin
+      )
 
-      Debits.reader.reads(json) match {
-        case JsSuccess(debits, _) => debits shouldBe List(
-          Debit(taxYearEnd       = LocalDate.of(2016, 4, 5),
-                charge           = Charge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-                relevantDueDate  = LocalDate.of(2015, 11, 5),
-                totalOutstanding = 5000,
-                interest         = Some(Interest(creationDate = Some(LocalDate.of(2015, 11, 5)), amount = 500)))
-        )
+      val desDebits = DesDebits.reads.reads(json)
+
+      desDebits match {
+        case JsSuccess(debits, _) => debits shouldBe DesDebits(List(
+          DesDebit(
+            taxYearEnd       = LocalDate.of(2016, 4, 5),
+            charge           = DesCharge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
+            relevantDueDate  = LocalDate.of(2015, 11, 5),
+            totalOutstanding = 5000,
+            interest         = Some(Interest(creationDate = Some(LocalDate.of(2015, 11, 5)), amount = 500))
+          )
+        ))
         case _ => fail("Could not extract debit")
       }
     }
@@ -85,21 +91,26 @@ class DebitsJsonSpec extends WordSpecLike with Matchers {
           |    }
           |  ]
           |}
-          |""".stripMargin)
+          |""".stripMargin
+      )
 
-      Debits.reader.reads(json) match {
-        case JsSuccess(debits, _) => debits shouldBe List(
-          Debit(taxYearEnd       = LocalDate.of(2016, 4, 5),
-                charge           = Charge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-                relevantDueDate  = LocalDate.of(2015, 11, 5),
-                totalOutstanding = 5000,
-                interest         = Some(Interest(creationDate = None, amount = 500))),
-          Debit(taxYearEnd       = LocalDate.of(2016, 4, 5),
-                charge           = Charge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-                relevantDueDate  = LocalDate.of(2015, 11, 5),
-                totalOutstanding = 5000,
-                interest         = None)
-        )
+      DesDebits.reads.reads(json) match {
+        case JsSuccess(debits, _) => debits shouldBe DesDebits(List(
+          DesDebit(
+            taxYearEnd       = LocalDate.of(2016, 4, 5),
+            charge           = DesCharge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
+            relevantDueDate  = LocalDate.of(2015, 11, 5),
+            totalOutstanding = 5000,
+            interest         = Some(Interest(creationDate = None, amount = 500))
+          ),
+          DesDebit(
+            taxYearEnd       = LocalDate.of(2016, 4, 5),
+            charge           = DesCharge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
+            relevantDueDate  = LocalDate.of(2015, 11, 5),
+            totalOutstanding = 5000,
+            interest         = None
+          )
+        ))
         case _ => fail("Could not extract debit")
       }
     }
@@ -108,9 +119,10 @@ class DebitsJsonSpec extends WordSpecLike with Matchers {
       val json = Json.parse(
         """{
           |  "wine": "cheese"
-          |}""".stripMargin)
+          |}""".stripMargin
+      )
 
-      Debits.reader.reads(json) match {
+      DesDebits.reads.reads(json) match {
         case JsSuccess(_, _) => fail("Should not parse")
         case JsError(errors) => errors.nonEmpty shouldBe true
       }

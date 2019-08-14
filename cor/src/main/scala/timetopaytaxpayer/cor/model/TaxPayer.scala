@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
+package timetopaytaxpayer.cor.model
 
-import play.api.libs.json.{Json, Reads}
+import java.time.LocalDate
 
-case class CommunicationPreferences(welshLanguageIndicator: Boolean, audioIndicator: Boolean,
-                                    largePrintIndicator: Boolean, brailleIndicator: Boolean)
+import play.api.libs.json.{Json, OFormat}
 
-object CommunicationPreferences {
+case class TaxPayer(
+    customerName:   String,
+    addresses:      Seq[Address],
+    selfAssessment: SelfAssessmentDetails
+)
 
-  val reader: Reads[CommunicationPreferences] = Json.reads[CommunicationPreferences]
-
+object TaxPayer {
+  implicit val format: OFormat[TaxPayer] = Json.format[TaxPayer]
 }

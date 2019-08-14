@@ -21,10 +21,11 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import support.{Fixtures, ITSpec, TestConnector, WireMockResponses}
+import timetopaytaxpayer.cor.model.Utr
+import timetopaytaxpayer.des.DesConnector
+import timetopaytaxpayer.sa.SaConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.timetopaytaxpayer.Utr
-import uk.gov.hmrc.timetopaytaxpayer.connectors.{DesConnector, SaConnector}
 
 class TaxPayerControllerSpec extends ITSpec {
 

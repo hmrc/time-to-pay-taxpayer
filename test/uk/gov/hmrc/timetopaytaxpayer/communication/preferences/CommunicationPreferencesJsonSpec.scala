@@ -18,6 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.{JsSuccess, Json}
+import timetopaytaxpayer.cor.model.CommunicationPreferences
 
 class CommunicationPreferencesJsonSpec extends WordSpec with Matchers {
 
@@ -31,9 +32,10 @@ class CommunicationPreferencesJsonSpec extends WordSpec with Matchers {
           |  "audioIndicator": false,
           |  "largePrintIndicator": false,
           |  "brailleIndicator": false
-          |}""".stripMargin)
+          |}""".stripMargin
+      )
 
-      CommunicationPreferences.reader.reads(json) match {
+      CommunicationPreferences.format.reads(json) match {
         case JsSuccess(returns, _) => returns shouldBe CommunicationPreferences(welshLanguageIndicator = true, audioIndicator = false,
                                                                                 largePrintIndicator    = false, brailleIndicator = false)
         case _ => fail("Could not extract communication preferences")

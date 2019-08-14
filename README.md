@@ -1,6 +1,6 @@
 # time-to-pay-taxpayer
 
-The Taxpayer service is used in the SSTTP project for Pay What You Owe In Instalments. It has one endpoint, a GET which will retrieve Taxpayer
+The Taxpayer service is used in the SSTTP project for Pay What You Owe In Instalments. It has one endpoint, a GET which will retrieve Taxpayer 
 information for a given UTR. Below is a diagram showing where the Taxpayer service fits into the SSTTP project.
 
 <a href="https://github.com/hmrc/time-to-pay-taxpayer">

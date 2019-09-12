@@ -18,9 +18,9 @@ package support
 
 import javax.inject.{Inject, Singleton}
 import play.api.test.FakeRequest
+import timetopaytaxpayer.cor.model.Utr
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.timetopaytaxpayer.Utr
 
 import scala.concurrent.{ExecutionContext, Future}
 

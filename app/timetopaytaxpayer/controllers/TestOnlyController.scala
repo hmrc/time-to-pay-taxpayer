@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.controllers
+package timetopaytaxpayer.controllers
 
-import javax.inject._
 import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
+import javax.inject._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
+import timetopaytaxpayer.config.ApplicationConfig
+import timetopaytaxpayer.des.DesConnector
+import timetopaytaxpayer.sa.SaConnector
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import uk.gov.hmrc.timetopaytaxpayer.Config.ApplicationConfig
 
-class TestOnlyController @Inject() (applicationConfig: ApplicationConfig, cc: ControllerComponents)
+class TestOnlyController @Inject() (
+    applicationConfig: ApplicationConfig,
+    cc:                ControllerComponents,
+    desConnector:      DesConnector,
+    saConnector:       SaConnector
+)
   extends BackendController(cc) {
 
   def config() = cc.actionBuilder { r =>
@@ -35,10 +42,10 @@ class TestOnlyController @Inject() (applicationConfig: ApplicationConfig, cc: Co
 
   def connectorsConfig() = cc.actionBuilder { r =>
     Ok(Json.obj(
-      "desServicesUrl" -> applicationConfig.desServicesUrl,
-      "desAuthorizationToken" -> applicationConfig.desAuthorizationToken,
-      "desServiceEnvironment" -> applicationConfig.desServiceEnvironment,
-      "saServicesUrl" -> applicationConfig.saServicesUrl
+      "desServicesUrl" -> desConnector.baseUrl,
+      "desAuthorizationToken" -> desConnector.token, //it's test only endpoint, no worries
+      "desServiceEnvironment" -> desConnector.environment,
+      "saServicesUrl" -> saConnector.baseUrl
     ))
   }
 

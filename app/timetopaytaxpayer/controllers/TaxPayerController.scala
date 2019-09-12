@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.controllers
+package timetopaytaxpayer.controllers
 
 import javax.inject.Inject
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
+import timetopaytaxpayer.cor.model._
+import timetopaytaxpayer.des.DesConnector
+import timetopaytaxpayer.des.model.{DesReturns, _}
+import timetopaytaxpayer.sa.Sa.Individual
+import timetopaytaxpayer.sa.SaConnector
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopaytaxpayer.connectors.{DesConnector, SaConnector}
-import uk.gov.hmrc.timetopaytaxpayer.debits.Debits._
-import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.{Interest, SelfAssessmentDetails, TaxPayer}
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxPayerController @Inject() (
     saConnector:  SaConnector,
     desConnector: DesConnector,
-    cc:           ControllerComponents)
-  (implicit executionContext: ExecutionContext) extends BackendController(cc) {
+    cc:           ControllerComponents
+)(implicit executionContext: ExecutionContext) extends BackendController(cc) {
 
   def getTaxPayer(utrAsString: String): Action[AnyContent] = Action.async { implicit request =>
-    implicit val writeTaxPayer: Writes[TaxPayer] = TaxPayer.writer
-
     val utr = Utr(utrAsString)
 
     val possibleUser: Option[AuthorizedUser] = request.headers.get(HeaderNames.authorisation).map(AuthorizedUser.apply)
@@ -60,33 +56,34 @@ class TaxPayerController @Inject() (
           preferences <- preferencesF
           individual <- individualF
         } yield {
-          Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
+          Ok(Json.toJson(taxPayer(
+            utrAsString,
+            debits, preferences, returns, individual
+          )))
         }
       }
     }
-
   }
 
   /**
    * Builds a TaxPayer object based upon the information retrieved from the DES APIs.
    */
-  private def taxPayer(utrAsString: String, debits: Seq[Debit], preferences: CommunicationPreferences,
-                       returns: Seq[Return], individual: Individual) = {
-    val address = individual.address
+  private def taxPayer(
+      utrAsString:              String,
+      debits:                   DesDebits,
+      communicationPreferences: CommunicationPreferences,
+      returns:                  DesReturns,
+      individual:               Individual
+  ): TaxPayer = {
+
     TaxPayer(
       customerName   = individual.name.fullName,
-      addresses      = List(address),
+      addresses      = List(individual.address),
       selfAssessment = SelfAssessmentDetails(
         utr                      = utrAsString,
-        communicationPreferences = preferences,
-        debits                   = debits.map(d => taxpayer.Debit(
-          originCode = d.charge.originCode,
-          amount     = d.totalOutstanding,
-          dueDate    = d.relevantDueDate,
-          interest   = d.interest.map(i => Interest(i.creationDate, i.amount)),
-          taxYearEnd = d.taxYearEnd
-        )),
-        returns                  = returns
+        communicationPreferences = communicationPreferences,
+        debits                   = debits.debits.map(_.asDebit()),
+        returns                  = returns.returns
       )
     )
   }

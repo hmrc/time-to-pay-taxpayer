@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.connectors
+package timetopaytaxpayer.sa
 
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
 import play.api.libs.json.Reads
+import timetopaytaxpayer.config.ApplicationConfig
+import timetopaytaxpayer.cor.model.{AuthorizedUser, Utr}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import uk.gov.hmrc.timetopaytaxpayer.Config.ApplicationConfig
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.DesignatoryDetails
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.DesignatoryDetails.Individual
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SaConnector @Inject() (
-    httpClient: HttpClient, config: ApplicationConfig)(implicit ec: ExecutionContext) {
+    httpClient: HttpClient,
+    config:     ServicesConfig
+)(implicit ec: ExecutionContext) {
 
-  def individual(utr: Utr, authorizedUser: AuthorizedUser)(implicit hc: HeaderCarrier): Future[Individual] = {
-    val serviceUrl = s"sa/individual/${utr.value}/designatory-details/taxpayer"
-    implicit val debitsRead: Reads[Individual] = DesignatoryDetails.reader
-    httpClient.GET[Individual](s"${config.saServicesUrl}/$serviceUrl")
+  val baseUrl = config.baseUrl("sa-services")
+
+  def individual(utr: Utr, authorizedUser: AuthorizedUser)(implicit hc: HeaderCarrier): Future[Sa.Individual] = {
+    val serviceUrl = s"/sa/individual/${utr.value}/designatory-details/taxpayer"
+    httpClient.GET[Sa.Individual](s"$baseUrl$serviceUrl")
   }
 
 }

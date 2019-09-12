@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.taxpayer
+package timetopaytaxpayer.sa
 
 import play.api.libs.json.{Json, Reads}
+import timetopaytaxpayer.cor.model.Address
 
-object DesignatoryDetails {
+/**
+ * DesignatoryDetails
+ */
+object Sa {
 
-  val reader: Reads[Individual] = {
-    implicit val readAddress: Reads[Address] = Json.reads[Address]
-    implicit val readName: Reads[Name] = Json.reads[Name]
+  case class Individual(
+      name:    Name,
+      address: Address
+  )
 
-    Json.reads[Individual]
+  object Individual {
+    implicit val reads: Reads[Individual] = Json.reads[Individual]
   }
-
-  case class Individual(name: Name, address: Address)
 
   //from the sa docs: All of the value fields nested under name, address, telephone and email are optional and the client should expect any of them to be unspecified.
   //SSTTP2-363
@@ -41,5 +45,9 @@ object DesignatoryDetails {
     def fullName: String = Seq(title, forename, secondForename, Some(surname)).collect {
       case Some(x) => x
     }.mkString(" ")
+  }
+
+  object Name {
+    implicit val reads: Reads[Name] = Json.reads[Name]
   }
 }

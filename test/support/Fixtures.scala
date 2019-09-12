@@ -18,13 +18,8 @@ package support
 
 import java.time.LocalDate
 
-import uk.gov.hmrc.timetopaytaxpayer.communication.preferences.CommunicationPreferences
-import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.Address
-import uk.gov.hmrc.timetopaytaxpayer.taxpayer.DesignatoryDetails.{Individual, Name}
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr}
-
-import scala.util.Random.nextInt
+import timetopaytaxpayer.cor.model._
+import timetopaytaxpayer.sa.Sa.{Individual, Name}
 
 object Fixtures {
 
@@ -49,8 +44,10 @@ object Fixtures {
 
   def someReturns() = List(
     Return(taxYearEnd   = LocalDate.of(2014, 4, 5), receivedDate = Some(LocalDate.of(2014, 11, 28))),
-    Return(taxYearEnd = LocalDate.of(2014, 4, 5),
-           issuedDate = Some(LocalDate.of(2015, 4, 6)), dueDate = Some(LocalDate.of(2016, 1, 31))),
+    Return(
+      taxYearEnd = LocalDate.of(2014, 4, 5),
+      issuedDate = Some(LocalDate.of(2015, 4, 6)), dueDate = Some(LocalDate.of(2016, 1, 31))
+    ),
     Return(taxYearEnd   = LocalDate.of(2014, 4, 5), issuedDate = Some(LocalDate.of(2016, 4, 6)),
            dueDate      = Some(LocalDate.of(2017, 1, 31)), receivedDate = Some(LocalDate.of(2016, 4, 11)))
   )

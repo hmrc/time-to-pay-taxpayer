@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer
+package timetopaytaxpayer.des.model
 
-case class Utr(value: String) extends AnyVal {
-  override def toString = value
-}
+import java.time.LocalDate
 
-case class AuthorizedUser(value: String) extends AnyVal {
-  override def toString = value
+import play.api.libs.json.{Json, Reads}
+
+final case class DesCharge(
+    originCode:   String,
+    creationDate: LocalDate
+)
+
+object DesCharge {
+  implicit val reads: Reads[DesCharge] = Json.reads[DesCharge]
 }

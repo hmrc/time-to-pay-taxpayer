@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.returns
+package timetopaytaxpayer.cor.model
 
-import java.time.LocalDate
+import play.api.libs.json.{Json, OFormat}
 
-import play.api.libs.json.{JsPath, Json, Reads}
+final case class SelfAssessmentDetails(
+    utr:                      String,
+    communicationPreferences: CommunicationPreferences,
+    debits:                   Seq[Debit],
+    returns:                  Seq[Return]
+)
 
-object Returns {
+object SelfAssessmentDetails {
 
-  val reader: Reads[Seq[Return]] = {
-    implicit val readReturn: Reads[Return] = Json.reads[Return]
-
-    (JsPath \ "returns").read[Seq[Return]]
-  }
-
-  case class Return(
-      taxYearEnd:   LocalDate,
-      issuedDate:   Option[LocalDate] = None,
-      dueDate:      Option[LocalDate] = None,
-      receivedDate: Option[LocalDate] = None
-  )
+  implicit val format: OFormat[SelfAssessmentDetails] = Json.format[SelfAssessmentDetails]
 }

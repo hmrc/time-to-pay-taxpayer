@@ -3,7 +3,6 @@ import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import scalariform.formatter.preferences._
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
 import uk.gov.hmrc.SbtArtifactory
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import wartremover.{Wart, wartremoverErrors, wartremoverExcluded, wartremoverWarnings}
 
 
@@ -16,11 +15,11 @@ lazy val scalariformSettings = {
     .setPreference(AllowParamGroupsOnNewlines, true)
     .setPreference(CompactControlReadability, false)
     .setPreference(CompactStringConcatenation, false)
-    .setPreference(DanglingCloseParenthesis, Preserve)
+    .setPreference(DanglingCloseParenthesis, Force)
     .setPreference(DoubleIndentConstructorArguments, true)
     .setPreference(DoubleIndentMethodDeclaration, true)
-    .setPreference(FirstArgumentOnNewline, Preserve)
-    .setPreference(FirstParameterOnNewline, Preserve)
+    .setPreference(FirstArgumentOnNewline, Force)
+    .setPreference(FirstParameterOnNewline, Force)
     .setPreference(FormatXml, true)
     .setPreference(IndentLocalDefs, true)
     .setPreference(IndentPackageBlocks, true)
@@ -83,13 +82,14 @@ lazy val scoverageSettings = {
     ScoverageKeys.coverageHighlighting := true
   )
 }
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(
     scalaVersion := "2.11.11",
     resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    retrieveManaged := true,
+    retrieveManaged := false,
     routesGenerator := InjectedRoutesGenerator,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
   )
@@ -104,7 +104,7 @@ lazy val microservice = Project(appName, file("."))
       (baseDirectory.value / "test").get ++
       Seq(sourceManaged.value / "main" / "sbt-buildinfo" / "BuildInfo.scala"))
   .settings(scoverageSettings: _*)
-  .settings(publishingSettings: _*)
+  .settings(SbtDistributablesPlugin.publishingSettings: _*)
   .settings(PlayKeys.playDefaultPort := 9857)
   .settings(scalaSettings: _*)
   .settings(defaultSettings(): _*)
@@ -121,5 +121,40 @@ lazy val microservice = Project(appName, file("."))
       "-Xfatal-warnings",
       "-feature"
     )
+  ).dependsOn(cor).aggregate(cor)
+
+
+lazy val appName = "time-to-pay-taxpayer"
+
+
+lazy val cor = Project("cor", file("cor"))
+  .enablePlugins(
+    //    play.sbt.PlayScala,
+    SbtAutoBuildPlugin,
+    SbtGitVersioning,
+    //    SbtDistributablesPlugin,
+    SbtArtifactory
   )
-val appName = "time-to-pay-taxpayer"
+    .settings(
+      scalaVersion := "2.11.11",
+      resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
+      libraryDependencies ++= List(
+        "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided
+      ),
+      retrieveManaged := false,
+      evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
+    )
+  .settings(majorVersion := 0)
+  .settings(scalariformSettings: _*)
+  .settings(wartRemoverError)
+  .settings(wartRemoverWarning)
+  .settings(scoverageSettings: _*)
+//  .settings(publishingSettings: _*)
+  .settings(scalaSettings: _*)
+  .settings(defaultSettings(): _*)
+  .settings(
+    scalacOptions ++= Seq(
+      "-Xfatal-warnings",
+      "-feature"
+    )
+  )

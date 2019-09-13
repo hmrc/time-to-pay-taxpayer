@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.cor.model
+package timetopaytaxpayer.sa.model
 
-import java.time.LocalDate
+import play.api.libs.json.{Json, Reads}
+import timetopaytaxpayer.cor.model.Address
 
-import play.api.libs.json.{Json, OFormat}
-
-case class TaxPayer(
-    customerName:   String,
-    addresses:      Seq[Address],
-    selfAssessment: SelfAssessmentDetails
+case class SaIndividual(
+    name:    SaName,
+    address: Address
 )
 
-object TaxPayer {
-  implicit val format: OFormat[TaxPayer] = Json.format[TaxPayer]
+object SaIndividual {
+  implicit val reads: Reads[SaIndividual] = Json.reads[SaIndividual]
 }

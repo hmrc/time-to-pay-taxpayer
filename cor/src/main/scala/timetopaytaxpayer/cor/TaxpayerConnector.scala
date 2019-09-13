@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.config
+package timetopaytaxpayer.cor
 
-import javax.inject._
+import timetopaytaxpayer.cor.model.{SaUtr, Taxpayer}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-class ApplicationConfig @Inject() (servicesConfig: ServicesConfig) {
+import scala.concurrent.{ExecutionContext, Future}
 
-  def getConfString(key: String): String = servicesConfig.getConfString(key, throw new IllegalArgumentException(s"Missing property $key"))
+class TaxpayerConnector(
+    servicesConfig: ServicesConfig,
+    http:           HttpClient
+)(
+    implicit
+    ec: ExecutionContext
+) {
+
+  val baseUrl: String = servicesConfig.baseUrl("time-to-pay-taxpayer")
+
+  def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Taxpayer] = {
+    http.GET[Taxpayer](s"$baseUrl/taxpayer/${utr.value}")
+  }
 }

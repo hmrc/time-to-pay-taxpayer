@@ -1,12 +1,28 @@
 import TestPhases.oneForkedJvmPerTest
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
+import sbt.Def
+import sbt.Keys.scalacOptions
 import scalariform.formatter.preferences._
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
 import uk.gov.hmrc.SbtArtifactory
 import wartremover.{Wart, wartremoverErrors, wartremoverExcluded, wartremoverWarnings}
 
+lazy val appName = "time-to-pay-taxpayer"
 
-lazy val scalariformSettings = {
+val scalaCompilerOptions = Seq(
+  "-Xfatal-warnings",
+  "-Xlint:-missing-interpolator,_",
+  "-Yno-adapted-args",
+  "-Ywarn-value-discard",
+  "-Ywarn-dead-code",
+  "-deprecation",
+  "-feature",
+  "-unchecked",
+  "-language:implicitConversions",
+  "-Ypartial-unification" //required by cats
+)
+
+lazy val scalariformSettings: Def.SettingsDefinition = {
   // description of options found here -> https://github.com/scala-ide/scalariform
   ScalariformKeys.preferences := ScalariformKeys.preferences.value
     .setPreference(AlignArguments, true)
@@ -37,6 +53,7 @@ lazy val scalariformSettings = {
     .setPreference(SpacesAroundMultiImports, false)
     .setPreference(SpacesWithinPatternBinders, true)
 }
+
 lazy val wartRemoverWarning = {
   val warningWarts = Seq(
     Wart.JavaSerializable,
@@ -47,6 +64,7 @@ lazy val wartRemoverWarning = {
   )
   wartremoverWarnings in(Compile, compile) ++= warningWarts
 }
+
 lazy val wartRemoverError = {
   // Error
   val errorWarts = Seq(
@@ -68,9 +86,9 @@ lazy val wartRemoverError = {
     //Wart.TryPartial,
     Wart.Var,
     Wart.While)
-
   wartremoverErrors in(Compile, compile) ++= errorWarts
 }
+
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys
   Seq(
@@ -83,78 +101,71 @@ lazy val scoverageSettings = {
   )
 }
 
-lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
-  .settings(
-    scalaVersion := "2.11.11",
-    resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    retrieveManaged := false,
-    routesGenerator := InjectedRoutesGenerator,
-    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
-  )
-  .settings(majorVersion := 0)
-  .settings(scalariformSettings: _*)
-  .settings(wartRemoverError)
-  .settings(wartRemoverWarning)
-  .settings(wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference))
-  .settings(wartremoverExcluded ++=
-    routes.in(Compile).value ++
-      (baseDirectory.value / "it").get ++
+lazy val commonSettings = Seq(
+  scalaVersion := "2.11.11",
+  majorVersion := 0,
+  scalacOptions ++= scalaCompilerOptions,
+  resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
+  evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
+  wartremoverExcluded ++=
+    (baseDirectory.value / "it").get ++
       (baseDirectory.value / "test").get ++
-      Seq(sourceManaged.value / "main" / "sbt-buildinfo" / "BuildInfo.scala"))
-  .settings(scoverageSettings: _*)
-  .settings(SbtDistributablesPlugin.publishingSettings: _*)
-  .settings(PlayKeys.playDefaultPort := 9857)
-  .settings(scalaSettings: _*)
-  .settings(defaultSettings(): _*)
-  .settings(integrationTestSettings())
-  .configs(IntegrationTest)
-  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
-  .settings(
-    Keys.fork in IntegrationTest := false,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
-    testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
-    parallelExecution in IntegrationTest := false)
-  .settings(
-    scalacOptions ++= Seq(
-      "-Xfatal-warnings",
-      "-feature"
-    )
-  ).dependsOn(cor).aggregate(cor)
+      Seq(sourceManaged.value / "main" / "sbt-buildinfo" / "BuildInfo.scala"),
+  scalariformSettings
+)
+  .++(wartRemoverError)
+  .++(wartRemoverWarning)
+  .++(Seq(
+    wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference)
+  ))
+  .++(scoverageSettings)
+  .++(scalaSettings)
+  .++(uk.gov.hmrc.DefaultBuildSettings.defaultSettings())
 
 
-lazy val appName = "time-to-pay-taxpayer"
-
-
-lazy val cor = Project("cor", file("cor"))
+lazy val microservice = Project(appName, file("."))
   .enablePlugins(
-    //    play.sbt.PlayScala,
+    play.sbt.PlayScala,
     SbtAutoBuildPlugin,
     SbtGitVersioning,
-    //    SbtDistributablesPlugin,
+    SbtDistributablesPlugin,
     SbtArtifactory
   )
-    .settings(
-      scalaVersion := "2.11.11",
-      resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
-      libraryDependencies ++= List(
-        "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided
-      ),
-      retrieveManaged := false,
-      evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
-    )
-  .settings(majorVersion := 0)
-  .settings(scalariformSettings: _*)
-  .settings(wartRemoverError)
-  .settings(wartRemoverWarning)
-  .settings(scoverageSettings: _*)
-//  .settings(publishingSettings: _*)
-  .settings(scalaSettings: _*)
-  .settings(defaultSettings(): _*)
+  .settings(commonSettings: _*)
+  .settings(SbtDistributablesPlugin.publishingSettings: _*)
   .settings(
-    scalacOptions ++= Seq(
-      "-Xfatal-warnings",
-      "-feature"
+    libraryDependencies ++= Seq(
+      ws,
+      "uk.gov.hmrc" %% "bootstrap-play-26" % "0.41.0",
+      "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
+      "org.scalatest" %% "scalatest" % "3.0.4" % Test,
+      "org.pegdown" % "pegdown" % "1.6.0" % Test,
+      "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
+      "com.github.tomakehurst" % "wiremock-jre8" % "2.21.0" % Test,
+      "org.mockito" % "mockito-core" % "2.23.0" % Test
+    ),
+    routesGenerator := InjectedRoutesGenerator,
+    majorVersion := 0,
+    PlayKeys.playDefaultPort := 9857,
+    wartremoverExcluded ++= routes.in(Compile).value,
+    routesImport ++= Seq(
+      "timetopaytaxpayer.cor.model._"
+    )
+  )
+  .dependsOn(cor)
+  .aggregate(cor)
+
+
+lazy val cor = Project(appName + "-cor", file("cor"))
+  .enablePlugins(
+    SbtAutoBuildPlugin,
+    SbtGitVersioning,
+    SbtArtifactory
+  )
+  .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= List(
+      "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
+      "uk.gov.hmrc" %% "bootstrap-play-26" % "0.41.0" % Provided
     )
   )

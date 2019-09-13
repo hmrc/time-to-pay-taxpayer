@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.cor.model
+package timetopaytaxpayer
 
-import play.api.libs.json.{Json, OFormat}
+import support.ITSpec
 
-final case class SelfAssessmentDetails(
-    utr:                      SaUtr,
-    communicationPreferences: CommunicationPreferences,
-    debits:                   Seq[Debit],
-    returns:                  Seq[Return]
-)
+class GetTaxpayerSpec extends ITSpec {
 
-object SelfAssessmentDetails {
+  "Get Taxpayer" in {
 
-  implicit val format: OFormat[SelfAssessmentDetails] = Json.format[SelfAssessmentDetails]
+  }
+
 }

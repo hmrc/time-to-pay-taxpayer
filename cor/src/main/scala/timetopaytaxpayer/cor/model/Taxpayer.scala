@@ -16,6 +16,14 @@
 
 package timetopaytaxpayer.cor.model
 
-case class Utr(value: String) extends AnyVal {
-  override def toString = value
+import play.api.libs.json.{Json, OFormat}
+
+case class Taxpayer(
+    customerName:   String,
+    addresses:      Seq[Address],
+    selfAssessment: SelfAssessmentDetails
+)
+
+object Taxpayer {
+  implicit val format: OFormat[Taxpayer] = Json.format[Taxpayer]
 }

@@ -17,9 +17,8 @@
 package timetopaytaxpayer.sa
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Reads
-import timetopaytaxpayer.config.ApplicationConfig
-import timetopaytaxpayer.cor.model.{AuthorizedUser, Utr}
+import timetopaytaxpayer.cor.model.SaUtr
+import timetopaytaxpayer.sa.model.SaIndividual
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
@@ -34,9 +33,8 @@ class SaConnector @Inject() (
 
   val baseUrl = config.baseUrl("sa-services")
 
-  def individual(utr: Utr, authorizedUser: AuthorizedUser)(implicit hc: HeaderCarrier): Future[Sa.Individual] = {
+  def getIndividual(utr: SaUtr)(implicit hc: HeaderCarrier): Future[SaIndividual] = {
     val serviceUrl = s"/sa/individual/${utr.value}/designatory-details/taxpayer"
-    httpClient.GET[Sa.Individual](s"$baseUrl$serviceUrl")
+    httpClient.GET[SaIndividual](s"$baseUrl$serviceUrl")
   }
-
 }

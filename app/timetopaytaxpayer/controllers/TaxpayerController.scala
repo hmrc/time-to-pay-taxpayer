@@ -17,51 +17,41 @@
 package timetopaytaxpayer.controllers
 
 import javax.inject.Inject
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.Json
 import play.api.mvc._
 import timetopaytaxpayer.cor.model._
 import timetopaytaxpayer.des.DesConnector
 import timetopaytaxpayer.des.model.{DesReturns, _}
-import timetopaytaxpayer.sa.Sa.Individual
 import timetopaytaxpayer.sa.SaConnector
-import uk.gov.hmrc.http.HeaderNames
+import timetopaytaxpayer.sa.model.SaIndividual
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class TaxPayerController @Inject() (
+class TaxpayerController @Inject() (
     saConnector:  SaConnector,
     desConnector: DesConnector,
     cc:           ControllerComponents
 )(implicit executionContext: ExecutionContext) extends BackendController(cc) {
 
-  def getTaxPayer(utrAsString: String): Action[AnyContent] = Action.async { implicit request =>
-    val utr = Utr(utrAsString)
+  def getTaxPayer(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
 
-    val possibleUser: Option[AuthorizedUser] = request.headers.get(HeaderNames.authorisation).map(AuthorizedUser.apply)
+    //start features before for comprehension
+    val returnsF = desConnector.getReturns(utr)
+    val debitsF = desConnector.getDebits(utr)
+    val preferencesF = desConnector.getCommunicationPreferences(utr)
+    val individualF = saConnector.getIndividual(utr)
 
-    possibleUser match {
-      case None => Future.successful(Unauthorized(s"Unauthorized DES call for user with UTR [${utr.value}] not found"))
-      case Some(authorizedUser) => {
-
-        //start features before for comprehension
-        val returnsF = desConnector.returns(utr)
-        val debitsF = desConnector.debits(utr)
-        val preferencesF = desConnector.preferences(utr)
-        val individualF = saConnector.individual(utr, authorizedUser)
-
-        for {
-          returns <- returnsF
-          debits <- debitsF
-          preferences <- preferencesF
-          individual <- individualF
-        } yield {
-          Ok(Json.toJson(taxPayer(
-            utrAsString,
-            debits, preferences, returns, individual
-          )))
-        }
-      }
+    for {
+      returns <- returnsF
+      debits <- debitsF
+      preferences <- preferencesF
+      individual <- individualF
+    } yield {
+      Ok(Json.toJson(taxPayer(
+        utr,
+        debits, preferences, returns, individual
+      )))
     }
   }
 
@@ -69,18 +59,18 @@ class TaxPayerController @Inject() (
    * Builds a TaxPayer object based upon the information retrieved from the DES APIs.
    */
   private def taxPayer(
-      utrAsString:              String,
+      utr:                      SaUtr,
       debits:                   DesDebits,
       communicationPreferences: CommunicationPreferences,
       returns:                  DesReturns,
-      individual:               Individual
-  ): TaxPayer = {
+      individual:               SaIndividual
+  ): Taxpayer = {
 
-    TaxPayer(
+    Taxpayer(
       customerName   = individual.name.fullName,
       addresses      = List(individual.address),
       selfAssessment = SelfAssessmentDetails(
-        utr                      = utrAsString,
+        utr                      = utr,
         communicationPreferences = communicationPreferences,
         debits                   = debits.debits.map(_.asDebit()),
         returns                  = returns.returns

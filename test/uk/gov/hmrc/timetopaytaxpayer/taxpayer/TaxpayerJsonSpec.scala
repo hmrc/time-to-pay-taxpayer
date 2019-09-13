@@ -22,7 +22,7 @@ import play.api.libs.json._
 import org.scalatest.{Matchers, WordSpec}
 import timetopaytaxpayer.cor.model._
 
-class TaxPayerJsonSpec extends WordSpec with Matchers {
+class TaxpayerJsonSpec extends WordSpec with Matchers {
 
   "a tax payer" should {
     "be serialised to json" in {
@@ -42,8 +42,16 @@ class TaxPayerJsonSpec extends WordSpec with Matchers {
       val debits = List(Debit(originCode = "POA2", amount = 250.52, dueDate = LocalDate.of(2016, 1, 31),
                               interest   = Some(Interest(Some(LocalDate.of(2016, 6, 1)), 42.32)), taxYearEnd = LocalDate.of(2017, 4, 5)))
 
-      val taxPayer = TaxPayer(customerName   = "Customer name", addresses = addresses,
-                              selfAssessment = SelfAssessmentDetails("1234567890", prefs, debits, Nil))
+      val taxPayer = Taxpayer(
+        customerName   = "Customer name",
+        addresses      = addresses,
+        selfAssessment = SelfAssessmentDetails(
+          SaUtr("1234567890"),
+          prefs,
+          debits,
+          Nil
+        )
+      )
 
       val json: JsValue = Json.toJson(taxPayer)
 

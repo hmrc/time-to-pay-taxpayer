@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-object TaxpayerCor {
+package timetopaytaxpayer.cor
 
-  println("hello")
+import com.google.inject.{AbstractModule, Provides, Singleton}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
+
+import scala.concurrent.ExecutionContext
+
+class TaxpayerCorModule extends AbstractModule {
+
+  override def configure(): Unit = {}
+
+  @Provides
+  @Singleton
+  def provideTaxpayerConnector(
+      servicesConfig: ServicesConfig,
+      http:           HttpClient
+  )(
+      implicit
+      ec: ExecutionContext
+  ): TaxpayerConnector = new TaxpayerConnector(servicesConfig, http)
+
 }

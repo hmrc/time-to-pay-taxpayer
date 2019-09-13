@@ -1,1 +1,1 @@
-GET /taxpayer/:utr  @timetopaytaxpayer.controllers.TaxPayerController.getTaxPayer(utr)
+GET /taxpayer/:utr  @timetopaytaxpayer.controllers.TaxpayerController.getTaxPayer(utr: SaUtr)

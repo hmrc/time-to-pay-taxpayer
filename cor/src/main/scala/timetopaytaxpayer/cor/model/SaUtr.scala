@@ -16,16 +16,15 @@
 
 package timetopaytaxpayer.cor.model
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Format
+import play.api.mvc.PathBindable
+import timetopaytaxpayer.cor.internal.ValueClassBinder
 
-final case class SelfAssessmentDetails(
-    utr:                      SaUtr,
-    communicationPreferences: CommunicationPreferences,
-    debits:                   Seq[Debit],
-    returns:                  Seq[Return]
-)
+case class SaUtr(value: String)
 
-object SelfAssessmentDetails {
+object SaUtr {
+  implicit val format: Format[SaUtr] = implicitly[Format[String]].inmap(SaUtr(_), _.value)
+  implicit val journeyIdBinder: PathBindable[SaUtr] = ValueClassBinder.valueClassBinder(_.value)
 
-  implicit val format: OFormat[SelfAssessmentDetails] = Json.format[SelfAssessmentDetails]
 }

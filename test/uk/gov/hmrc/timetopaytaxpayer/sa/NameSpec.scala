@@ -17,13 +17,14 @@
 package uk.gov.hmrc.timetopaytaxpayer.sa
 
 import org.scalatest.{Matchers, WordSpec}
-import timetopaytaxpayer.sa.Sa
+import timetopaytaxpayer.sa
+import timetopaytaxpayer.sa.model.SaName
 
 class NameSpec extends WordSpec with Matchers {
 
   "Name" should {
     "print to string correctly without middle name" in {
-      Sa.Name(
+      SaName(
         Some("President"),
         Some("Donald"),
         None,
@@ -32,7 +33,7 @@ class NameSpec extends WordSpec with Matchers {
     }
 
     "print to string correctly with middle name" in {
-      Sa.Name(
+      SaName(
         Some("President"),
         Some("Donald"),
         Some("John"),
@@ -41,7 +42,7 @@ class NameSpec extends WordSpec with Matchers {
     }
 
     "Only surname is expected to be there" in {
-      Sa.Name(
+      SaName(
         None,
         None,
         None,

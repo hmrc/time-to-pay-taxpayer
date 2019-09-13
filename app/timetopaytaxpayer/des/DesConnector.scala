@@ -18,7 +18,7 @@ package timetopaytaxpayer.des
 
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Reads
-import timetopaytaxpayer.cor.model.{CommunicationPreferences, Utr}
+import timetopaytaxpayer.cor.model.{CommunicationPreferences, SaUtr}
 import timetopaytaxpayer.des.model._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.Authorization
@@ -41,17 +41,17 @@ class DesConnector @Inject() (
     authorization = Some(Authorization(s"Bearer $token"))
   ).withExtraHeaders("Environment" -> environment)
 
-  def returns(utr: Utr): Future[DesReturns] = {
+  def getReturns(utr: SaUtr): Future[DesReturns] = {
     val serviceUrl = s"/sa/taxpayer/${utr.value}/returns"
     httpClient.GET[DesReturns](s"$baseUrl$serviceUrl")
   }
 
-  def debits(utr: Utr): Future[DesDebits] = {
+  def getDebits(utr: SaUtr): Future[DesDebits] = {
     val serviceUrl = s"/sa/taxpayer/${utr.value}/debits"
     httpClient.GET[DesDebits](s"$baseUrl$serviceUrl")
   }
 
-  def preferences(utr: Utr): Future[CommunicationPreferences] = {
+  def getCommunicationPreferences(utr: SaUtr): Future[CommunicationPreferences] = {
     val serviceUrl = s"/sa/taxpayer/${utr.value}/communication-preferences"
     httpClient.GET[CommunicationPreferences](s"$baseUrl$serviceUrl")
   }

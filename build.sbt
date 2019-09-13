@@ -134,11 +134,23 @@ lazy val microservice = Project(appName, file("."))
   .settings(commonSettings: _*)
   .settings(SbtDistributablesPlugin.publishingSettings: _*)
   .settings(
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
+    libraryDependencies ++= Seq(
+      ws,
+      "uk.gov.hmrc" %% "bootstrap-play-26" % "0.41.0",
+      "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
+      "org.scalatest" %% "scalatest" % "3.0.4" % Test,
+      "org.pegdown" % "pegdown" % "1.6.0" % Test,
+      "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
+      "com.github.tomakehurst" % "wiremock-jre8" % "2.21.0" % Test,
+      "org.mockito" % "mockito-core" % "2.23.0" % Test
+    ),
     routesGenerator := InjectedRoutesGenerator,
     majorVersion := 0,
     PlayKeys.playDefaultPort := 9857,
-    wartremoverExcluded ++= routes.in(Compile).value
+    wartremoverExcluded ++= routes.in(Compile).value,
+    routesImport ++= Seq(
+      "timetopaytaxpayer.cor.model._"
+    )
   )
   .dependsOn(cor)
   .aggregate(cor)
@@ -153,6 +165,7 @@ lazy val cor = Project(appName + "-cor", file("cor"))
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= List(
-      "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided
+      "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
+      "uk.gov.hmrc" %% "bootstrap-play-26" % "0.41.0" % Provided
     )
   )

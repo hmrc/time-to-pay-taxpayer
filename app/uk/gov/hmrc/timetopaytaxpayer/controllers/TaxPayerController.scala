@@ -56,27 +56,28 @@ class TaxPayerController @Inject() (
         val individualF = saConnector.individual(utr, authorizedUser)
 
         for {
-          returns <- returnsF
-          debits <- debitsF
+          returns: Seq[Return] <- returnsF
+          debits: Seq[Debit] <- debitsF
           preferences: CommunicationPreferences <- preferencesF
           individual <- individualF
         } yield {
           dLogger.info(
             s"""returns:
-               |${Json.prettyPrint(Json.toJson(returns))}
+               |${Json.prettyPrint(Json.toJson(returns)(writesReturn))}
                |
                |debits:
-               |${Json.prettyPrint(Json.toJson(debits))}
+               |${Json.prettyPrint(Json.toJson(debits)(writesDebit))}
              """.stripMargin)
 
           Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
         }
       }
     }
-
   }
 
-  val dLogger = Logger("dates-logger")
+  private val dLogger = Logger("dates-logger")
+  private val writesReturn = Json.writes[Seq[Return]]
+  private val writesDebit = Json.writes[Seq[Debit]]
 
   /**
    * Builds a TaxPayer object based upon the information retrieved from the DES APIs.

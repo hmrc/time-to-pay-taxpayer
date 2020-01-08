@@ -17,6 +17,7 @@
 package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import javax.inject.Inject
+import play.api.Logger
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc._
 import uk.gov.hmrc.http.HeaderNames
@@ -57,15 +58,25 @@ class TaxPayerController @Inject() (
         for {
           returns <- returnsF
           debits <- debitsF
-          preferences <- preferencesF
+          preferences: CommunicationPreferences <- preferencesF
           individual <- individualF
         } yield {
+          dLogger.info(
+            s"""returns:
+               |${Json.prettyPrint(Json.toJson(returns))}
+               |
+               |debits:
+               |${Json.prettyPrint(Json.toJson(debits))}
+             """.stripMargin)
+
           Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
         }
       }
     }
 
   }
+
+  val dLogger = Logger("dates-logger")
 
   /**
    * Builds a TaxPayer object based upon the information retrieved from the DES APIs.

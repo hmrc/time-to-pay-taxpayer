@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import uk.gov.hmrc.timetopaytaxpayer.debits.Debits._
 import uk.gov.hmrc.timetopaytaxpayer.returns.Returns.Return
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.DesignatoryDetails.Individual
 import uk.gov.hmrc.timetopaytaxpayer.taxpayer.{Interest, SelfAssessmentDetails, TaxPayer}
-import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, Utr, taxpayer}
+import uk.gov.hmrc.timetopaytaxpayer.{AuthorizedUser, JourneyLogger, Utr, taxpayer}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -61,23 +61,14 @@ class TaxPayerController @Inject() (
           preferences: CommunicationPreferences <- preferencesF
           individual <- individualF
         } yield {
-          dLogger.info(
-            s"""returns:
-               |${Json.prettyPrint(Json.toJson(returns)(writesReturn))}
-               |
-               |debits:
-               |${Json.prettyPrint(Json.toJson(debits)(writesDebit))}
-             """.stripMargin)
-
+          import TaxPayer._
+          JourneyLogger.info("TaxPayerController.getTaxPayer: returns", Json.toJson(returns))
+          JourneyLogger.info("TaxPayerController.getTaxPayer: debits", Json.toJson(debits))
           Ok(Json.toJson(taxPayer(utrAsString, debits, preferences, returns, individual)))
         }
       }
     }
   }
-
-  private val dLogger = Logger("dates-logger")
-  private val writesReturn = Json.writes[Seq[Return]]
-  private val writesDebit = Json.writes[Seq[Debit]]
 
   /**
    * Builds a TaxPayer object based upon the information retrieved from the DES APIs.

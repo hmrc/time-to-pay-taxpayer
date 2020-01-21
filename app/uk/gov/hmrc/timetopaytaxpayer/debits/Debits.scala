@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer.debits
 
 import java.time.LocalDate
 
-import play.api.libs.json.{JsPath, Json, Reads}
+import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 
 object Debits {
 
@@ -35,4 +35,12 @@ object Debits {
   case class Interest(creationDate: Option[LocalDate], amount: Double)
 
   case class Debit(taxYearEnd: LocalDate, charge: Charge, relevantDueDate: LocalDate, totalOutstanding: Double, interest: Option[Interest])
+
+  object Debit {
+    implicit val writes: OWrites[Debit] = {
+      implicit val chargeWrite: OWrites[Charge] = Json.writes[Charge]
+      implicit val interestWrite: OWrites[Interest] = Json.writes[Interest]
+      Json.writes[Debit]
+    }
+  }
 }

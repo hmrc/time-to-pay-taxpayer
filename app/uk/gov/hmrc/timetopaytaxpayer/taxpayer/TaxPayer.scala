@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ case class Address(
 )
 
 object TaxPayer {
+  implicit val writeReturns: Writes[Return] = Json.writes[Return]
 
   val writer: Writes[TaxPayer] = {
     implicit val writeReturn: Writes[TaxPayer] = TaxPayer.writer
@@ -49,7 +50,6 @@ object TaxPayer {
     implicit val writePreferences: Writes[CommunicationPreferences] = Json.writes[CommunicationPreferences]
     implicit val writeInterest: Writes[Interest] = Json.writes[Interest]
     implicit val writeDebits: Writes[Debit] = Json.writes[Debit]
-    implicit val writeReturns: Writes[Return] = Json.writes[Return]
     implicit val writeSelfAssessmentDetails: Writes[SelfAssessmentDetails] = Json.writes[SelfAssessmentDetails]
 
     Json.writes[TaxPayer]

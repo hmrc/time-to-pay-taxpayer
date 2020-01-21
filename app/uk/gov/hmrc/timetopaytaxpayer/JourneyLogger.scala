@@ -16,10 +16,14 @@
 
 package uk.gov.hmrc.timetopaytaxpayer
 
-case class Utr(value: String) extends AnyVal {
-  override def toString = value
-}
+import play.api.Logger
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.logging.SessionId
 
-case class AuthorizedUser(value: String) extends AnyVal {
-  override def toString = value
+object JourneyLogger {
+
+  private val logger = Logger("journey-logger")
+  def info(sessionId: SessionId, message: => String, data: JsValue): Unit = logger.info(s"$message [sessionId=${sessionId.value}]\n${Json.prettyPrint(data)}")
+  def info(message: => String, data: JsValue)(implicit hc: HeaderCarrier): Unit = JourneyLogger.info(hc.sessionId.getOrElse(SessionId("NoSessionId")), message, data)
 }

@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.cor.model
+import java.time.{Clock, ZoneOffset}
 
-import java.time.LocalDate
+import com.google.inject.{AbstractModule, Provides, Singleton}
 
-import play.api.libs.json.{Json, OFormat}
+class Module extends AbstractModule {
 
-final case class Interest(
+  def configure(): Unit = ()
 
-    creationDate: Option[LocalDate],
-    amount:       Double
-)
-
-object Interest {
-  implicit val format: OFormat[Interest] = Json.format
+  @Provides
+  @Singleton
+  def clock(): Clock = Clock.systemDefaultZone.withZone(ZoneOffset.UTC)
 }

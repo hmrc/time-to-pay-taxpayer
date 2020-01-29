@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package timetopaytaxpayer.controllers
+
+import java.time.Clock
 
 import javax.inject.Inject
 import play.api.libs.json.Json
@@ -32,7 +34,7 @@ class TaxpayerController @Inject() (
     saConnector:  SaConnector,
     desConnector: DesConnector,
     cc:           ControllerComponents
-)(implicit executionContext: ExecutionContext) extends BackendController(cc) {
+)(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {
 
   def getTaxPayer(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
 
@@ -64,7 +66,7 @@ class TaxpayerController @Inject() (
       communicationPreferences: CommunicationPreferences,
       returns:                  DesReturns,
       individual:               SaIndividual
-  ): Taxpayer = {
+  )(implicit clock: Clock): Taxpayer = {
 
     Taxpayer(
       customerName   = individual.name.fullName,
@@ -75,6 +77,7 @@ class TaxpayerController @Inject() (
         debits                   = debits.debits.map(_.asDebit()),
         returns                  = returns.returns
       )
+        .fixReturns
     )
   }
 

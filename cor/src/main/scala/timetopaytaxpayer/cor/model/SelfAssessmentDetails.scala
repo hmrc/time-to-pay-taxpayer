@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package timetopaytaxpayer.cor.model
 
+import java.time.{Clock, LocalDate}
+
 import play.api.libs.json.{Json, OFormat}
 
 final case class SelfAssessmentDetails(
@@ -23,7 +25,14 @@ final case class SelfAssessmentDetails(
     communicationPreferences: CommunicationPreferences,
     debits:                   Seq[Debit],
     returns:                  Seq[Return]
-)
+) {
+
+  /**
+   * Removes returns older than 5 years.
+   */
+  def fixReturns(implicit clock: Clock): SelfAssessmentDetails = copy(returns = returns.filter(_.taxYearEnd.isAfter(LocalDate.now(clock).minusYears(5))))
+
+}
 
 object SelfAssessmentDetails {
 

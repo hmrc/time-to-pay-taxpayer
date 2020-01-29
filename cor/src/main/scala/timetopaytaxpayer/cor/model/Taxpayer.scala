@@ -22,7 +22,14 @@ case class Taxpayer(
     customerName:   String,
     addresses:      Seq[Address],
     selfAssessment: SelfAssessmentDetails
-)
+) {
+
+  def obfuscate: Taxpayer = Taxpayer(
+    customerName   = customerName.replaceAll("[A-Za-z]", "x"),
+    addresses      = addresses.map(_.obfuscate),
+    selfAssessment = selfAssessment.obfuscate
+  )
+}
 
 object Taxpayer {
   implicit val format: OFormat[Taxpayer] = Json.format[Taxpayer]

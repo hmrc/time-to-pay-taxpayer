@@ -32,6 +32,12 @@ final case class SelfAssessmentDetails(
    */
   def fixReturns(implicit clock: Clock): SelfAssessmentDetails = copy(returns = returns.filter(_.taxYearEnd.isAfter(LocalDate.now(clock).minusYears(5))))
 
+  def obfuscate: SelfAssessmentDetails = SelfAssessmentDetails(
+    utr                      = utr.obfuscate,
+    communicationPreferences = communicationPreferences,
+    debits                   = debits,
+    returns                  = returns
+  )
 }
 
 object SelfAssessmentDetails {

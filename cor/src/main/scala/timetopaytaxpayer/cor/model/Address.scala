@@ -25,7 +25,17 @@ final case class Address(
     addressLine4: Option[String],
     addressLine5: Option[String],
     postcode:     Option[String]
-)
+) {
+
+  def obfuscate: Address = Address(
+    addressLine1 = addressLine1.map(_.replaceAll("[A-Za-z]", "x")),
+    addressLine2 = addressLine2.map(_.replaceAll("[A-Za-z]", "x")),
+    addressLine3 = addressLine3.map(_.replaceAll("[A-Za-z]", "x")),
+    addressLine4 = addressLine4.map(_.replaceAll("[A-Za-z]", "x")),
+    addressLine5 = addressLine5.map(_.replaceAll("[A-Za-z]", "x")),
+    postcode     = postcode.map(_.replaceAll("[A-Za-z]", "x"))
+  )
+}
 
 object Address {
   implicit val format: OFormat[Address] = Json.format[Address]

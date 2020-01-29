@@ -21,7 +21,9 @@ import play.api.libs.json.Format
 import play.api.mvc.PathBindable
 import timetopaytaxpayer.cor.internal.ValueClassBinder
 
-case class SaUtr(value: String)
+case class SaUtr(value: String) {
+  def obfuscate: SaUtr = SaUtr(value = value.take(4) + "***")
+}
 
 object SaUtr {
   implicit val format: Format[SaUtr] = implicitly[Format[String]].inmap(SaUtr(_), _.value)

@@ -16,31 +16,23 @@
 
 package timetopaytaxpayer.cor.model
 
-import java.time.{Clock, LocalDate}
-
 import play.api.libs.json.{Json, OFormat}
 
-final case class SelfAssessmentDetails(
+case class TaxpayerDetails(
     utr:                      SaUtr,
-    communicationPreferences: CommunicationPreferences,
-    debits:                   Seq[Debit],
-    returns:                  Seq[Return]
+    customerName:             String,
+    addresses:                Seq[Address],
+    communicationPreferences: CommunicationPreferences
 ) {
 
-  /**
-   * Removes returns older than 5 years.
-   */
-  def fixReturns(implicit clock: Clock): SelfAssessmentDetails = copy(returns = returns.filter(_.taxYearEnd.isAfter(LocalDate.now(clock).minusYears(5))))
-
-  def obfuscate: SelfAssessmentDetails = SelfAssessmentDetails(
+  def obfuscate: TaxpayerDetails = TaxpayerDetails(
     utr                      = utr.obfuscate,
-    communicationPreferences = communicationPreferences,
-    debits                   = debits,
-    returns                  = returns
+    customerName             = customerName.replaceAll("[A-Za-z]", "x"),
+    addresses                = addresses.map(_.obfuscate),
+    communicationPreferences = communicationPreferences
   )
 }
 
-object SelfAssessmentDetails {
-
-  implicit val format: OFormat[SelfAssessmentDetails] = Json.format[SelfAssessmentDetails]
+object TaxpayerDetails {
+  implicit val format: OFormat[TaxpayerDetails] = Json.format[TaxpayerDetails]
 }

@@ -36,49 +36,18 @@ class TaxpayerController @Inject() (
     cc:           ControllerComponents
 )(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {
 
-  def getTaxPayer(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
-
-    //start features before for comprehension
+  def getSelfAssessmentsAndDebits(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
     val returnsF = desConnector.getReturns(utr)
     val debitsF = desConnector.getDebits(utr)
-    val preferencesF = desConnector.getCommunicationPreferences(utr)
-    val individualF = saConnector.getIndividual(utr)
 
     for {
-      returns <- returnsF
-      debits <- debitsF
-      preferences <- preferencesF
-      individual <- individualF
-    } yield {
-      Ok(Json.toJson(taxPayer(
-        utr,
-        debits, preferences, returns, individual
-      )))
-    }
+      returns: DesReturns <- returnsF
+      debits: DesDebits <- debitsF
+      returnsAndDebits = ReturnsAndDebits(
+        debits  = debits.debits.map(_.asDebit()),
+        returns = returns.returns
+      ).fixReturns
+      result = returnsAndDebits.fixReturns
+    } yield Ok(Json.toJson(result))
   }
-
-  /**
-   * Builds a TaxPayer object based upon the information retrieved from the DES APIs.
-   */
-  private def taxPayer(
-      utr:                      SaUtr,
-      debits:                   DesDebits,
-      communicationPreferences: CommunicationPreferences,
-      returns:                  DesReturns,
-      individual:               SaIndividual
-  )(implicit clock: Clock): Taxpayer = {
-
-    Taxpayer(
-      customerName   = individual.name.fullName,
-      addresses      = List(individual.address),
-      selfAssessment = SelfAssessmentDetails(
-        utr                      = utr,
-        communicationPreferences = communicationPreferences,
-        debits                   = debits.debits.map(_.asDebit()),
-        returns                  = returns.returns
-      )
-        .fixReturns
-    )
-  }
-
 }

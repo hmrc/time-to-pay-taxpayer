@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.cor.model
+package timetopaytaxpayer
 
-import play.api.libs.json.{Json, OFormat}
+import support.ItSpec
 
-case class Taxpayer(
-    customerName:   String,
-    addresses:      Seq[Address],
-    selfAssessment: SelfAssessmentDetails
-) {
+class GetTaxpayerDetailsSpec extends ItSpec {
 
-  def obfuscate: Taxpayer = Taxpayer(
-    customerName   = customerName.replaceAll("[A-Za-z]", "x"),
-    addresses      = addresses.map(_.obfuscate),
-    selfAssessment = selfAssessment.obfuscate
-  )
-}
+  "Get Taxpayer" in {
 
-object Taxpayer {
-  implicit val format: OFormat[Taxpayer] = Json.format[Taxpayer]
+  }
+
 }

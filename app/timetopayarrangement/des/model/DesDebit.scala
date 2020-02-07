@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.des.model
+package timetopayarrangement.des.model
 
 import java.time.LocalDate
 
-import play.api.libs.json.{Json, Reads}
-import timetopaytaxpayer.cor.model.{Debit, Interest}
+import play.api.libs.json.{Json, OFormat}
 
-final case class DesDebit(
-    taxYearEnd:       LocalDate,
-    charge:           DesCharge,
-    relevantDueDate:  LocalDate,
-    totalOutstanding: BigDecimal,
-    interest:         Option[Interest]
-) {
-
-  def asDebit() = Debit(
-    originCode = this.charge.originCode,
-    amount     = this.totalOutstanding,
-    dueDate    = this.relevantDueDate,
-    interest   = this.interest,
-    taxYearEnd = this.taxYearEnd
-  )
-}
+case class DesDebit(debitType: String, dueDate: LocalDate)
 
 object DesDebit {
-  implicit val reads: Reads[DesDebit] = Json.reads[DesDebit]
+  implicit val format: OFormat[DesDebit] = Json.format[DesDebit]
 }

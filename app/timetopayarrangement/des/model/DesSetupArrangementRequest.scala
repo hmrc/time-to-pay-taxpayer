@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.cor.model
+package timetopayarrangement.des.model
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
-import play.api.mvc.PathBindable
-import timetopaytaxpayer.cor.internal.ValueClassBinder
+import play.api.libs.json.{Json, OFormat}
 
-case class SaUtr(value: String) {
-  def obfuscate: SaUtr = SaUtr(value = value.take(4) + "***")
-}
+case class DesSetupArrangementRequest(
+    ttpArrangement:   DesTtpArrangement,
+    letterAndControl: LetterAndControl
+)
 
-object SaUtr {
-  implicit val format: Format[SaUtr] = implicitly[Format[String]].inmap(SaUtr(_), _.value)
-  implicit val journeyIdBinder: PathBindable[SaUtr] = ValueClassBinder.valueClassBinder(_.value)
+object DesSetupArrangementRequest {
+  implicit val format: OFormat[DesSetupArrangementRequest] = Json.format[DesSetupArrangementRequest]
 }

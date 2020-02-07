@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer
+package timetopayarrangement
 
-import support.ITSpec
+import support.ItSpec
 
-class GetTaxpayerSpec extends ITSpec {
+class SubmitArrangementSpec extends ItSpec {
 
-  "Get Taxpayer" in {
+  "TODO Jake" in {
 
   }
 

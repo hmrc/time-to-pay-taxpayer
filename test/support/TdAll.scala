@@ -24,9 +24,10 @@ object TdAll {
 
   val saUtr = SaUtr("3217334604")
 
-  val taxpayer: Taxpayer = Taxpayer(
-    customerName   = "Mr Lester Corncrake",
-    addresses      = List(
+  val taxpayerDetails: TaxpayerDetails = TaxpayerDetails(
+    utr                      = saUtr,
+    customerName             = "Mr Lester Corncrake",
+    addresses                = List(
       Address(
         addressLine1 = "123 Any Street",
         addressLine2 = "Kingsland High Road",
@@ -36,43 +37,43 @@ object TdAll {
         postcode     = "E8 3PP"
       )
     ),
-    selfAssessment = SelfAssessmentDetails(
-      utr                      = saUtr,
-      communicationPreferences = CommunicationPreferences(
-        welshLanguageIndicator = true,
-        audioIndicator         = false,
-        largePrintIndicator    = false,
-        brailleIndicator       = false
+    communicationPreferences = CommunicationPreferences(
+      welshLanguageIndicator = true,
+      audioIndicator         = false,
+      largePrintIndicator    = false,
+      brailleIndicator       = false
+    )
+  )
+
+  val returnsAndDebits = ReturnsAndDebits(
+    debits  = List(
+      Debit(
+        originCode = "IN1",
+        amount     = 2500,
+        dueDate    = "2019-02-25",
+        interest   = None,
+        taxYearEnd = "2019-04-05"
       ),
-      debits                   = List(
-        Debit(
-          originCode = "IN1",
-          amount     = 2500,
-          dueDate    = "2019-02-25",
-          interest   = None,
-          taxYearEnd = "2019-04-05"
-        ),
-        Debit(
-          originCode = "IN2",
-          amount     = 2500,
-          dueDate    = "2019-02-25",
-          interest   = None,
-          taxYearEnd = "2019-04-05"
-        )
+      Debit(
+        originCode = "IN2",
+        amount     = 2500,
+        dueDate    = "2019-02-25",
+        interest   = None,
+        taxYearEnd = "2019-04-05"
+      )
+    ),
+    returns = List(
+      Return(
+        taxYearEnd   = "2019-04-05",
+        issuedDate   = None,
+        dueDate      = "2019-01-31",
+        receivedDate = None
       ),
-      returns                  = List(
-        Return(
-          taxYearEnd   = "2019-04-05",
-          issuedDate   = None,
-          dueDate      = "2019-01-31",
-          receivedDate = None
-        ),
-        Return(
-          taxYearEnd   = "2018-04-05",
-          issuedDate   = None,
-          dueDate      = "2018-01-31",
-          receivedDate = "2018-03-09"
-        )
+      Return(
+        taxYearEnd   = "2018-04-05",
+        issuedDate   = None,
+        dueDate      = "2018-01-31",
+        receivedDate = "2018-03-09"
       )
     )
   )

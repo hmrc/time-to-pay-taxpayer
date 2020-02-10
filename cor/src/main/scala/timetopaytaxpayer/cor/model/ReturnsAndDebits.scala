@@ -16,16 +16,30 @@
 
 package timetopaytaxpayer.cor.model
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
-import play.api.mvc.PathBindable
-import timetopaytaxpayer.cor.internal.ValueClassBinder
+import java.time.{Clock, LocalDate}
 
-case class SaUtr(value: String) {
-  def obfuscate: SaUtr = SaUtr(value = value.take(4) + "***")
+import play.api.libs.json.{Json, OFormat}
+
+/**
+ * Self Assessments Returns and debits
+ */
+final case class ReturnsAndDebits(
+    debits:  Seq[Debit],
+    returns: Seq[Return]
+) {
+
+  /**
+   * Removes returns older than 5 years.
+   */
+  def fixReturns(implicit clock: Clock): ReturnsAndDebits = copy(returns = returns.filter(_.taxYearEnd.isAfter(LocalDate.now(clock).minusYears(5))))
+
+  def obfuscate: ReturnsAndDebits = ReturnsAndDebits(
+    debits  = debits,
+    returns = returns
+  )
 }
 
-object SaUtr {
-  implicit val format: Format[SaUtr] = implicitly[Format[String]].inmap(SaUtr(_), _.value)
-  implicit val journeyIdBinder: PathBindable[SaUtr] = ValueClassBinder.valueClassBinder(_.value)
+object ReturnsAndDebits {
+
+  implicit val format: OFormat[ReturnsAndDebits] = Json.format[ReturnsAndDebits]
 }

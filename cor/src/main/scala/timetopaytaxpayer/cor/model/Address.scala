@@ -19,12 +19,12 @@ package timetopaytaxpayer.cor.model
 import play.api.libs.json.{Json, OFormat, Reads}
 
 final case class Address(
-    addressLine1: Option[String],
-    addressLine2: Option[String],
-    addressLine3: Option[String],
-    addressLine4: Option[String],
-    addressLine5: Option[String],
-    postcode:     Option[String]
+    addressLine1: Option[String] = None,
+    addressLine2: Option[String] = None,
+    addressLine3: Option[String] = None,
+    addressLine4: Option[String] = None,
+    addressLine5: Option[String] = None,
+    postcode:     Option[String] = None
 ) {
 
   def obfuscate: Address = Address(

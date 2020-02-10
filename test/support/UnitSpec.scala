@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.cor
+package support
 
-import timetopaytaxpayer.cor.model.{ReturnsAndDebits, SaUtr, TaxpayerDetails}
-import uk.gov.hmrc.http.HeaderCarrier
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
+
+import com.google.inject.AbstractModule
+import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.{BeforeAndAfterEach, FreeSpecLike}
+import org.scalatestplus.play.guice.GuiceOneServerPerTest
+import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
+import play.api.{Application, Configuration}
+import timetopaytaxpayer.cor.TaxpayerCorModule
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class TaxpayerConnector(
-    servicesConfig: ServicesConfig,
-    http:           HttpClient
-)(
-    implicit
-    ec: ExecutionContext
-) {
-
-  val baseUrl: String = servicesConfig.baseUrl("time-to-pay-taxpayer")
-
-  def getReturnsAndDebits(utr: SaUtr)(implicit hc: HeaderCarrier): Future[ReturnsAndDebits] = {
-    http.GET[ReturnsAndDebits](s"$baseUrl/taxpayer/returns-and-debits/${utr.value}")
-  }
-}
+/**
+ * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
+ */
+trait UnitSpec
+  extends FreeSpecLike
+  with RichMatchers

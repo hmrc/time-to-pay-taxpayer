@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext
 /**
  * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
  */
-trait ITSpec
+trait ItSpec
   extends FreeSpecLike
   with RichMatchers
   with BeforeAndAfterEach

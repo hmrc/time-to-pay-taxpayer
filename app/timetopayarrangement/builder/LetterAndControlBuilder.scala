@@ -112,7 +112,7 @@ object LetterAndControlBuilder {
   }
 
   def validate(address: Address): AddressResult = address match {
-    case Address(_, _, _, _, _, None) | Address(Some(""), _, _, _, _, _) =>
+    case Address(_, _, _, _, _, Some("")) | Address(Some(""), _, _, _, _, _) =>
       (address, Some(LetterError(9, "incomplete address")))
     case _ =>
       (address, None)

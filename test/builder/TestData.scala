@@ -134,37 +134,39 @@ object TestData {
                   |""".stripMargin).as[LetterAndControl]
 
   val taxpayer: TaxpayerDetails =
-    Json.parse(s"""{
-                  |  "customerName" : "Customer Name",
-                  |  "addresses": [
-                  |    {
-                  |      "addressLine1": "",
-                  |      "addressLine2": "",
-                  |      "addressLine3": "",
-                  |      "addressLine4": "",
-                  |      "addressLine5": "",
-                  |      "postcode": ""
-                  |    }
-                  |  ],
-                  |  "selfAssessment": {
-                  |    "utr": "1234567890",
-                  |    "communicationPreferences": {
-                  |      "welshLanguageIndicator": false,
-                  |      "audioIndicator": false,
-                  |      "largePrintIndicator": false,
-                  |      "brailleIndicator": false
-                  |    },
-                  |    "debits": [
-                  |      {
-                  |        "originCode": "IN2",
-                  |        "dueDate": "2004-07-31"
-                  |      }
-                  |    ]
-                  |  }
-                  |}""".stripMargin).as[TaxpayerDetails]
+    Json.parse( //language=json
+      s"""{
+                    "customerName" : "Customer Name",
+                    "addresses": [
+                      {
+                        "addressLine1": "",
+                        "addressLine2": "",
+                        "addressLine3": "",
+                        "addressLine4": "",
+                        "addressLine5": "",
+                        "postcode": ""
+                      }
+                    ],
+                      "utr": "1234567890",
+                      "communicationPreferences": {
+                        "welshLanguageIndicator": false,
+                        "audioIndicator": false,
+                        "largePrintIndicator": false,
+                        "brailleIndicator": false
+                      },
+                      "debits": [
+                        {
+                          "originCode": "IN2",
+                          "dueDate": "2004-07-31"
+                        }
+                      ]
+                    }
+                  """.stripMargin
+    ).as[TaxpayerDetails]
 
   val schedule: Schedule = Schedule(LocalDate.now(), LocalDate.now(), 0.0, BigDecimal("2000.00"), 0.0, 0.0, 0.0, List(Instalment(LocalDate.now(), 0.0)))
   val happyCommsPref = CommunicationPreferences(welshLanguageIndicator = false, audioIndicator = false, largePrintIndicator = false, brailleIndicator = false)
+  val welshAndLargePrintCommsPref = CommunicationPreferences(welshLanguageIndicator = true, audioIndicator = false, largePrintIndicator = true, brailleIndicator = false)
 
   object Addresses {
     val englishAddress1 = Address(addressLine1 = Some("XXX"), postcode = Some("B45 0HY"))
@@ -200,7 +202,7 @@ object TestData {
     val taxPayerWithScottishAndForeignAddresses = TaxpayerDetails(SaUtr("XXX"), "CustomerName", List(scottishAddress, foreignAddress), happyCommsPref)
     val taxPayerWithEnglishScottishAndForeignAddresses = TaxpayerDetails(SaUtr("XXX"), "CustomerName", List(englishAddress1, scottishAddress, foreignAddress), happyCommsPref)
     val taxPayerWithNoAddress = TaxpayerDetails(SaUtr("XXX"), "CustomerName", List(), happyCommsPref)
-    val taxPayerWithLargePrintAndWelsh = TaxpayerDetails(SaUtr("XXX"), "CustomerName", List(englishAddress1), happyCommsPref)
+    val taxPayerWithLargePrintAndWelsh = TaxpayerDetails(SaUtr("XXX"), "CustomerName", List(englishAddress1), welshAndLargePrintCommsPref)
     val taxPayerWithMultipleWelshAddresses = TaxpayerDetails(SaUtr("XXX"), "CustomerName", List(welshAddress1, welshAddress2), happyCommsPref)
     val taxPayerWithMultipleScottishAddresses = TaxpayerDetails(SaUtr("XXX"), "CustomerName", List(scottishAddress1, scottishAddress2), happyCommsPref)
     val taxPayerWithMultipleJurisdictions = TaxpayerDetails(SaUtr("XXX"), "CustomerName", List(welshAddress, scottishAddress), happyCommsPref)

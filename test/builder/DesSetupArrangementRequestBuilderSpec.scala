@@ -38,7 +38,7 @@ class DesSetupArrangementRequestBuilderSpec extends UnitSpec {
     (taxPayerWithNoAddress, "Other", "no addresss")
   )
 
-  "DesTTPArrangementService " in {
+  "DesTTPArrangementService " - {
 
     forAll(taxPayerData) { (taxpayer, enforcementFlag, message) =>
       s"return enforcementFlag =  $enforcementFlag for $message" in {

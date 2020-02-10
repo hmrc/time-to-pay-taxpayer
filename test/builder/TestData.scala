@@ -25,66 +25,67 @@ import timetopaytaxpayer.cor.model.{Address, CommunicationPreferences, SaUtr, Ta
 
 object TestData {
 
-  val setupArrangementRequet = Json.parse(s"""
-                                             |{
-                                             |  "paymentPlanReference": "12345678901234567890123456789012345678900123456",
-                                             |  "directDebitReference": "12345678901234567890123456789012345678900123456",
-                                             |  "taxpayer": {
-                                             |    "addresses": [
-                                             |      {
-                                             |        "addressLine1": "",
-                                             |        "addressLine2": "",
-                                             |        "addressLine3": "",
-                                             |        "addressLine4": "",
-                                             |        "addressLine5": "",
-                                             |        "postcode": ""
-                                             |      }
-                                             |    ],
-                                             |    "customerName": "Customer Name",
-                                             |    "selfAssessment": {
-                                             |      "utr": "1234567890",
-                                             |      "communicationPreferences": {
-                                             |        "welshLanguageIndicator": false,
-                                             |        "audioIndicator": false,
-                                             |        "largePrintIndicator": false,
-                                             |        "brailleIndicator": false
-                                             |      },
-                                             |      "debits": [
-                                             |        {
-                                             |          "originCode": "IN2",
-                                             |          "dueDate": "2004-07-31"
-                                             |        }
-                                             |      ]
-                                             |    }
-                                             |  },
-                                             |  "schedule": {
-                                             |    "startDate": "2016-09-01",
-                                             |    "endDate": "2017-08-01",
-                                             |    "initialPayment": 50,
-                                             |    "amountToPay": 50000000,
-                                             |    "instalmentBalance": 4950,
-                                             |    "totalInterestCharged": 45.83,
-                                             |    "totalPayable": 5045.83,
-                                             |    "instalments": [
-                                             |      {
-                                             |        "paymentDate": "2016-10-01",
-                                             |        "amount": 1248.95
-                                             |      },
-                                             |      {
-                                             |        "paymentDate": "2016-11-01",
-                                             |        "amount": 1248.95
-                                             |      },
-                                             |      {
-                                             |        "paymentDate": "2016-12-01",
-                                             |        "amount": 1248.95
-                                             |      },
-                                             |      {
-                                             |        "paymentDate": "2017-01-01",
-                                             |        "amount": 1248.95
-                                             |      }
-                                             |    ]
-                                             |  }
-                                             |}""".stripMargin)
+  val setupArrangementRequet = Json.parse( //language=json
+    s"""
+                                             {
+                                               "paymentPlanReference": "12345678901234567890123456789012345678900123456",
+                                               "directDebitReference": "12345678901234567890123456789012345678900123456",
+                                                 "addresses": [
+                                                   {
+                                                     "addressLine1": "",
+                                                     "addressLine2": "",
+                                                     "addressLine3": "",
+                                                     "addressLine4": "",
+                                                     "addressLine5": "",
+                                                     "postcode": ""
+                                                   }
+                                                 ],
+                                                 "customerName": "Customer Name",
+
+                                                   "utr": "1234567890",
+                                                   "communicationPreferences": {
+                                                     "welshLanguageIndicator": false,
+                                                     "audioIndicator": false,
+                                                     "largePrintIndicator": false,
+                                                     "brailleIndicator": false
+                                                   },
+                                                   "debits": [
+                                                     {
+                                                       "originCode": "IN2",
+                                                       "amount": 4950.00,
+                                                       "dueDate": "2004-07-31",
+                                                       "taxYearEnd": "2016-08-09"
+                                                     }
+                                                   ],
+                                               "schedule": {
+                                                 "startDate": "2016-09-01",
+                                                 "endDate": "2017-08-01",
+                                                 "initialPayment": 50,
+                                                 "amountToPay": 50000000,
+                                                 "instalmentBalance": 4950,
+                                                 "totalInterestCharged": 45.83,
+                                                 "totalPayable": 5045.83,
+                                                 "instalments": [
+                                                   {
+                                                     "paymentDate": "2016-10-01",
+                                                     "amount": 1248.95
+                                                   },
+                                                   {
+                                                     "paymentDate": "2016-11-01",
+                                                     "amount": 1248.95
+                                                   },
+                                                   {
+                                                     "paymentDate": "2016-12-01",
+                                                     "amount": 1248.95
+                                                   },
+                                                   {
+                                                     "paymentDate": "2017-01-01",
+                                                     "amount": 1248.95
+                                                   }
+                                                 ]
+                                               }
+                                             }"""
+  )
 
   val submitArrangementTTPArrangement: DesTtpArrangement =
     Json.parse(s"""

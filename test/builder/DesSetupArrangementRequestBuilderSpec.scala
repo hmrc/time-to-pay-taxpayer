@@ -22,6 +22,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import support.UnitSpec
 import timetopayarrangement.SetupArrangementRequest
 import timetopayarrangement.builder.DesTtpArrangementBuilder
+import timetopayarrangement.des.model.DesTtpArrangement
 
 class DesSetupArrangementRequestBuilderSpec extends UnitSpec {
   import TestData._
@@ -49,7 +50,7 @@ class DesSetupArrangementRequestBuilderSpec extends UnitSpec {
 
     "create a des arrangement" in {
       val arrangement = setupArrangementRequet.as[SetupArrangementRequest]
-      val desArrangement = DesTtpArrangementBuilder.createDesTtpArrangement(arrangement, TestData.taxpayer)
+      val desArrangement: DesTtpArrangement = DesTtpArrangementBuilder.createDesTtpArrangement(arrangement, TestData.taxpayer)
       desArrangement.enforcementAction shouldBe "Distraint"
       desArrangement.directDebit shouldBe true
       desArrangement.initials shouldBe "ZZZ"

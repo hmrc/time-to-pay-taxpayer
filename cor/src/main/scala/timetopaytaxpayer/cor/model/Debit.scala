@@ -23,7 +23,7 @@ import play.api.libs.json.{Json, OFormat}
 final case class Debit(
     originCode: String,
     amount:     BigDecimal,
-    dueDate:    LocalDate,
+    dueDate:    Option[LocalDate],
     interest:   Option[Interest],
     taxYearEnd: LocalDate
 )

@@ -55,7 +55,7 @@ class DesDebitsJsonSpec extends WordSpecLike with Matchers {
           DesDebit(
             taxYearEnd       = LocalDate.of(2016, 4, 5),
             charge           = DesCharge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-            relevantDueDate  = LocalDate.of(2015, 11, 5),
+            relevantDueDate  = Some(LocalDate.of(2015, 11, 5)),
             totalOutstanding = 5000,
             interest         = Some(Interest(creationDate = Some(LocalDate.of(2015, 11, 5)), amount = 500))
           )
@@ -99,14 +99,14 @@ class DesDebitsJsonSpec extends WordSpecLike with Matchers {
           DesDebit(
             taxYearEnd       = LocalDate.of(2016, 4, 5),
             charge           = DesCharge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-            relevantDueDate  = LocalDate.of(2015, 11, 5),
+            relevantDueDate  = Some(LocalDate.of(2015, 11, 5)),
             totalOutstanding = 5000,
             interest         = Some(Interest(creationDate = None, amount = 500))
           ),
           DesDebit(
             taxYearEnd       = LocalDate.of(2016, 4, 5),
             charge           = DesCharge(originCode   = "POA1", creationDate = LocalDate.of(2015, 11, 5)),
-            relevantDueDate  = LocalDate.of(2015, 11, 5),
+            relevantDueDate  = Some(LocalDate.of(2015, 11, 5)),
             totalOutstanding = 5000,
             interest         = None
           )

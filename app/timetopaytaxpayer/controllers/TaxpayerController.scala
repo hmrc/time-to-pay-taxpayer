@@ -19,13 +19,12 @@ package timetopaytaxpayer.controllers
 import java.time.Clock
 
 import javax.inject.Inject
-import play.api.libs.json.Json
+import play.api.libs.json.Json.toJson
 import play.api.mvc._
 import timetopaytaxpayer.cor.model._
 import timetopaytaxpayer.des.DesConnector
 import timetopaytaxpayer.des.model.{DesReturns, _}
 import timetopaytaxpayer.sa.SaConnector
-import timetopaytaxpayer.sa.model.SaIndividual
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.ExecutionContext
@@ -35,6 +34,21 @@ class TaxpayerController @Inject() (
     desConnector: DesConnector,
     cc:           ControllerComponents
 )(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {
+  // todo - remove as part of OPS-4581
+  def getTaxPayer(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
+    for {
+      returns <- desConnector.getReturns(utr)
+      debits <- desConnector.getDebits(utr)
+      preferences <- desConnector.getCommunicationPreferences(utr)
+      individual <- saConnector.getIndividual(utr)
+    } yield {
+      Ok(toJson(Taxpayer(
+        customerName   = individual.name.fullName,
+        addresses      = List(individual.address),
+        selfAssessment = SelfAssessmentDetails(utr, preferences, debits.debits.map(_.asDebit()), returns.returns).fixReturns
+      )))
+    }
+  }
 
   def getSelfAssessmentsAndDebits(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
     val returnsF = desConnector.getReturns(utr)
@@ -48,6 +62,6 @@ class TaxpayerController @Inject() (
         returns = returns.returns
       ).fixReturns
       result = returnsAndDebits.fixReturns
-    } yield Ok(Json.toJson(result))
+    } yield Ok(toJson(result))
   }
 }

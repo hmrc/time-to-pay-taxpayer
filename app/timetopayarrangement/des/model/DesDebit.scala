@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import play.api.libs.json.{Json, OFormat}
 
-case class DesDebit(debitType: String, dueDate: LocalDate)
+case class DesDebit(debitType: String, dueDate: Option[LocalDate])
 
 object DesDebit {
   implicit val format: OFormat[DesDebit] = Json.format[DesDebit]

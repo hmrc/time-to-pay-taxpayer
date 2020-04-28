@@ -39,7 +39,7 @@ class DebitsAndReturnsSpec extends UnitSpec {
       Debit(
         originCode = "POA2",
         amount     = 250.52,
-        dueDate    = LocalDate.parse("2016-01-31"),
+        dueDate    = Some(LocalDate.parse("2016-01-31")),
         interest   = Some(Interest(Some(LocalDate.parse("2016-06-01")), 42.32)),
         taxYearEnd = LocalDate.parse("2017-04-05")
       )
@@ -83,7 +83,7 @@ class DebitsAndReturnsSpec extends UnitSpec {
       Debit(
         originCode = "POA2",
         amount     = 250.52,
-        dueDate    = LocalDate.parse("2016-01-31"),
+        dueDate    = Some(LocalDate.parse("2016-01-31")),
         interest   = Some(Interest(Some(LocalDate.parse("2016-06-01")), 42.32)),
         taxYearEnd = LocalDate.parse("2017-04-05")
       )

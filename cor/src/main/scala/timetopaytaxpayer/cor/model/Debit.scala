@@ -23,10 +23,14 @@ import play.api.libs.json.{Json, OFormat}
 final case class Debit(
     originCode: String,
     amount:     BigDecimal,
-    dueDate:    LocalDate,
+    dueDate:    Option[LocalDate],
     interest:   Option[Interest],
     taxYearEnd: LocalDate
-)
+) {
+  def getDueDate(): LocalDate = {
+    dueDate.getOrElse(throw new RuntimeException("Tried to process debit dueDate but wasn't present- should be blocked in EligibilityService"))
+  }
+}
 
 object Debit {
   implicit val format: OFormat[Debit] = Json.format[Debit]

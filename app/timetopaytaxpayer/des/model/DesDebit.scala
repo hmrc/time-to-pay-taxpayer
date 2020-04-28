@@ -24,12 +24,12 @@ import timetopaytaxpayer.cor.model.{Debit, Interest}
 final case class DesDebit(
     taxYearEnd:       LocalDate,
     charge:           DesCharge,
-    relevantDueDate:  LocalDate,
+    relevantDueDate:  Option[LocalDate],
     totalOutstanding: BigDecimal,
     interest:         Option[Interest]
 ) {
 
-  def asDebit() = Debit(
+  def asDebit(): Debit = Debit(
     originCode = this.charge.originCode,
     amount     = this.totalOutstanding,
     dueDate    = this.relevantDueDate,

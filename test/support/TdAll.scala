@@ -50,14 +50,14 @@ object TdAll {
       Debit(
         originCode = "IN1",
         amount     = 2500,
-        dueDate    = "2019-02-25",
+        dueDate    = Some("2019-02-25"),
         interest   = None,
         taxYearEnd = "2019-04-05"
       ),
       Debit(
         originCode = "IN2",
         amount     = 2500,
-        dueDate    = "2019-02-25",
+        dueDate    = Some("2019-02-25"),
         interest   = None,
         taxYearEnd = "2019-04-05"
       )

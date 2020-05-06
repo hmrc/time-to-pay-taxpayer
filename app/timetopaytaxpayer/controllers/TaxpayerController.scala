@@ -35,7 +35,6 @@ class TaxpayerController @Inject() (
     cc:           ControllerComponents
 )(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {
 
-
   def getSelfAssessmentsAndDebits(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
     val returnsF = desConnector.getReturns(utr)
     val debitsF = desConnector.getDebits(utr)

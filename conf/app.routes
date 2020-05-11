@@ -1,2 +1,2 @@
-GET         /taxpayer/returns-and-debits/:utr        @timetopaytaxpayer.controllers.TaxpayerController.getSelfAssessmentsAndDebits(utr: SaUtr)
+GET         /taxpayer/returns-and-debits/:utr        @timetopaytaxpayer.controllers.TaxpayerController.getReturnsAndDebits(utr: SaUtr)
 POST        /taxpayer/submit-arrangement             @timetopayarrangement.ArrangementController.submitArrangement()

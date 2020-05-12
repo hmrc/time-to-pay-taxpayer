@@ -16,7 +16,7 @@
 
 package timetopaytaxpayer.cor
 
-import timetopaytaxpayer.cor.model.{ReturnsAndDebits, SaUtr, Taxpayer}
+import timetopaytaxpayer.cor.model.{ReturnsAndDebits, SaUtr}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
@@ -35,10 +35,5 @@ class TaxpayerConnector(
 
   def getReturnsAndDebits(utr: SaUtr)(implicit hc: HeaderCarrier): Future[ReturnsAndDebits] = {
     http.GET[ReturnsAndDebits](s"$baseUrl/taxpayer/returns-and-debits/${utr.value}")
-  }
-
-  // todo - remove as part of OPS-4581
-  def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Taxpayer] = {
-    http.GET[Taxpayer](s"$baseUrl/taxpayer/${utr.value}")
   }
 }

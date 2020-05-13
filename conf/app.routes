@@ -1,2 +1,5 @@
-GET         /taxpayer/returns-and-debits/:utr        @timetopaytaxpayer.controllers.TaxpayerController.getReturnsAndDebits(utr: SaUtr)
+#  todo - remove as part of OPS-4581
+GET         /taxpayer/:utr                           @timetopaytaxpayer.controllers.TaxpayerController.getTaxPayer(utr: SaUtr)
+
+GET         /taxpayer/returns-and-debits/:utr        @timetopaytaxpayer.controllers.TaxpayerController.getSelfAssessmentsAndDebits(utr: SaUtr)
 POST        /taxpayer/submit-arrangement             @timetopayarrangement.ArrangementController.submitArrangement()

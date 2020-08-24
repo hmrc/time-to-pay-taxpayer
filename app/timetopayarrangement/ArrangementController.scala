@@ -20,7 +20,7 @@ import javax.inject.Inject
 import play.api.mvc.{Action, ControllerComponents}
 import timetopaytaxpayer.cor.model.{CommunicationPreferences, TaxpayerDetails}
 import timetopaytaxpayer.des.DesConnector
-import timetopaytaxpayer.sa.SaConnector
+import timetopaytaxpayer.sa.PaymentStubsProtectedConnector
 import timetopaytaxpayer.sa.model.SaIndividual
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
@@ -30,7 +30,7 @@ class ArrangementController @Inject() (
     arrangementService: ArrangementService,
     cc:                 ControllerComponents,
     desConnector:       DesConnector,
-    saConnector:        SaConnector
+    saConnector:        PaymentStubsProtectedConnector
 )(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   def submitArrangement(): Action[SetupArrangementRequest] = Action.async(parse.json[SetupArrangementRequest]) { implicit request =>

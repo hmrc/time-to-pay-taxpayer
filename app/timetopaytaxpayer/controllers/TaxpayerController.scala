@@ -24,13 +24,13 @@ import play.api.mvc._
 import timetopaytaxpayer.cor.model._
 import timetopaytaxpayer.des.DesConnector
 import timetopaytaxpayer.des.model.{DesReturns, _}
-import timetopaytaxpayer.sa.SaConnector
+import timetopaytaxpayer.sa.PaymentStubsProtectedConnector
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.ExecutionContext
 
 class TaxpayerController @Inject() (
-    saConnector:  SaConnector,
+    saConnector:  PaymentStubsProtectedConnector,
     desConnector: DesConnector,
     cc:           ControllerComponents
 )(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {

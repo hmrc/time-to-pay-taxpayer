@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SaConnector @Inject() (
+class PaymentStubsProtectedConnector @Inject() (
     httpClient: HttpClient,
     config:     ServicesConfig
 )(implicit ec: ExecutionContext) {

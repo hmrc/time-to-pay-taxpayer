@@ -31,7 +31,7 @@ class SaConnector @Inject() (
     config:     ServicesConfig
 )(implicit ec: ExecutionContext) {
 
-  val baseUrl = config.baseUrl("sa-services")
+  val baseUrl = config.baseUrl("payment-stubs-protected")
 
   def getIndividual(utr: SaUtr)(implicit hc: HeaderCarrier): Future[SaIndividual] = {
     val serviceUrl = s"/sa/individual/${utr.value}/designatory-details/taxpayer"

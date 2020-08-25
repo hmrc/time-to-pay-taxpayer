@@ -26,12 +26,12 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class PaymentStubsProtectedConnector @Inject()(
+class SaConnector @Inject()(
     httpClient: HttpClient,
     config:     ServicesConfig
 )(implicit ec: ExecutionContext) {
 
-  val baseUrl = config.baseUrl("payment-stubs-protected")
+  val baseUrl = config.baseUrl("sa-services")
 
   def getIndividual(utr: SaUtr)(implicit hc: HeaderCarrier): Future[SaIndividual] = {
     val serviceUrl = s"/sa/individual/${utr.value}/designatory-details/taxpayer"

@@ -21,13 +21,13 @@ import javax.inject._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import timetopaytaxpayer.des.DesConnector
-import timetopaytaxpayer.sa.PaymentStubsProtectedConnector
+import timetopaytaxpayer.sa.SaConnector
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 class TestOnlyController @Inject() (
-                                     cc:           ControllerComponents,
-                                     desConnector: DesConnector,
-                                     paymentStubsProtectedConnector:  PaymentStubsProtectedConnector
+                                     cc:                             ControllerComponents,
+                                     desConnector:                   DesConnector,
+                                     saConnector: SaConnector
 )
   extends BackendController(cc) {
 
@@ -43,7 +43,7 @@ class TestOnlyController @Inject() (
       "desServicesUrl" -> desConnector.baseUrl,
       "desAuthorizationToken" -> desConnector.token, //it's test only endpoint, no worries
       "desServiceEnvironment" -> desConnector.environment,
-      "saServicesUrl" -> paymentStubsProtectedConnector.baseUrl
+      "saServicesUrl" -> saConnector.baseUrl
     ))
   }
 

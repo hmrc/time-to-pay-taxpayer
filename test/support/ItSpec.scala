@@ -66,7 +66,7 @@ trait ItSpec
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule, new TaxpayerCorModule)))
     .configure(Map[String, Any](
       "microservice.services.des-services.port" -> WireMockSupport.port,
-      "microservice.services.payment-stubs-protected.port" -> WireMockSupport.port,
+      "microservice.services.sa-services.port" -> WireMockSupport.port,
 
       "microservice.services.time-to-pay-taxpayer.port" -> port,
       "microservice.services.time-to-pay-taxpayer.host" -> "localhost"

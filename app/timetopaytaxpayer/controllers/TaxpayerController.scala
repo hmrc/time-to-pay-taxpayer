@@ -24,15 +24,15 @@ import play.api.mvc._
 import timetopaytaxpayer.cor.model._
 import timetopaytaxpayer.des.DesConnector
 import timetopaytaxpayer.des.model.{DesReturns, _}
-import timetopaytaxpayer.sa.SaConnector
+import timetopaytaxpayer.sa.PaymentStubsProtectedConnector
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.ExecutionContext
 
 class TaxpayerController @Inject() (
-    saConnector:  SaConnector,
-    desConnector: DesConnector,
-    cc:           ControllerComponents
+                                     paymentStubsProtectedConnector:  PaymentStubsProtectedConnector,
+                                     desConnector: DesConnector,
+                                     cc:           ControllerComponents
 )(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {
 
   // todo - remove as part of OPS-4581
@@ -41,7 +41,7 @@ class TaxpayerController @Inject() (
       returns <- desConnector.getReturns(utr)
       debits <- desConnector.getDebits(utr)
       preferences <- desConnector.getCommunicationPreferences(utr)
-      individual <- saConnector.getIndividual(utr)
+      individual <- paymentStubsProtectedConnector.getIndividual(utr)
     } yield {
       Ok(toJson(Taxpayer(
         customerName   = individual.name.fullName,

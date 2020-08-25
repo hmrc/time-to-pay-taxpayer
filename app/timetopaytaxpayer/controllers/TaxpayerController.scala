@@ -30,9 +30,9 @@ import uk.gov.hmrc.play.bootstrap.controller.BackendController
 import scala.concurrent.ExecutionContext
 
 class TaxpayerController @Inject() (
-    saConnector:  SaConnector,
-    desConnector: DesConnector,
-    cc:           ControllerComponents
+                                     saConnector: SaConnector,
+                                     desConnector:                   DesConnector,
+                                     cc:                             ControllerComponents
 )(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {
 
   // todo - remove as part of OPS-4581

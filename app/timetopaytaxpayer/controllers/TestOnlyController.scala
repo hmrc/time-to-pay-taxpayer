@@ -25,9 +25,9 @@ import timetopaytaxpayer.sa.SaConnector
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 class TestOnlyController @Inject() (
-    cc:           ControllerComponents,
-    desConnector: DesConnector,
-    saConnector:  SaConnector
+                                     cc:                             ControllerComponents,
+                                     desConnector:                   DesConnector,
+                                     saConnector: SaConnector
 )
   extends BackendController(cc) {
 

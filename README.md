@@ -11,9 +11,7 @@ information for a given UTR. Below is a diagram showing where the Taxpayer servi
 
 ## Run locally
 
-This app depends on 3 DES services and the SA app. Both have stub projects available:
-
-https://github.com/hmrc/self-service-time-to-pay-des-stub-scala
+This app depends on 3 DES services and the SA app. Stubs for these are in:
 
 https://github.com/hmrc/payment-stubs-protected
 

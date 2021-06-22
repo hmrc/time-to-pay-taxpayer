@@ -25,22 +25,6 @@ val scalaCompilerOptions = Seq(
   "-Ypartial-unification" //required by cats
 )
 
-
-
-
-
-lazy val scoverageSettings = {
-  import scoverage.ScoverageKeys
-  Seq(
-    // Semicolon-separated list of regexs matching classes to exclude
-    ScoverageKeys.coverageExcludedPackages := "<empty>;.*BuildInfo.*;Reverse.*;app.Routes.*;prod.*;testOnlyDoNotUseInProd.*;manualdihealth.*;forms.*;config.*;",
-    ScoverageKeys.coverageExcludedFiles := ".*microserviceGlobal.*;.*microserviceWiring.*;.*ApplicationLoader.*;.*ApplicationConfig.*;.*package.*;.*Routes.*;.*TestOnlyController.*;.*WebService.*",
-    ScoverageKeys.coverageMinimum := 80,
-    ScoverageKeys.coverageFailOnMinimum := false,
-    ScoverageKeys.coverageHighlighting := true
-  )
-}
-
 lazy val commonSettings = Seq(
   scalaVersion := "2.12.12",
   majorVersion := 0,
@@ -60,7 +44,7 @@ lazy val commonSettings = Seq(
   .++(Seq(
     wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference)
   ))
-  .++(scoverageSettings)
+  .++(ScoverageSettings())
   .++(scalaSettings)
   .++(uk.gov.hmrc.DefaultBuildSettings.defaultSettings())
 

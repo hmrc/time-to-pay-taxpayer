@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.debits
 
-import java.time.LocalDate
-
-import org.scalatest.{Matchers, WordSpecLike}
 import play.api.libs.json._
+import support.UnitSpec
 import timetopaytaxpayer.cor.model.Interest
 import timetopaytaxpayer.des.model.{DesCharge, DesDebit, DesDebits}
 
-class DesDebitsJsonSpec extends WordSpecLike with Matchers {
+import java.time.LocalDate
 
-  "a json value" should {
+class DesDebitsJsonSpec extends UnitSpec {
+
+  "a json value" - {
     "be parsed to debits" in {
       val json = Json.parse(
         """{

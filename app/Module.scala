@@ -20,7 +20,7 @@ import com.google.inject.{AbstractModule, Provides, Singleton}
 
 class Module extends AbstractModule {
 
-  def configure(): Unit = ()
+  override def configure(): Unit = ()
 
   @Provides
   @Singleton

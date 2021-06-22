@@ -16,7 +16,7 @@
 
 package timetopaytaxpayer.cor.model
 
-import play.api.libs.json.{Json, OFormat, Reads}
+import play.api.libs.json.{Json, OFormat}
 
 final case class Address(
     addressLine1: Option[String] = None,

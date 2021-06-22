@@ -19,12 +19,14 @@ package support
 import com.github.tomakehurst.wiremock.verification.LoggedRequest
 import org.scalatest._
 import org.scalatest.concurrent.{Eventually, IntegrationPatience, ScalaFutures}
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.{JsValue, Json}
+
 import scala.language.implicitConversions
 
 trait RichMatchers
   extends Matchers
-  with DiagrammedAssertions
+  //  with DiagrammedAssertions
   with TryValues
   with EitherValues
   with OptionValues

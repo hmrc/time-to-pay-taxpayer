@@ -19,7 +19,7 @@ package timetopaytaxpayer.des
 import timetopaytaxpayer.cor.model.{CommunicationPreferences, SaUtr}
 import timetopaytaxpayer.des.model._
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.http.Authorization
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 

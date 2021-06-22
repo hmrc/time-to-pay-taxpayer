@@ -16,13 +16,12 @@
 
 package timetopayarrangement
 
-import javax.inject.Inject
 import timetopayarrangement.builder.{DesTtpArrangementBuilder, LetterAndControlBuilder}
 import timetopayarrangement.des.DesConnector
 import timetopayarrangement.des.model.DesSetupArrangementRequest
 import timetopaytaxpayer.cor.model.TaxpayerDetails
-import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ArrangementService @Inject() (
@@ -32,7 +31,7 @@ class ArrangementService @Inject() (
   /**
    * Builds and submits the TTPArrangement to Des.
    */
-  def submit(setupArrangementRequest: SetupArrangementRequest, taxpayerDetails: TaxpayerDetails)(implicit hc: HeaderCarrier): Future[Unit] = {
+  def submit(setupArrangementRequest: SetupArrangementRequest, taxpayerDetails: TaxpayerDetails): Future[Unit] = {
     val desSetupArrangementRequest = DesSetupArrangementRequest(
       ttpArrangement   = DesTtpArrangementBuilder.createDesTtpArrangement(setupArrangementRequest, taxpayerDetails),
       letterAndControl = LetterAndControlBuilder.create(setupArrangementRequest, taxpayerDetails)

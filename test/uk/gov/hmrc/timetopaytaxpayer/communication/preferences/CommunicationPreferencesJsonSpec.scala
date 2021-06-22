@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.communication.preferences
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.{JsSuccess, Json}
+import support.UnitSpec
 import timetopaytaxpayer.cor.model.CommunicationPreferences
 
-class CommunicationPreferencesJsonSpec extends WordSpec with Matchers {
+class CommunicationPreferencesJsonSpec extends UnitSpec {
 
-  "a json value" should {
-
+  "a json value" - {
     "be parsed to communication preferences" in {
 
       val json = Json.parse(

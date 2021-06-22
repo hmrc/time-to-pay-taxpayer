@@ -16,13 +16,12 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.sa
 
-import org.scalatest.{Matchers, WordSpec}
-import timetopaytaxpayer.sa
+import support.UnitSpec
 import timetopaytaxpayer.sa.model.SaName
 
-class NameSpec extends WordSpec with Matchers {
+class NameSpec extends UnitSpec {
 
-  "Name" should {
+  "Name" - {
     "print to string correctly without middle name" in {
       SaName(
         Some("President"),

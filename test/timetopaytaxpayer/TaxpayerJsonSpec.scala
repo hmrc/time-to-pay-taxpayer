@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.cor.model
+package timetopaytaxpayer
+
+import play.api.libs.json.Json.toJson
+import play.api.libs.json._
+import support.UnitSpec
+import timetopaytaxpayer.cor.model._
 
 import java.time.format.DateTimeFormatter.ISO_DATE_TIME
 import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
 
-import org.scalatest.{Matchers, WordSpec}
-import play.api.libs.json.Json.toJson
-import play.api.libs.json._
-
 // todo - remove as part of OPS-4581
-class TaxpayerJsonSpec extends WordSpec with Matchers {
-  "a tax payer" should {
+class TaxpayerJsonSpec extends UnitSpec {
+
+  "a tax payer" - {
     "be serialised to json" in {
       val prefs = CommunicationPreferences(
         welshLanguageIndicator = false, audioIndicator = false, largePrintIndicator = false, brailleIndicator = false
@@ -92,7 +94,7 @@ class TaxpayerJsonSpec extends WordSpec with Matchers {
     }
   }
 
-  "address" should {
+  "address" - {
     "parse json" in {
       implicit val format: Format[Address] = Json.format[Address]
 

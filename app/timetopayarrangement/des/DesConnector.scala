@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import timetopayarrangement.des.model.DesSetupArrangementRequest
 import timetopaytaxpayer.cor.model.SaUtr
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.http.Authorization
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.http.HttpReads.Implicits._

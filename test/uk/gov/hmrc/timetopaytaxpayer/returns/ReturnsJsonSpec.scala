@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.returns
 
-import java.time.LocalDate
-
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json._
+import support.UnitSpec
 import timetopaytaxpayer.cor.model._
 import timetopaytaxpayer.des.model._
 
-class ReturnsJsonSpec extends WordSpec with Matchers {
+import java.time.LocalDate
 
-  "a json value" should {
+class ReturnsJsonSpec extends UnitSpec {
+
+  "a json value" - {
     "be parsed to returns" in {
       val json = Json.parse(
         """{

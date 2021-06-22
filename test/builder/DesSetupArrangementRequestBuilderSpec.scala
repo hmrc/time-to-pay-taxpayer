@@ -40,7 +40,6 @@ class DesSetupArrangementRequestBuilderSpec extends UnitSpec {
   )
 
   "DesTTPArrangementService " - {
-
     forAll(taxPayerData) { (taxpayer, enforcementFlag, message) =>
       s"return enforcementFlag =  $enforcementFlag for $message" in {
         val flag = DesTtpArrangementBuilder.enforcementFlag(taxpayer)

@@ -16,24 +16,11 @@
 
 package support
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
-
-import com.google.inject.AbstractModule
-import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfterEach, FreeSpecLike}
-import org.scalatestplus.play.guice.GuiceOneServerPerTest
-import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
-import play.api.{Application, Configuration}
-import timetopaytaxpayer.cor.TaxpayerCorModule
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-
-import scala.concurrent.ExecutionContext
+import org.scalatest.freespec.AnyFreeSpecLike
 
 /**
  * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
  */
 trait UnitSpec
-  extends FreeSpecLike
+  extends AnyFreeSpecLike
   with RichMatchers

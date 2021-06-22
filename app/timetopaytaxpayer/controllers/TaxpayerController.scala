@@ -50,7 +50,7 @@ class TaxpayerController @Inject() (
     }
   }
 
-  def getReturnsAndDebits(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
+  def getReturnsAndDebits(utr: SaUtr): Action[AnyContent] = Action.async { _ =>
     val returnsF = desConnector.getReturns(utr)
     val debitsF = desConnector.getDebits(utr)
 

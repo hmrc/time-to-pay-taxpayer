@@ -29,7 +29,7 @@ import wiremockresponses.{DesWiremockResponses, SaWiremockResponses}
 class TaxpayerControllerSpec extends ItSpec {
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private val date20190225 = LocalDate.of(2019, 2, 25)
+  /*private val date20190225 = LocalDate.of(2019, 2, 25)
   private val date20190405 = LocalDate.of(2019, 4, 5)
   private val date20190131 = LocalDate.of(2019, 1, 31)
 
@@ -52,7 +52,7 @@ class TaxpayerControllerSpec extends ItSpec {
         )
       )
     )
-  )
+  )*/
 
   "should get a 200 with an authorization header" in {
     DesWiremockResponses.getDebits()

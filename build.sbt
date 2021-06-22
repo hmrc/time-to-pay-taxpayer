@@ -8,6 +8,9 @@ import uk.gov.hmrc.SbtArtifactory
 import wartremover.{Wart, wartremoverErrors, wartremoverExcluded, wartremoverWarnings}
 
 lazy val appName = "time-to-pay-taxpayer"
+//scalaVersion := "2.12.12"
+
+resolvers += Resolver.bintrayRepo("hmrc", "releases")
 
 val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
@@ -102,10 +105,12 @@ lazy val scoverageSettings = {
 }
 
 lazy val commonSettings = Seq(
-  scalaVersion := "2.11.11",
+  scalaVersion := "2.12.12",
   majorVersion := 0,
   scalacOptions ++= scalaCompilerOptions,
-  resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
+  resolvers ++= Seq(
+    Resolver.jcenterRepo
+  ),
   evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
   wartremoverExcluded ++=
     (baseDirectory.value / "it").get ++
@@ -136,7 +141,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     libraryDependencies ++= Seq(
       ws,
-      "uk.gov.hmrc" %% "bootstrap-play-26" % "0.41.0",
+      "uk.gov.hmrc" %% "bootstrap-backend-play-26" % "3.4.0",
       "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
       "org.scalatest" %% "scalatest" % "3.0.4" % Test,
       "org.pegdown" % "pegdown" % "1.6.0" % Test,
@@ -166,6 +171,6 @@ lazy val cor = Project(appName + "-cor", file("cor"))
   .settings(
     libraryDependencies ++= List(
       "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
-      "uk.gov.hmrc" %% "bootstrap-play-26" % "0.41.0" % Provided
+      "uk.gov.hmrc" %% "bootstrap-backend-play-26" % "3.4.0" % Provided
     )
   )

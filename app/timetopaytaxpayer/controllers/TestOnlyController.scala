@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,18 @@
 package timetopaytaxpayer.controllers
 
 import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
+
 import javax.inject._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
 import timetopaytaxpayer.des.DesConnector
 import timetopaytaxpayer.sa.SaConnector
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 class TestOnlyController @Inject() (
-                                     cc:                             ControllerComponents,
-                                     desConnector:                   DesConnector,
-                                     saConnector: SaConnector
+    cc:           ControllerComponents,
+    desConnector: DesConnector,
+    saConnector:  SaConnector
 )
   extends BackendController(cc) {
 

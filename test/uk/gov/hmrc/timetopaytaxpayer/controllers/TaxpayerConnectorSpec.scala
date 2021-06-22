@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import support._
 import timetopaytaxpayer.cor.TaxpayerConnector
-import timetopaytaxpayer.cor.model._
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, Upstream5xxResponse}
-import wiremockresponses.{DesWiremockResponses, SaWiremockResponses}
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import wiremockresponses.DesWiremockResponses
 
 class TaxpayerConnectorSpec extends ItSpec {
 
@@ -45,7 +44,7 @@ class TaxpayerConnectorSpec extends ItSpec {
     val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
 
     val e: Throwable = taxpayerConnector.getReturnsAndDebits(TdAll.saUtr).failed.futureValue
-    e shouldBe an[Upstream5xxResponse]
+    e shouldBe an[UpstreamErrorResponse]
     e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/returns-and-debits/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/debits' returned 500. Response body: 'error'"}'"""
   }
 
@@ -57,7 +56,7 @@ class TaxpayerConnectorSpec extends ItSpec {
     val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
 
     val e: Throwable = taxpayerConnector.getReturnsAndDebits(TdAll.saUtr).failed.futureValue
-    e shouldBe an[NotFoundException]
-    e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/returns-and-debits/3217334604' returned 404 (Not Found). Response body: '{"statusCode":404,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/returns' returned 404 (Not Found). Response body: 'not found '"}'"""
+    e shouldBe an[UpstreamErrorResponse]
+    e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/returns-and-debits/3217334604' returned 500. Response body: '{"statusCode":500,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/returns' returned 404. Response body: 'not found '"}'"""
   }
 }

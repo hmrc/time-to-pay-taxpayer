@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,15 @@ import timetopaytaxpayer.cor.model.{CommunicationPreferences, TaxpayerDetails}
 import timetopaytaxpayer.des.DesConnector
 import timetopaytaxpayer.sa.SaConnector
 import timetopaytaxpayer.sa.model.SaIndividual
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.ExecutionContext
 
 class ArrangementController @Inject() (
-                                        arrangementService:             ArrangementService,
-                                        cc:                             ControllerComponents,
-                                        desConnector:                   DesConnector,
-                                        saConnector: SaConnector
+    arrangementService: ArrangementService,
+    cc:                 ControllerComponents,
+    desConnector:       DesConnector,
+    saConnector:        SaConnector
 )(implicit ec: ExecutionContext) extends BackendController(cc) {
 
   def submitArrangement(): Action[SetupArrangementRequest] = Action.async(parse.json[SetupArrangementRequest]) { implicit request =>

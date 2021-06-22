@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import timetopaytaxpayer.cor.model.SaUtr
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,6 +42,6 @@ class DesConnector @Inject() (
 
   def submitArrangement(utr: SaUtr, desSetupArrangementRequest: DesSetupArrangementRequest): Future[Unit] = {
     val url = s"$desArrangementUrl/time-to-pay/taxpayers/${utr.value}/arrangements"
-    httpClient.POST(url, desSetupArrangementRequest).map(_ => ())
+    httpClient.POST[DesSetupArrangementRequest, Unit](url, desSetupArrangementRequest)
   }
 }

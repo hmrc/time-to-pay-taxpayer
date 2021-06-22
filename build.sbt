@@ -142,7 +142,6 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= Seq(
       ws,
       "uk.gov.hmrc" %% "bootstrap-backend-play-26" % "3.4.0",
-      "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
       "org.scalatest" %% "scalatest" % "3.0.4" % Test,
       "org.pegdown" % "pegdown" % "1.6.0" % Test,
       "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import timetopayarrangement.{Instalment, Schedule, SetupArrangementRequest}
 import timetopaytaxpayer.cor.model.TaxpayerDetails
 
 object DesTtpArrangementBuilder {
+  val logger = Logger(getClass)
 
   val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
@@ -58,12 +59,12 @@ object DesTtpArrangementBuilder {
 
     val addressTypes: Seq[JurisdictionType] = taxpayer.addresses.map(JurisdictionChecker.addressToJurisdictionType).distinct
     addressTypes match {
-      case x :: Nil => x match {
+      case Seq(x) => x match {
         case Scottish => "Summary Warrant"
         case _        => "Distraint"
       }
       case _ =>
-        Logger.logger.info(s"Unable to determine enforcement flag as multiple mixed or no jurisdictions detected $addressTypes")
+        logger.info(s"Unable to determine enforcement flag as multiple mixed or no jurisdictions detected $addressTypes")
         "Other"
     }
   }

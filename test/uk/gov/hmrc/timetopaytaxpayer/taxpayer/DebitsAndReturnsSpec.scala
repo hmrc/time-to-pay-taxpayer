@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,15 @@
 
 package uk.gov.hmrc.timetopaytaxpayer.taxpayer
 
-import java.time.format.DateTimeFormatter
-import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
-
-import org.scalatest.{FreeSpec, Matchers}
 import support.UnitSpec
 import timetopaytaxpayer.cor.model.{Debit, Interest, Return, ReturnsAndDebits}
+
+import java.time.format.DateTimeFormatter
+import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
 
 class DebitsAndReturnsSpec extends UnitSpec {
 
   "fix returns" in {
-      implicit def stringToDate(s: String): LocalDate = LocalDate.parse(s)
-      implicit def stringToDateO(s: String): Option[LocalDate] = Some(LocalDate.parse(s))
     implicit val clock: Clock = Clock.fixed(LocalDateTime.parse("2006-01-22T16:28:55.185", DateTimeFormatter.ISO_DATE_TIME).atZone(ZoneId.of("Europe/London")).toInstant, ZoneId.of("UTC"))
     saBeforeFix.fixReturns shouldBe saAfterFix
   }

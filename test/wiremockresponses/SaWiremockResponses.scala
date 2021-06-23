@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,19 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import support.TdAll
 import timetopaytaxpayer.cor.model.SaUtr
+import timetopaytaxpayer.sa.model.{SaIndividual, SaName}
 
 object SaWiremockResponses {
 
+  private val individual =
+    """{
+      |"name":{"title":"Mr","forename":"Lester","surname":"Corncrake","honours":"KCBE"},
+      |"address":{"addressLine1":"123 Any Street","addressLine2":"Kingsland High Road","addressLine3":"Dalston","addressLine4":"Greater London","addressLine5":"","postcode":"E8 3PP","additionalDeliveryInformation":"Watch the dog"},"contact":{"telephone":{"daytime":"02765760#1235","evening":"027657630","mobile":"rowMapper","fax":"0208875765"},
+      |"email":{"primary":"lc@notreal.com.com.com"}}}""".stripMargin
+
   def getIndividual(
       utr:      SaUtr  = TdAll.saUtr,
-      response: String = """{"name":{"title":"Mr","forename":"Lester","surname":"Corncrake","honours":"KCBE"},"address":{"addressLine1":"123 Any Street","addressLine2":"Kingsland High Road","addressLine3":"Dalston","addressLine4":"Greater London","addressLine5":"","postcode":"E8 3PP","additionalDeliveryInformation":"Watch the dog"},"contact":{"telephone":{"daytime":"02765760#1235","evening":"027657630","mobile":"rowMapper","fax":"0208875765"},"email":{"primary":"lc@notreal.com.com.com"}}}""",
+      response: String = individual,
       status:   Int    = 200
   ): StubMapping = {
     stubFor(

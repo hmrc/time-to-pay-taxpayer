@@ -25,8 +25,6 @@ import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
 class DebitsAndReturnsSpec extends UnitSpec {
 
   "fix returns" in {
-    //    implicit def stringToDate(s: String): LocalDate = LocalDate.parse(s)
-    //    implicit def stringToDateO(s: String): Option[LocalDate] = Some(LocalDate.parse(s))
     implicit val clock: Clock = Clock.fixed(LocalDateTime.parse("2006-01-22T16:28:55.185", DateTimeFormatter.ISO_DATE_TIME).atZone(ZoneId.of("Europe/London")).toInstant, ZoneId.of("UTC"))
     saBeforeFix.fixReturns shouldBe saAfterFix
   }

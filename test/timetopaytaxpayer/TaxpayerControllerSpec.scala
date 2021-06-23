@@ -29,13 +29,13 @@ import wiremockresponses.{DesWiremockResponses, SaWiremockResponses}
 class TaxpayerControllerSpec extends ItSpec {
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  /*private val date20190225 = LocalDate.of(2019, 2, 25)
+  private val date20190225 = LocalDate.of(2019, 2, 25)
   private val date20190405 = LocalDate.of(2019, 4, 5)
   private val date20190131 = LocalDate.of(2019, 1, 31)
 
-  private val taxpayer = Taxpayer(
+  private val expectedTaxpayer = Taxpayer(
     "Mr Lester Corncrake",
-    Seq(Address(Some("123 Any Street"), Some("Kingsland High Road"), Some("E8 3PP"))),
+    Seq(Address(Some("123 Any Street"), Some("Kingsland High Road"), Some("Dalston"), Some("Greater London"), Some(""), Some("E8 3PP"))),
     SelfAssessmentDetails(
       saUtr,
       CommunicationPreferences(
@@ -52,7 +52,7 @@ class TaxpayerControllerSpec extends ItSpec {
         )
       )
     )
-  )*/
+  )
 
   "should get a 200 with an authorization header" in {
     DesWiremockResponses.getDebits()
@@ -63,7 +63,7 @@ class TaxpayerControllerSpec extends ItSpec {
     val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
 
     val taxpayer: Taxpayer = taxpayerConnector.getTaxPayer(saUtr).futureValue
-    taxpayer shouldBe taxpayer
+    taxpayer shouldBe expectedTaxpayer
   }
 
   "error case - getDebits fails" in {

@@ -29,12 +29,11 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import scala.concurrent.{ExecutionContext, Future}
 
 class DesConnector @Inject() (
-    servicesConfig: ServicesConfig,
-    desConfig:      DesConfig,
+    desConfig:      DesArrangementConfig,
     httpClient:     HttpClient
 )(implicit ec: ExecutionContext) {
 
-  private val desArrangementUrl: String = servicesConfig.baseUrl("des-arrangement-api")
+  private val desArrangementUrl: String = desConfig.baseUrl
 
   // external services require explicitly passed headers
   private implicit val emptyHc: HeaderCarrier = HeaderCarrier()

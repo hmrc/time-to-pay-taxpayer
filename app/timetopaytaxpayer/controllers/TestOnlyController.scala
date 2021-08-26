@@ -21,13 +21,13 @@ import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
 import javax.inject._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
-import timetopaytaxpayer.des.DesConnector
+import timetopaytaxpayer.des.{DesConfig, DesConnector}
 import timetopaytaxpayer.sa.SaConnector
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 class TestOnlyController @Inject() (
     cc:           ControllerComponents,
-    desConnector: DesConnector,
+    desConfig:    DesConfig,
     saConnector:  SaConnector
 )
   extends BackendController(cc) {
@@ -41,9 +41,9 @@ class TestOnlyController @Inject() (
 
   def connectorsConfig() = cc.actionBuilder { r =>
     Ok(Json.obj(
-      "desServicesUrl" -> desConnector.baseUrl,
-      "desAuthorizationToken" -> desConnector.token, //it's test only endpoint, no worries
-      "desServiceEnvironment" -> desConnector.environment,
+      "desServicesUrl" -> desConfig.baseUrl,
+      "desAuthorizationToken" -> desConfig.authorisationToken, //it's test only endpoint, no worries
+      "desServiceEnvironment" -> desConfig.serviceEnvironment,
       "saServicesUrl" -> saConnector.baseUrl
     ))
   }

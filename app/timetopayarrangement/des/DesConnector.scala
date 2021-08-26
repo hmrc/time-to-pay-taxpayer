@@ -19,6 +19,7 @@ package timetopayarrangement.des
 import com.google.inject.Inject
 import timetopayarrangement.des.model.DesSetupArrangementRequest
 import timetopaytaxpayer.cor.model.SaUtr
+import timetopaytaxpayer.des.DesConfig
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.Authorization
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -29,19 +30,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DesConnector @Inject() (
     servicesConfig: ServicesConfig,
+    desConfig:      DesConfig,
     httpClient:     HttpClient
 )(implicit ec: ExecutionContext) {
 
   private val desArrangementUrl: String = servicesConfig.baseUrl("des-arrangement-api")
-  private val serviceEnvironment: String = servicesConfig.getString("microservice.services.des-arrangement-api.environment")
-  private val authorisationToken: String = servicesConfig.getString("microservice.services.des-arrangement-api.authorization-token")
 
-  private implicit val desHeaderCarrier: HeaderCarrier = HeaderCarrier(
-    authorization = Some(Authorization(s"Bearer $authorisationToken"))
-  ).withExtraHeaders("Environment" -> serviceEnvironment)
+  // external services require explicitly passed headers
+  private implicit val emptyHc: HeaderCarrier = HeaderCarrier()
+  private val headers: Seq[(String, String)] = desConfig.desHeaders
 
   def submitArrangement(utr: SaUtr, desSetupArrangementRequest: DesSetupArrangementRequest): Future[Unit] = {
     val url = s"$desArrangementUrl/time-to-pay/taxpayers/${utr.value}/arrangements"
-    httpClient.POST[DesSetupArrangementRequest, Unit](url, desSetupArrangementRequest)
+    httpClient.POST[DesSetupArrangementRequest, Unit](url, desSetupArrangementRequest, headers = headers)
   }
 }

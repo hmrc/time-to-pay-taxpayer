@@ -19,40 +19,36 @@ package timetopaytaxpayer.des
 import timetopaytaxpayer.cor.model.{CommunicationPreferences, SaUtr}
 import timetopaytaxpayer.des.model._
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.Authorization
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DesConnector @Inject() (
-    httpClient:     HttpClient,
-    servicesConfig: ServicesConfig
+    httpClient: HttpClient,
+    desConfig:  DesConfig
 )(implicit ec: ExecutionContext) {
 
-  val baseUrl = servicesConfig.baseUrl ("des-services")
-  val token = servicesConfig.getString("microservice.services.des-services.authorizationToken")
-  val environment = servicesConfig.getString("microservice.services.des-services.serviceEnvironment")
+  private val baseUrl = desConfig.baseUrl
 
-  implicit val desHeaderCarrier: HeaderCarrier = HeaderCarrier(
-    authorization = Some(Authorization(s"Bearer $token"))
-  ).withExtraHeaders("Environment" -> environment)
+  // external services require explicitly passed headers
+  private implicit val emptyHc: HeaderCarrier = HeaderCarrier()
+  private val headers: Seq[(String, String)] = desConfig.desHeaders
 
   def getReturns(utr: SaUtr): Future[DesReturns] = {
     val serviceUrl = s"/sa/taxpayer/${utr.value}/returns"
-    httpClient.GET[DesReturns](s"$baseUrl$serviceUrl")
+    httpClient.GET[DesReturns](s"$baseUrl$serviceUrl", headers = headers)
   }
 
   def getDebits(utr: SaUtr): Future[DesDebits] = {
     val serviceUrl = s"/sa/taxpayer/${utr.value}/debits"
-    httpClient.GET[DesDebits](s"$baseUrl$serviceUrl")
+    httpClient.GET[DesDebits](s"$baseUrl$serviceUrl", headers = headers)
   }
 
   def getCommunicationPreferences(utr: SaUtr): Future[CommunicationPreferences] = {
     val serviceUrl = s"/sa/taxpayer/${utr.value}/communication-preferences"
-    httpClient.GET[CommunicationPreferences](s"$baseUrl$serviceUrl")
+    httpClient.GET[CommunicationPreferences](s"$baseUrl$serviceUrl", headers = headers)
   }
 }
 

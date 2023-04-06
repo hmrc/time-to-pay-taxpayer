@@ -5,7 +5,7 @@ information for a given UTR. Below is a diagram showing where the Taxpayer servi
 
 <a href="https://github.com/hmrc/time-to-pay-taxpayer">
     <p align="center">
-        <img src="https://raw.githubusercontent.com/hmrc/time-to-pay-taxpayer/master/public/taxpayer.png" alt="TaxpayerOverview">
+        <img src="public/taxpayer.png" alt="TaxpayerOverview">
     </p>
 </a>
 

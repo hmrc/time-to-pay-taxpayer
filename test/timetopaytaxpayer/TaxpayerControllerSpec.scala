@@ -43,13 +43,7 @@ class TaxpayerControllerSpec extends ItSpec {
       ),
       Vector(Debit("IN1", 2500, date20190225, None, date20190405), Debit("IN2", 2500, date20190225, None, date20190405)),
       Vector(
-        Return(date20190405, None, Some(date20190131), None),
-        Return(
-          LocalDate.of(2018, 4, 5),
-          None,
-          Some(LocalDate.of(2018, 1, 31)),
-          Some(LocalDate.of(2018, 3, 9))
-        )
+        Return(date20190405, None, Some(date20190131), None)
       )
     )
   )

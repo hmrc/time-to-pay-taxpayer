@@ -27,7 +27,7 @@ object TdAll {
   val taxpayerDetails: TaxpayerDetails = TaxpayerDetails(
     utr                      = saUtr,
     customerName             = "Mr Lester Corncrake",
-    addresses                = List(
+    addresses                = Vector(
       Address(
         addressLine1 = "123 Any Street",
         addressLine2 = "Kingsland High Road",
@@ -46,7 +46,7 @@ object TdAll {
   )
 
   val returnsAndDebits = ReturnsAndDebits(
-    debits  = List(
+    debits  = Vector(
       Debit(
         originCode = "IN1",
         amount     = 2500,
@@ -62,7 +62,7 @@ object TdAll {
         taxYearEnd = "2019-04-05"
       )
     ),
-    returns = List(
+    returns = Vector(
       Return(
         taxYearEnd   = "2019-04-05",
         issuedDate   = None,

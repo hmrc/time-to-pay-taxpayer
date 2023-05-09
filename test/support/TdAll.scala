@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,12 +68,6 @@ object TdAll {
         issuedDate   = None,
         dueDate      = "2019-01-31",
         receivedDate = None
-      ),
-      Return(
-        taxYearEnd   = "2018-04-05",
-        issuedDate   = None,
-        dueDate      = "2018-01-31",
-        receivedDate = "2018-03-09"
       )
     )
   )

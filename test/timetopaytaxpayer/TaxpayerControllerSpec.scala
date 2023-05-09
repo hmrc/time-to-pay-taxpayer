@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,21 +35,15 @@ class TaxpayerControllerSpec extends ItSpec {
 
   private val expectedTaxpayer = Taxpayer(
     "Mr Lester Corncrake",
-    Seq(Address(Some("123 Any Street"), Some("Kingsland High Road"), Some("Dalston"), Some("Greater London"), Some(""), Some("E8 3PP"))),
+    Vector(Address(Some("123 Any Street"), Some("Kingsland High Road"), Some("Dalston"), Some("Greater London"), Some(""), Some("E8 3PP"))),
     SelfAssessmentDetails(
       saUtr,
       CommunicationPreferences(
         welshLanguageIndicator = true, audioIndicator = false, largePrintIndicator = false, brailleIndicator = false
       ),
-      Seq(Debit("IN1", 2500, date20190225, None, date20190405), Debit("IN2", 2500, date20190225, None, date20190405)),
-      Seq(
-        Return(date20190405, None, Some(date20190131), None),
-        Return(
-          LocalDate.of(2018, 4, 5),
-          None,
-          Some(LocalDate.of(2018, 1, 31)),
-          Some(LocalDate.of(2018, 3, 9))
-        )
+      Vector(Debit("IN1", 2500, date20190225, None, date20190405), Debit("IN2", 2500, date20190225, None, date20190405)),
+      Vector(
+        Return(date20190405, None, Some(date20190131), None)
       )
     )
   )

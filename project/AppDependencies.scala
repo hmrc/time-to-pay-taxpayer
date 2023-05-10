@@ -4,7 +4,7 @@ import play.sbt.PlayImport.ws
 object AppDependencies {
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "5.4.0",
+    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "5.12.0",
     "com.vladsch.flexmark" % "flexmark-all" % "0.35.10"
   )
 

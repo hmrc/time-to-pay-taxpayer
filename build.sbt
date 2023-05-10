@@ -1,19 +1,14 @@
 import BuildSettings.{commonSettings, scalaV}
-import uk.gov.hmrc.SbtArtifactory
 import wartremover.wartremoverExcluded
 
 lazy val appName = "time-to-pay-taxpayer"
 scalaVersion := scalaV
 
-resolvers += Resolver.bintrayRepo("hmrc", "releases")
-
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(
     play.sbt.PlayScala,
     SbtAutoBuildPlugin,
-    SbtGitVersioning,
-    SbtDistributablesPlugin,
-    SbtArtifactory
+    SbtDistributablesPlugin
   )
   .settings(commonSettings: _*)
   .settings(SbtDistributablesPlugin.publishingSettings: _*)
@@ -33,9 +28,7 @@ lazy val microservice = Project(appName, file("."))
 
 lazy val cor = Project(appName + "-cor", file("cor"))
   .enablePlugins(
-    SbtAutoBuildPlugin,
-    SbtGitVersioning,
-    SbtArtifactory
+    SbtAutoBuildPlugin
   )
   .settings(commonSettings: _*)
   .settings(

@@ -16,14 +16,14 @@
 
 package timetopaytaxpayer
 
-import java.time.LocalDate
-
 import support.TdAll.saUtr
 import support._
 import timetopaytaxpayer.cor.TaxpayerConnector
 import timetopaytaxpayer.cor.model._
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import wiremockresponses.{DesWiremockResponses, SaWiremockResponses}
+
+import java.time.LocalDate
 
 // todo - remove as part of OPS-4581
 class TaxpayerControllerSpec extends ItSpec {

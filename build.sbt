@@ -30,7 +30,7 @@ lazy val cor = Project(appName + "-cor", file("cor"))
   .enablePlugins(
     SbtAutoBuildPlugin
   )
-  .settings(commonSettings: _*)
+  .settings(commonSettings *)
   .settings(
     libraryDependencies ++= List(
       "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,

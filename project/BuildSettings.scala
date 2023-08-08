@@ -23,7 +23,7 @@ object BuildSettings {
   lazy val commonSettings =
     uk.gov.hmrc.DefaultBuildSettings.scalaSettings ++
       uk.gov.hmrc.DefaultBuildSettings.defaultSettings() ++ Seq(
-      scalaVersion := "2.13.11",
+      scalaVersion := scalaV,
       majorVersion := 0,
       scalacOptions ++= scalaCompilerOptions,
       resolvers ++= Seq(

@@ -18,7 +18,7 @@ package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import support._
 import timetopaytaxpayer.cor.TaxpayerConnector
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import wiremockresponses.DesWiremockResponses
 
 class TaxpayerConnectorSpec extends ItSpec {

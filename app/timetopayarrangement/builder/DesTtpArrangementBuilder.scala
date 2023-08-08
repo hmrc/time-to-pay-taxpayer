@@ -64,7 +64,7 @@ object DesTtpArrangementBuilder {
         case _        => "Distraint"
       }
       case _ =>
-        logger.info(s"Unable to determine enforcement flag as multiple mixed or no jurisdictions detected $addressTypes")
+        logger.info(s"Unable to determine enforcement flag as multiple mixed or no jurisdictions detected ${addressTypes.toString()}")
         "Other"
     }
   }
@@ -86,9 +86,9 @@ object DesTtpArrangementBuilder {
     val finalPayment = ttpArrangement.schedule.instalments.last.amount
 
     val saNotes = s"DDI $directDebitReference, PP $paymentPlanReference, " +
-      s"First Payment Due Date $initialPaymentDate, First Payment £$initialPayment, " +
-      s"Regular Payment £$regularPaymentAmount, Frequency Monthly, " +
-      s"Final Payment £$finalPayment, Review Date $reviewDate"
+      s"First Payment Due Date $initialPaymentDate, First Payment £${initialPayment.toString()}, " +
+      s"Regular Payment £${regularPaymentAmount.toString()}, Frequency Monthly, " +
+      s"Final Payment £${finalPayment.toString()}, Review Date $reviewDate"
 
     saNotes.take(250)
   }

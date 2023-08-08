@@ -51,8 +51,8 @@ trait ItSpec
   lazy val overridingsModule = new AbstractModule {
     override def configure(): Unit = ()
   }
-  lazy val servicesConfig = fakeApplication.injector.instanceOf[ServicesConfig]
-  lazy val config = fakeApplication.injector.instanceOf[Configuration]
+  lazy val servicesConfig = fakeApplication().injector.instanceOf[ServicesConfig]
+  lazy val config = fakeApplication().injector.instanceOf[Configuration]
   val baseUrl: String = s"http://localhost:$WireMockSupport.port"
 
   override implicit val patienceConfig = PatienceConfig(

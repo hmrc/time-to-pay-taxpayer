@@ -1,29 +1,29 @@
-import sbt.Keys._
-import sbt._
+import sbt.Keys.*
+import sbt.*
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
-import wartremover.{Wart, wartremoverErrors, wartremoverExcluded}
+import wartremover.Wart
+import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 
 object BuildSettings {
-  val scalaV = "2.12.12"
+  val scalaV = "2.13.8"
 
   val scalaCompilerOptions = Seq(
     "-Xfatal-warnings",
     "-Xlint:-missing-interpolator,_",
-    "-Yno-adapted-args",
+    "-Xlint:-byname-implicit",
     "-Ywarn-value-discard",
     "-Ywarn-dead-code",
     "-deprecation",
     "-feature",
     "-unchecked",
     "-Ywarn-unused:-imports",
-    "-language:implicitConversions",
-    "-Ypartial-unification" //required by cats
+    "-language:implicitConversions"
   )
 
   lazy val commonSettings =
     uk.gov.hmrc.DefaultBuildSettings.scalaSettings ++
       uk.gov.hmrc.DefaultBuildSettings.defaultSettings() ++ Seq(
-      scalaVersion := "2.12.12",
+      scalaVersion := "2.13.11",
       majorVersion := 0,
       scalacOptions ++= scalaCompilerOptions,
       resolvers ++= Seq(

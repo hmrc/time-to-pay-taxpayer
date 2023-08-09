@@ -23,7 +23,7 @@ import wiremockresponses.DesWiremockResponses
 
 class TaxpayerConnectorSpec extends ItSpec {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "getSelfAssessmentsAndDebits happy path" in {
 

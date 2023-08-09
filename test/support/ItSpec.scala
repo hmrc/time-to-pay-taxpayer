@@ -16,21 +16,21 @@
 
 package support
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import com.google.inject.AbstractModule
-import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.freespec.AnyFreeSpecLike
-import org.scalatestplus.play.guice.{GuiceOneServerPerSuite, GuiceOneServerPerTest}
+import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.test.{DefaultTestServerFactory, RunningServer}
 import play.api.{Application, Configuration, Mode}
 import play.core.server.ServerConfig
 import timetopaytaxpayer.cor.TaxpayerCorModule
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.time.format.DateTimeFormatter
+import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
 import scala.concurrent.ExecutionContext
 
 /**
@@ -59,12 +59,12 @@ trait ItSpec
   lazy val config = fakeApplication().injector.instanceOf[Configuration]
   val baseUrl: String = s"http://localhost:$WireMockSupport.port"
 
-  override implicit val patienceConfig = PatienceConfig(
+  override implicit val patienceConfig: PatienceConfig = PatienceConfig(
     timeout  = scaled(Span(3, Seconds)),
     interval = scaled(Span(300, Millis))
   )
 
-  def httpClient = fakeApplication().injector.instanceOf[HttpClient]
+  def httpClient: HttpClient = fakeApplication().injector.instanceOf[HttpClient]
 
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule, new TaxpayerCorModule)))

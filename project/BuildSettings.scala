@@ -5,7 +5,7 @@ import wartremover.Wart
 import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 
 object BuildSettings {
-  val scalaV = "2.13.8"
+  val scalaV = "2.13.11"
 
   val scalaCompilerOptions = Seq(
     "-Xfatal-warnings",

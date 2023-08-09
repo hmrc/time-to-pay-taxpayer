@@ -22,9 +22,11 @@ import com.google.inject.AbstractModule
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.freespec.AnyFreeSpecLike
-import org.scalatestplus.play.guice.GuiceOneServerPerTest
+import org.scalatestplus.play.guice.{GuiceOneServerPerSuite, GuiceOneServerPerTest}
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
-import play.api.{Application, Configuration}
+import play.api.test.{DefaultTestServerFactory, RunningServer}
+import play.api.{Application, Configuration, Mode}
+import play.core.server.ServerConfig
 import timetopaytaxpayer.cor.TaxpayerCorModule
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.http.HttpClient
@@ -38,8 +40,10 @@ trait ItSpec
   extends AnyFreeSpecLike
   with RichMatchers
   with BeforeAndAfterEach
-  with GuiceOneServerPerTest
+  with GuiceOneServerPerSuite
   with WireMockSupport {
+
+  val testServerPort = 19001
 
   lazy val frozenZonedDateTime: ZonedDateTime = {
     val formatter = DateTimeFormatter.ISO_DATE_TIME
@@ -68,9 +72,19 @@ trait ItSpec
       "microservice.services.des-services.port" -> WireMockSupport.port,
       "microservice.services.sa-services.port" -> WireMockSupport.port,
 
-      "microservice.services.time-to-pay-taxpayer.port" -> port,
+      "microservice.services.time-to-pay-taxpayer.port" -> testServerPort,
       "microservice.services.time-to-pay-taxpayer.host" -> "localhost"
 
     )).build()
+
+  object TestServerFactory extends DefaultTestServerFactory {
+    override protected def serverConfig(app: Application): ServerConfig = {
+      val sc = ServerConfig(port    = Some(testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
+      sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
+    }
+  }
+
+  override implicit protected lazy val runningServer: RunningServer =
+    TestServerFactory.start(app)
 
 }

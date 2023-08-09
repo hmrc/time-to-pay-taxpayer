@@ -70,7 +70,7 @@ class TaxpayerControllerSpec extends ItSpec {
 
     val e: Throwable = taxpayerConnector.getTaxPayer(saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
-    e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/debits' returned 500. Response body: 'error'"}'"""
+    e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/debits' returned 500. Response body: 'error'"}'"""
   }
 
   "error case - getReturns fails" in {
@@ -83,7 +83,7 @@ class TaxpayerControllerSpec extends ItSpec {
 
     val e: Throwable = taxpayerConnector.getTaxPayer(saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
-    e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/3217334604' returned 500. Response body: '{"statusCode":500,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/returns' returned 404. Response body: 'not found '"}'"""
+    e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/3217334604' returned 500. Response body: '{"statusCode":500,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/returns' returned 404. Response body: 'not found '"}'"""
   }
 
   "error case - getCommunicationPreferences fails" in {
@@ -96,7 +96,7 @@ class TaxpayerControllerSpec extends ItSpec {
 
     val e: Throwable = taxpayerConnector.getTaxPayer(saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
-    e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/communication-preferences' returned 500. Response body: 'some error'"}'"""
+    e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/communication-preferences' returned 500. Response body: 'some error'"}'"""
   }
 
   "error case - getIndividual fails" in {
@@ -109,6 +109,6 @@ class TaxpayerControllerSpec extends ItSpec {
 
     val e: Throwable = taxpayerConnector.getTaxPayer(saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
-    e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/individual/3217334604/designatory-details/taxpayer' returned 500. Response body: 'some error'"}'"""
+    e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/individual/3217334604/designatory-details/taxpayer' returned 500. Response body: 'some error'"}'"""
   }
 }

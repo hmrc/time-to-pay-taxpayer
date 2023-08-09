@@ -30,13 +30,13 @@ object AppDependencies {
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc"         %% "bootstrap-backend-play-28" % bootstrapVersion,
-    "com.vladsch.flexmark" % "flexmark-all"              % "0.64.6"
+    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % bootstrapVersion,
   ) ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
 
   val test = Seq(
     "uk.gov.hmrc"            %% "bootstrap-test-play-28"  % bootstrapVersion,
     "org.scalatest"          %% "scalatest"               % "3.2.16",
+    "com.vladsch.flexmark"    % "flexmark-all"            % "0.64.6",
     "org.pegdown"             % "pegdown"                 % "1.6.0",
     "org.scalatestplus.play" %% "scalatestplus-play"      % "5.1.0",
     "com.github.tomakehurst"  % "wiremock-jre8"           % "2.35.0",

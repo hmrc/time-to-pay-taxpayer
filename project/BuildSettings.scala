@@ -29,7 +29,7 @@ object BuildSettings {
       resolvers ++= Seq(
         Resolver.jcenterRepo
       ),
-      evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
+      (update / evictionWarningOptions) := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
       wartremoverExcluded ++=
         (baseDirectory.value / "it").get ++
           (baseDirectory.value / "test").get ++
@@ -39,7 +39,7 @@ object BuildSettings {
       .++(WartRemoverSettings.wartRemoverError)
       .++(WartRemoverSettings.wartRemoverWarning)
       .++(Seq(
-        wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference)
+        (Test / compile) / wartremoverErrors --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference)
       ))
       .++(ScoverageSettings())
 }

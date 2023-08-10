@@ -36,7 +36,9 @@ trait RichMatchers
   with Eventually
   with IntegrationPatience {
 
-  implicit def toLoggedRequestOps(lr: LoggedRequest) = new {
+  implicit def toLoggedRequestOps(lr: LoggedRequest): Object {
+    def getBodyAsJson: JsValue
+  } = new {
     def getBodyAsJson: JsValue = Json.parse(lr.getBodyAsString)
   }
 

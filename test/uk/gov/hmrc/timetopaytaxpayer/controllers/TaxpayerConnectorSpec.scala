@@ -18,12 +18,12 @@ package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import support._
 import timetopaytaxpayer.cor.TaxpayerConnector
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import wiremockresponses.DesWiremockResponses
 
 class TaxpayerConnectorSpec extends ItSpec {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "getSelfAssessmentsAndDebits happy path" in {
 
@@ -45,7 +45,7 @@ class TaxpayerConnectorSpec extends ItSpec {
 
     val e: Throwable = taxpayerConnector.getReturnsAndDebits(TdAll.saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
-    e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/returns-and-debits/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/debits' returned 500. Response body: 'error'"}'"""
+    e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/returns-and-debits/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/debits' returned 500. Response body: 'error'"}'"""
   }
 
   "getSelfAssessmentsAndDebits error case - getReturns fails" in {
@@ -57,6 +57,6 @@ class TaxpayerConnectorSpec extends ItSpec {
 
     val e: Throwable = taxpayerConnector.getReturnsAndDebits(TdAll.saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
-    e.getMessage shouldBe """GET of 'http://localhost:19001/taxpayer/returns-and-debits/3217334604' returned 500. Response body: '{"statusCode":500,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/returns' returned 404. Response body: 'not found '"}'"""
+    e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/returns-and-debits/3217334604' returned 500. Response body: '{"statusCode":500,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/returns' returned 404. Response body: 'not found '"}'"""
   }
 }

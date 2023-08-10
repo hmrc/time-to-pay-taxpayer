@@ -1,35 +1,36 @@
-import sbt.Keys._
-import sbt._
+import sbt.Keys.*
+import sbt.*
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
-import wartremover.{Wart, wartremoverErrors, wartremoverExcluded}
+import wartremover.Wart
+import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 
 object BuildSettings {
-  val scalaV = "2.12.12"
+  val scalaV = "2.13.10"
 
   val scalaCompilerOptions = Seq(
     "-Xfatal-warnings",
     "-Xlint:-missing-interpolator,_",
-    "-Yno-adapted-args",
+    "-Xlint:-byname-implicit",
     "-Ywarn-value-discard",
     "-Ywarn-dead-code",
     "-deprecation",
     "-feature",
     "-unchecked",
     "-Ywarn-unused:-imports",
-    "-language:implicitConversions",
-    "-Ypartial-unification" //required by cats
+    "-language:implicitConversions"
   )
 
   lazy val commonSettings =
     uk.gov.hmrc.DefaultBuildSettings.scalaSettings ++
       uk.gov.hmrc.DefaultBuildSettings.defaultSettings() ++ Seq(
-      scalaVersion := "2.12.12",
+      scalaVersion := scalaV,
+      libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always,
       majorVersion := 0,
       scalacOptions ++= scalaCompilerOptions,
       resolvers ++= Seq(
         Resolver.jcenterRepo
       ),
-      evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
+      (update / evictionWarningOptions) := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
       wartremoverExcluded ++=
         (baseDirectory.value / "it").get ++
           (baseDirectory.value / "test").get ++
@@ -39,7 +40,7 @@ object BuildSettings {
       .++(WartRemoverSettings.wartRemoverError)
       .++(WartRemoverSettings.wartRemoverWarning)
       .++(Seq(
-        wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference)
+        (Test / compile) / wartremoverErrors --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference)
       ))
       .++(ScoverageSettings())
 }

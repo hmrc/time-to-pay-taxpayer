@@ -128,7 +128,7 @@ object LetterAndControlBuilder {
     val initialPayment = (Try(schedule.initialPayment).getOrElse(BigDecimal(0.0)) + schedule.instalments.head.amount).setScale(2)
 
     instalmentSize match {
-      case 0 => f"Initial payment of £$initialPayment%,.2f then a final payment of £" + s"$lastPaymentAmount%,.2f"
+      case 0 => f"Initial payment of £$initialPayment%,.2f then a final payment of £" + s"${lastPaymentAmount.toString()}%,.2f"
       case _ => f"Initial payment of £$initialPayment%,.2f then $instalmentSize payments of £$regularPaymentAmount%,.2f and final payment of £" +
         f"$lastPaymentAmount%,.2f"
     }

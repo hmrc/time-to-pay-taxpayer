@@ -22,6 +22,7 @@ lazy val microservice = Project(appName, file("."))
       "timetopaytaxpayer.cor.model.SaUtr"
     )
   )
+  .settings(Compile / doc / scalacOptions := Seq())
   .dependsOn(cor)
   .aggregate(cor)
 

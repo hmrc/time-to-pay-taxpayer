@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package timetopayarrangement.des.model
+package timetopaytaxpayer.actions.model
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.mvc.{Request, WrappedRequest}
 
-case class DesSetupArrangementRequest(
-    ttpArrangement:   DesTtpArrangement,
-    letterAndControl: LetterAndControl
-)
-
-object DesSetupArrangementRequest {
-  implicit val format: OFormat[DesSetupArrangementRequest] = Json.format[DesSetupArrangementRequest]
-}
+final case class AuthenticatedRequest[A](request: Request[A]) extends WrappedRequest[A](request)

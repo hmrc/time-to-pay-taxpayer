@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package timetopayarrangement
+package timetopaytaxpayer.actions
 
-import support.ItSpec
+import com.google.inject.{Inject, Singleton}
+import play.api.mvc.{ActionBuilder, AnyContent, DefaultActionBuilder}
+import timetopaytaxpayer.actions.model.AuthenticatedRequest
 
-class SubmitArrangementSpec extends ItSpec {
+@Singleton
+class Actions @Inject() (
+    actionBuilder:              DefaultActionBuilder,
+    authenticatedActionRefiner: AuthenticatedActionRefiner
+) {
 
-  "TODO Jake" in {
-
-  }
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  val authenticatedAction: ActionBuilder[AuthenticatedRequest, AnyContent] =
+    actionBuilder.andThen(authenticatedActionRefiner)
 
 }

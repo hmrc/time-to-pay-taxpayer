@@ -71,6 +71,7 @@ trait ItSpec
     .configure(Map[String, Any](
       "microservice.services.des-services.port" -> WireMockSupport.port,
       "microservice.services.sa-services.port" -> WireMockSupport.port,
+      "microservice.services.auth.port" -> WireMockSupport.port,
 
       "microservice.services.time-to-pay-taxpayer.port" -> testServerPort,
       "microservice.services.time-to-pay-taxpayer.host" -> "localhost"

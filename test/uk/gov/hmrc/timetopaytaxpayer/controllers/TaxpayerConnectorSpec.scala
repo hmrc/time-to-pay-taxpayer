@@ -18,15 +18,15 @@ package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import support._
 import timetopaytaxpayer.cor.TaxpayerConnector
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import wiremockresponses.DesWiremockResponses
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, UpstreamErrorResponse}
+import wiremockresponses.{AuthWiremockResponses, DesWiremockResponses}
 
 class TaxpayerConnectorSpec extends ItSpec {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("Bearer 1243")))
 
   "getSelfAssessmentsAndDebits happy path" in {
-
+    AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits()
     DesWiremockResponses.getReturns()
 
@@ -37,7 +37,7 @@ class TaxpayerConnectorSpec extends ItSpec {
   }
 
   "getSelfAssessmentsAndDebits error case - getDebits fails" in {
-
+    AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits(response = "error", status = 500)
     DesWiremockResponses.getReturns()
 
@@ -49,7 +49,7 @@ class TaxpayerConnectorSpec extends ItSpec {
   }
 
   "getSelfAssessmentsAndDebits error case - getReturns fails" in {
-
+    AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits()
     DesWiremockResponses.getReturns(response = "not found ", status = 404)
 

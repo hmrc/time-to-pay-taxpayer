@@ -20,6 +20,7 @@ import java.time.Clock
 import javax.inject.Inject
 import play.api.libs.json.Json.toJson
 import play.api.mvc._
+import timetopaytaxpayer.actions.Actions
 import timetopaytaxpayer.cor.model._
 import timetopaytaxpayer.des.DesConnector
 import timetopaytaxpayer.des.model.{DesReturns, _}
@@ -29,13 +30,14 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.ExecutionContext
 
 class TaxpayerController @Inject() (
+    actions:      Actions,
     saConnector:  SaConnector,
     desConnector: DesConnector,
     cc:           ControllerComponents
 )(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {
 
   // todo - remove as part of OPS-4581
-  def getTaxPayer(utr: SaUtr): Action[AnyContent] = Action.async { implicit request =>
+  def getTaxPayer(utr: SaUtr): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
     for {
       returns <- desConnector.getReturns(utr)
       debits <- desConnector.getDebits(utr)
@@ -50,7 +52,7 @@ class TaxpayerController @Inject() (
     }
   }
 
-  def getReturnsAndDebits(utr: SaUtr): Action[AnyContent] = Action.async { _ =>
+  def getReturnsAndDebits(utr: SaUtr): Action[AnyContent] = actions.authenticatedAction.async { _ =>
     val returnsF = desConnector.getReturns(utr)
     val debitsF = desConnector.getDebits(utr)
 

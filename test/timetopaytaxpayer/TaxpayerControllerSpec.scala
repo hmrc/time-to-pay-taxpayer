@@ -16,18 +16,19 @@
 
 package timetopaytaxpayer
 
+import play.api.http.Status.UNAUTHORIZED
 import support.TdAll.saUtr
 import support._
 import timetopaytaxpayer.cor.TaxpayerConnector
 import timetopaytaxpayer.cor.model._
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import wiremockresponses.{DesWiremockResponses, SaWiremockResponses}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, UpstreamErrorResponse}
+import wiremockresponses.{AuthWiremockResponses, DesWiremockResponses, SaWiremockResponses}
 
 import java.time.LocalDate
 
 // todo - remove as part of OPS-4581
 class TaxpayerControllerSpec extends ItSpec {
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("Bearer 123")))
 
   private val date20190225 = LocalDate.of(2019, 2, 25)
   private val date20190405 = LocalDate.of(2019, 4, 5)
@@ -48,67 +49,86 @@ class TaxpayerControllerSpec extends ItSpec {
     )
   )
 
+  lazy val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
+
   "should get a 200 with an authorization header" in {
+    AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits()
     DesWiremockResponses.getReturns()
     DesWiremockResponses.getCommunicationPreferences()
     SaWiremockResponses.getIndividual()
 
-    val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
-
     val taxpayer: Taxpayer = taxpayerConnector.getTaxPayer(saUtr).futureValue
     taxpayer shouldBe expectedTaxpayer
+
+    AuthWiremockResponses.ensureAuthoriseCalled()
+  }
+
+  "error case - no auth token" in {
+    val e: Throwable = taxpayerConnector.getTaxPayer(saUtr)(HeaderCarrier()).failed.futureValue
+
+    e match {
+      case u: UpstreamErrorResponse =>
+        u.statusCode shouldBe UNAUTHORIZED
+
+      case other =>
+        fail(s"Expected UpstreamErrorResponse but got ${other.toString}")
+    }
   }
 
   "error case - getDebits fails" in {
+    AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits(response = "error", status = 500)
     DesWiremockResponses.getReturns()
     DesWiremockResponses.getCommunicationPreferences()
     SaWiremockResponses.getIndividual()
 
-    val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
-
     val e: Throwable = taxpayerConnector.getTaxPayer(saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
     e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/debits' returned 500. Response body: 'error'"}'"""
+
+    AuthWiremockResponses.ensureAuthoriseCalled()
   }
 
   "error case - getReturns fails" in {
+    AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits()
     DesWiremockResponses.getReturns(response = "not found ", status = 404)
     DesWiremockResponses.getCommunicationPreferences()
     SaWiremockResponses.getIndividual()
 
-    val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
-
     val e: Throwable = taxpayerConnector.getTaxPayer(saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
     e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/3217334604' returned 500. Response body: '{"statusCode":500,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/returns' returned 404. Response body: 'not found '"}'"""
+
+    AuthWiremockResponses.ensureAuthoriseCalled()
   }
 
   "error case - getCommunicationPreferences fails" in {
+    AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits()
     DesWiremockResponses.getReturns()
     DesWiremockResponses.getCommunicationPreferences(response = "some error", status = 500)
     SaWiremockResponses.getIndividual()
 
-    val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
-
     val e: Throwable = taxpayerConnector.getTaxPayer(saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
     e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/taxpayer/3217334604/communication-preferences' returned 500. Response body: 'some error'"}'"""
+
+    AuthWiremockResponses.ensureAuthoriseCalled()
   }
 
   "error case - getIndividual fails" in {
+    AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits()
     DesWiremockResponses.getReturns()
     DesWiremockResponses.getCommunicationPreferences()
     SaWiremockResponses.getIndividual(response = "some error", status = 500)
 
-    val taxpayerConnector = app.injector.instanceOf[TaxpayerConnector]
-
     val e: Throwable = taxpayerConnector.getTaxPayer(saUtr).failed.futureValue
     e shouldBe an[UpstreamErrorResponse]
     e.getMessage shouldBe s"""GET of 'http://localhost:${testServerPort.toString}/taxpayer/3217334604' returned 502. Response body: '{"statusCode":502,"message":"GET of 'http://localhost:11111/sa/individual/3217334604/designatory-details/taxpayer' returned 500. Response body: 'some error'"}'"""
+
+    AuthWiremockResponses.ensureAuthoriseCalled()
   }
 }

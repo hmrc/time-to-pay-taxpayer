@@ -33,8 +33,6 @@ lazy val cor = Project(appName + "-cor", file("cor"))
   )
   .settings(commonSettings *)
   .settings(
-    libraryDependencies ++= List(
-      "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
-      "uk.gov.hmrc" %% "bootstrap-backend-play-28" % AppDependencies.bootstrapVersion % Provided
-    )
+    libraryDependencies ++= AppDependencies.corDependencies
   )
+

@@ -34,7 +34,7 @@ case class Taxpayer(
     selfAssessment = selfAssessment.obfuscate
   )
 
-  override def encrypt: Encrypted[Taxpayer] = EncryptedTaxpayer(
+  override def encrypt: EncryptedTaxpayer = EncryptedTaxpayer(
     SensitiveString(customerName),
     addresses.map(_.encrypt),
     selfAssessment

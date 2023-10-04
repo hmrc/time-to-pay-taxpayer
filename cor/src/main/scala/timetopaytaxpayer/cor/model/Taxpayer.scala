@@ -16,50 +16,17 @@
 
 package timetopaytaxpayer.cor.model
 
-import play.api.libs.json.{Format, Json, OFormat}
-import timetopaytaxpayer.cor.crypto
-import timetopaytaxpayer.cor.crypto.CryptoFormat
-import timetopaytaxpayer.cor.crypto.model.{Encryptable, Encrypted}
-import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+import play.api.libs.json.{Json, OFormat}
 
 //// todo - remove as part of OPS-4581
-case class Taxpayer(
-    customerName:   String,
-    addresses:      Seq[Address],
-    selfAssessment: SelfAssessmentDetails
-) extends Encryptable[Taxpayer] {
+case class Taxpayer(customerName: String, addresses: Seq[Address], selfAssessment: SelfAssessmentDetails) {
   def obfuscate: Taxpayer = Taxpayer(
     customerName   = customerName.replaceAll("[A-Za-z]", "x"),
     addresses      = addresses.map(_.obfuscate),
     selfAssessment = selfAssessment.obfuscate
   )
-
-  override def encrypt: EncryptedTaxpayer = EncryptedTaxpayer(
-    SensitiveString(customerName),
-    addresses.map(_.encrypt),
-    selfAssessment
-  )
 }
 
 object Taxpayer {
   implicit val format: OFormat[Taxpayer] = Json.format[Taxpayer]
-}
-
-case class EncryptedTaxpayer(
-    customerName:   SensitiveString,
-    addresses:      Seq[EncryptedAddress],
-    selfAssessment: SelfAssessmentDetails
-) extends Encrypted[Taxpayer] {
-  override def decrypt: Taxpayer = Taxpayer(
-    customerName.decryptedValue,
-    addresses.map(_.decrypt),
-    selfAssessment
-  )
-}
-
-object EncryptedTaxpayer {
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EncryptedTaxpayer] = {
-    implicit val sensitiveFormat: Format[SensitiveString] = crypto.sensitiveStringFormat(cryptoFormat)
-    Json.format[EncryptedTaxpayer]
-  }
 }

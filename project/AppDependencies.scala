@@ -47,7 +47,6 @@ object AppDependencies {
 
   val corDependencies = List(
     // format: OFF
-    "uk.gov.hmrc"                %% "crypto-json-play-28"      % cryptoVersion,
     "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
     "uk.gov.hmrc" %% "bootstrap-backend-play-28" % AppDependencies.bootstrapVersion % Provided
     // format: ON

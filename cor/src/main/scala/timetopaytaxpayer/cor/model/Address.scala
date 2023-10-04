@@ -16,11 +16,7 @@
 
 package timetopaytaxpayer.cor.model
 
-import play.api.libs.json.{Format, Json, OFormat}
-import timetopaytaxpayer.cor.crypto
-import timetopaytaxpayer.cor.crypto.CryptoFormat
-import timetopaytaxpayer.cor.crypto.model.{Encryptable, Encrypted}
-import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+import play.api.libs.json.{Json, OFormat}
 
 final case class Address(
     addressLine1: Option[String] = None,
@@ -29,7 +25,7 @@ final case class Address(
     addressLine4: Option[String] = None,
     addressLine5: Option[String] = None,
     postcode:     Option[String] = None
-) extends Encryptable[Address] {
+) {
 
   def obfuscate: Address = Address(
     addressLine1 = addressLine1.map(_.replaceAll("[A-Za-z]", "x")),
@@ -39,44 +35,8 @@ final case class Address(
     addressLine5 = addressLine5.map(_.replaceAll("[A-Za-z]", "x")),
     postcode     = postcode.map(_.replaceAll("[A-Za-z]", "x"))
   )
-
-  override def encrypt: EncryptedAddress = EncryptedAddress(
-    addressLine1.map(SensitiveString),
-    addressLine2.map(SensitiveString),
-    addressLine3.map(SensitiveString),
-    addressLine4.map(SensitiveString),
-    addressLine5.map(SensitiveString),
-    postcode.map(SensitiveString)
-  )
 }
 
 object Address {
   implicit val format: OFormat[Address] = Json.format[Address]
-}
-
-case class EncryptedAddress(
-    addressLine1: Option[SensitiveString] = None,
-    addressLine2: Option[SensitiveString] = None,
-    addressLine3: Option[SensitiveString] = None,
-    addressLine4: Option[SensitiveString] = None,
-    addressLine5: Option[SensitiveString] = None,
-    postcode:     Option[SensitiveString] = None
-) extends Encrypted[Address] {
-
-  override def decrypt: Address = Address(
-    addressLine1.map(_.decryptedValue),
-    addressLine2.map(_.decryptedValue),
-    addressLine3.map(_.decryptedValue),
-    addressLine4.map(_.decryptedValue),
-    addressLine5.map(_.decryptedValue),
-    postcode.map(_.decryptedValue)
-  )
-
-}
-
-object EncryptedAddress {
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EncryptedAddress] = {
-    implicit val sensitiveFormat: Format[SensitiveString] = crypto.sensitiveStringFormat(cryptoFormat)
-    Json.format[EncryptedAddress]
-  }
 }

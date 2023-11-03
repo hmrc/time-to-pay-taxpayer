@@ -1,4 +1,4 @@
-import sbt.*
+import sbt._
 import play.sbt.PlayImport.ws
 import sbt.librarymanagement.Configurations.Provided
 
@@ -41,8 +41,8 @@ object AppDependencies {
     "com.vladsch.flexmark"    % "flexmark-all"            % "0.64.6",
     "org.pegdown"             % "pegdown"                 % "1.6.0",
     "org.scalatestplus.play" %% "scalatestplus-play"      % "5.1.0",
-    "org.wiremock"            % "wiremock-standalone"     % "3.2.0",
-    "org.mockito"             % "mockito-core"            % "5.5.0"
+    "org.wiremock"            % "wiremock-standalone"     % "3.3.1",
+    "org.mockito"             % "mockito-core"            % "5.7.0"
   ).map(_ % Test)
 
   val corDependencies = List(

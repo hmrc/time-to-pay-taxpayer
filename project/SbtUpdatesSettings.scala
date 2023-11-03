@@ -1,7 +1,7 @@
 import com.timushev.sbt.updates.UpdatesKeys.dependencyUpdates
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport.{dependencyUpdatesFailBuild, dependencyUpdatesFilter, moduleFilterRemoveValue}
-import sbt.*
-import sbt.Keys.*
+import sbt._
+import sbt.Keys._
 
 object SbtUpdatesSettings {
 
@@ -29,7 +29,9 @@ object SbtUpdatesSettings {
     dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.core"),
     dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.datatype"),
     dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.dataformat"),
-    dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.module")
+    dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.module"),
+    // locked by version of play
+    dependencyUpdatesFilter -= moduleFilter("org.scalatestplus.play", "scalatestplus-play")
   )
 
 }

@@ -1,7 +1,7 @@
 import com.timushev.sbt.updates.UpdatesKeys.dependencyUpdates
 import com.timushev.sbt.updates.UpdatesPlugin.autoImport.{dependencyUpdatesFailBuild, dependencyUpdatesFilter, moduleFilterRemoveValue}
-import sbt._
-import sbt.Keys._
+import sbt.*
+import sbt.Keys.*
 
 object SbtUpdatesSettings {
 
@@ -25,11 +25,6 @@ object SbtUpdatesSettings {
     dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum"),
     dependencyUpdatesFilter -= moduleFilter("com.beachape", "enumeratum-play"),
     dependencyUpdatesFilter -= moduleFilter("uk.gov.hmrc", "auth-client"),
-    // newer versions are needed of the jackson libraries below than those provided by play
-    dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.core"),
-    dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.datatype"),
-    dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.dataformat"),
-    dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.module"),
     // locked by version of play
     dependencyUpdatesFilter -= moduleFilter("org.scalatestplus.play", "scalatestplus-play")
   )

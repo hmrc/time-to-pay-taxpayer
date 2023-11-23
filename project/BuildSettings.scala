@@ -17,7 +17,8 @@ object BuildSettings {
     "-feature",
     "-unchecked",
     "-Ywarn-unused:-imports",
-    "-language:implicitConversions"
+    "-language:implicitConversions",
+    "-Ywarn-unused:-imports,-patvars,-privates,-locals,-explicits,-implicits,_"
   )
 
   lazy val commonSettings =

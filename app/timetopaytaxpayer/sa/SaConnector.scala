@@ -16,12 +16,13 @@
 
 package timetopaytaxpayer.sa
 
+import play.api.http.Status.NOT_FOUND
+
 import javax.inject.{Inject, Singleton}
 import timetopaytaxpayer.cor.model.SaUtr
 import timetopaytaxpayer.sa.model.SaIndividual
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,8 +35,12 @@ class SaConnector @Inject() (
 
   val baseUrl = config.baseUrl("sa-services")
 
-  def getIndividual(utr: SaUtr)(implicit hc: HeaderCarrier): Future[SaIndividual] = {
+  // return None if API call returns 404
+  def getIndividual(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Option[SaIndividual]] = {
     val serviceUrl = s"/sa/individual/${utr.value}/designatory-details/taxpayer"
-    httpClient.GET[SaIndividual](s"$baseUrl$serviceUrl")
+    httpClient.GET[SaIndividual](s"$baseUrl$serviceUrl").map(Some(_)).recover{
+      case e: HttpException if e.responseCode == NOT_FOUND                           => None
+      case UpstreamErrorResponse.Upstream4xxResponse(e) if e.statusCode == NOT_FOUND => None
+    }
   }
 }

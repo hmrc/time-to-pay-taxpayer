@@ -58,8 +58,8 @@ class TaxpayerControllerSpec extends ItSpec {
     DesWiremockResponses.getCommunicationPreferences()
     SaWiremockResponses.getIndividual()
 
-    val taxpayer: Taxpayer = taxpayerConnector.getTaxPayer(saUtr).futureValue
-    taxpayer shouldBe expectedTaxpayer
+    val taxpayer: Option[Taxpayer] = taxpayerConnector.getTaxPayer(saUtr).futureValue
+    taxpayer shouldBe Some(expectedTaxpayer)
 
     AuthWiremockResponses.ensureAuthoriseCalled()
   }
@@ -118,7 +118,7 @@ class TaxpayerControllerSpec extends ItSpec {
     AuthWiremockResponses.ensureAuthoriseCalled()
   }
 
-  "error case - getIndividual fails" in {
+  "error case - getIndividual fails (not a 404)" in {
     AuthWiremockResponses.authorise()
     DesWiremockResponses.getDebits()
     DesWiremockResponses.getReturns()
@@ -131,4 +131,14 @@ class TaxpayerControllerSpec extends ItSpec {
 
     AuthWiremockResponses.ensureAuthoriseCalled()
   }
+
+  "error case - getIndividual fails with a 404" in {
+    AuthWiremockResponses.authorise()
+    SaWiremockResponses.getIndividual(response = "some error", status = 404)
+
+    taxpayerConnector.getTaxPayer(saUtr).futureValue shouldBe None
+
+    AuthWiremockResponses.ensureAuthoriseCalled()
+  }
+
 }

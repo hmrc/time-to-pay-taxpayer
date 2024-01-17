@@ -16,10 +16,10 @@
 
 package timetopaytaxpayer.cor
 
+import play.api.http.Status.NOT_FOUND
 import timetopaytaxpayer.cor.model.{ReturnsAndDebits, SaUtr, Taxpayer}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,7 +39,13 @@ class TaxpayerConnector(
   }
 
   // todo - remove as part of OPS-4581
-  def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Taxpayer] = {
+  def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Option[Taxpayer]] = {
     http.GET[Taxpayer](s"$baseUrl/taxpayer/${utr.value}")
+      .map(Some(_))
+      .recover {
+        case e: HttpException if e.responseCode == NOT_FOUND                           => None
+        case UpstreamErrorResponse.Upstream4xxResponse(e) if e.statusCode == NOT_FOUND => None
+      }
   }
+
 }

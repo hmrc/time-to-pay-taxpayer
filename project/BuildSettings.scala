@@ -5,7 +5,7 @@ import wartremover.Wart
 import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 
 object BuildSettings {
-  val scalaV = "2.13.10"
+  val scalaV = "2.13.12"
 
   val scalaCompilerOptions = Seq(
     "-Xfatal-warnings",
@@ -25,7 +25,6 @@ object BuildSettings {
     uk.gov.hmrc.DefaultBuildSettings.scalaSettings ++
       uk.gov.hmrc.DefaultBuildSettings.defaultSettings() ++ Seq(
       scalaVersion := scalaV,
-      libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always,
       majorVersion := 0,
       scalacOptions ++= scalaCompilerOptions,
       resolvers ++= Seq(
@@ -33,7 +32,6 @@ object BuildSettings {
       ),
       (update / evictionWarningOptions) := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
       wartremoverExcluded ++=
-        (baseDirectory.value / "it").get ++
           (baseDirectory.value / "test").get ++
           Seq(sourceManaged.value / "main" / "sbt-buildinfo" / "BuildInfo.scala"),
       ScalariformSettings()

@@ -33,10 +33,6 @@ final case class ReturnsAndDebits(
    */
   def fixReturns(implicit clock: Clock): ReturnsAndDebits = copy(returns = returns.filter(_.taxYearEnd.isAfter(LocalDate.now(clock).minusYears(5))))
 
-  def obfuscate: ReturnsAndDebits = ReturnsAndDebits(
-    debits  = debits,
-    returns = returns
-  )
 }
 
 object ReturnsAndDebits {

@@ -14,19 +14,79 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.timetopaytaxpayer.taxpayer
+package timetopaytaxpayer.cor.model
 
-import support.UnitSpec
-import timetopaytaxpayer.cor.model.{Debit, Interest, Return, ReturnsAndDebits}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
+import play.api.libs.json.{JsSuccess, Json}
 
 import java.time.format.DateTimeFormatter
 import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
 
-class DebitsAndReturnsSpec extends UnitSpec {
+class DebitsAndReturnsSpec extends AnyWordSpecLike with Matchers {
 
-  "fix returns" in {
-    implicit val clock: Clock = Clock.fixed(LocalDateTime.parse("2006-01-22T16:28:55.185", DateTimeFormatter.ISO_DATE_TIME).atZone(ZoneId.of("Europe/London")).toInstant, ZoneId.of("UTC"))
-    saBeforeFix.fixReturns shouldBe saAfterFix
+  "DebitAndReturns" should {
+
+    "have a fixReturns method" in {
+      implicit val clock: Clock = Clock.fixed(
+        LocalDateTime
+          .parse("2006-01-22T16:28:55.185", DateTimeFormatter.ISO_DATE_TIME)
+          .atZone(ZoneId.of("Europe/London")).toInstant,
+        ZoneId.of("UTC")
+      )
+      saBeforeFix.fixReturns shouldBe saAfterFix
+    }
+
+    "should have a format instance" in {
+      val expectedJson = Json.parse(
+        """
+          |{
+          |  "debits" : [ {
+          |    "originCode" : "POA2",
+          |    "amount" : 250.52,
+          |    "dueDate" : "2016-01-31",
+          |    "interest" : {
+          |      "creationDate" : "2016-06-01",
+          |      "amount" : 42.32
+          |    },
+          |    "taxYearEnd" : "2017-04-05"
+          |  } ],
+          |  "returns" : [ {
+          |    "taxYearEnd" : "2000-04-05",
+          |    "issuedDate" : "2001-01-23",
+          |    "dueDate" : "2001-04-30",
+          |    "receivedDate" : "2001-04-10"
+          |  }, {
+          |    "taxYearEnd" : "2001-04-10",
+          |    "issuedDate" : "2001-04-06",
+          |    "dueDate" : "2002-01-31",
+          |    "receivedDate" : "2001-06-19"
+          |  }, {
+          |    "taxYearEnd" : "2002-04-05",
+          |    "issuedDate" : "2002-04-06",
+          |    "dueDate" : "2003-01-31",
+          |    "receivedDate" : "2002-05-08"
+          |  }, {
+          |    "taxYearEnd" : "2003-04-05",
+          |    "issuedDate" : "2003-04-06",
+          |    "dueDate" : "2004-01-31",
+          |    "receivedDate" : "2003-07-04"
+          |  }, {
+          |    "taxYearEnd" : "2004-04-05",
+          |    "issuedDate" : "2004-04-06",
+          |    "dueDate" : "2005-01-31",
+          |    "receivedDate" : "2004-08-23"
+          |  }, {
+          |    "taxYearEnd" : "2005-04-05"
+          |  } ]
+          |}
+          |""".stripMargin
+      )
+
+      Json.toJson(saBeforeFix) shouldBe expectedJson
+      expectedJson.validate[ReturnsAndDebits] shouldBe JsSuccess(saBeforeFix)
+    }
+
   }
 
   private implicit def stringToDate(s: String): LocalDate = LocalDate.parse(s)

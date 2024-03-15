@@ -23,7 +23,10 @@ import play.api.libs.json.{Json, OFormat}
 
 // todo - remove as part of OPS-4581
 final case class SelfAssessmentDetails(
-    utr: SaUtr, communicationPreferences: CommunicationPreferences, debits: Seq[Debit], returns: Seq[Return]
+    utr:                      SaUtr,
+    communicationPreferences: CommunicationPreferences,
+    debits:                   Seq[Debit],
+    returns:                  Seq[Return]
 ) {
   /**
    * Removes returns older than 5 years.
@@ -31,9 +34,8 @@ final case class SelfAssessmentDetails(
   def fixReturns(implicit clock: Clock): SelfAssessmentDetails =
     copy(returns = returns.filter(_.taxYearEnd.isAfter(now(clock).minusYears(5))))
 
-  def obfuscate: SelfAssessmentDetails = SelfAssessmentDetails(
-    utr                      = utr.obfuscate, communicationPreferences = communicationPreferences, debits = debits, returns = returns
-  )
+  def obfuscate: SelfAssessmentDetails =
+    copy(utr = utr.obfuscate)
 }
 
 object SelfAssessmentDetails {

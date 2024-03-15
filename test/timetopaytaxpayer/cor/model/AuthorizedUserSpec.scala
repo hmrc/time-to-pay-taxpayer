@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,17 @@
 
 package timetopaytaxpayer.cor.model
 
-import play.api.libs.json.{Format, Json}
-import play.api.mvc.PathBindable
-import timetopaytaxpayer.cor.internal.ValueClassBinder
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
-case class SaUtr(value: String) {
-  def obfuscate: SaUtr = SaUtr(value = value.take(4) + "***")
-}
+class AuthorizedUserSpec extends AnyWordSpecLike with Matchers {
 
-object SaUtr {
-  implicit val format: Format[SaUtr] = Json.valueFormat
-  implicit val journeyIdBinder: PathBindable[SaUtr] = ValueClassBinder.valueClassBinder(_.value)
+  "AuthorizedUser" should {
+
+    "have a toString method" in {
+      AuthorizedUser("user 123").toString shouldBe "user 123"
+    }
+
+  }
+
 }

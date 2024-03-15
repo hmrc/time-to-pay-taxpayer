@@ -32,7 +32,5 @@ lazy val cor = Project(appName + "-cor", file("cor"))
     SbtAutoBuildPlugin
   )
   .settings(commonSettings *)
-  .settings(
-    libraryDependencies ++= AppDependencies.corDependencies
-  )
+  .settings(libraryDependencies ++= AppDependencies.corDependencies)
 

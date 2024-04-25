@@ -34,11 +34,6 @@ class TaxpayerConnector(
 
   val baseUrl: String = servicesConfig.baseUrl("time-to-pay-taxpayer")
 
-  def getReturnsAndDebits(utr: SaUtr)(implicit hc: HeaderCarrier): Future[ReturnsAndDebits] = {
-    http.GET[ReturnsAndDebits](s"$baseUrl/taxpayer/returns-and-debits/${utr.value}")
-  }
-
-  // todo - remove as part of OPS-4581
   def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Option[Taxpayer]] = {
     http.GET[Taxpayer](s"$baseUrl/taxpayer/${utr.value}")
       .map(Some(_))

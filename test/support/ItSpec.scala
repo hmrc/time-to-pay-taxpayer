@@ -16,7 +16,7 @@
 
 package support
 
-import com.google.inject.AbstractModule
+import com.google.inject.{AbstractModule, Provides, Singleton}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.{Clock, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import scala.concurrent.ExecutionContext
 
 /**
@@ -47,13 +47,17 @@ trait ItSpec
 
   lazy val frozenZonedDateTime: ZonedDateTime = {
     val formatter = DateTimeFormatter.ISO_DATE_TIME
-    LocalDateTime.parse("2018-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
+    LocalDateTime.parse("2023-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
   }
 
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   lazy val overridingsModule = new AbstractModule {
     override def configure(): Unit = ()
+
+    @Provides
+    @Singleton
+    def clock(): Clock = Clock.fixed(frozenZonedDateTime.toInstant, frozenZonedDateTime.getZone)
   }
   lazy val servicesConfig = fakeApplication().injector.instanceOf[ServicesConfig]
   lazy val config = fakeApplication().injector.instanceOf[Configuration]

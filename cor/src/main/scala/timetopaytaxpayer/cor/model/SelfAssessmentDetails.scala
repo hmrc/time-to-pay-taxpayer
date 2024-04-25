@@ -21,7 +21,6 @@ import java.time.LocalDate.now
 
 import play.api.libs.json.{Json, OFormat}
 
-// todo - remove as part of OPS-4581
 final case class SelfAssessmentDetails(
     utr:                      SaUtr,
     communicationPreferences: CommunicationPreferences,

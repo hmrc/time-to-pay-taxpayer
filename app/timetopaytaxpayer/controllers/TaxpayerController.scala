@@ -37,7 +37,6 @@ class TaxpayerController @Inject() (
     cc:           ControllerComponents
 )(implicit executionContext: ExecutionContext, clock: Clock) extends BackendController(cc) {
 
-  // todo - remove as part of OPS-4581
   def getTaxPayer(utr: SaUtr): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
     saConnector.getIndividual(utr).flatMap[Result]{
       case None =>
@@ -58,18 +57,4 @@ class TaxpayerController @Inject() (
     }
   }
 
-  def getReturnsAndDebits(utr: SaUtr): Action[AnyContent] = actions.authenticatedAction.async { _ =>
-    val returnsF = desConnector.getReturns(utr)
-    val debitsF = desConnector.getDebits(utr)
-
-    for {
-      returns: DesReturns <- returnsF
-      debits: DesDebits <- debitsF
-      returnsAndDebits = ReturnsAndDebits(
-        debits  = debits.debits.map(_.asDebit()),
-        returns = returns.returns
-      ).fixReturns
-      result = returnsAndDebits.fixReturns
-    } yield Ok(toJson(result))
-  }
 }

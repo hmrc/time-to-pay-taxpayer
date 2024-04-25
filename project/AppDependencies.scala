@@ -17,7 +17,7 @@ object AppDependencies {
     "uk.gov.hmrc"            %% "bootstrap-test-play-30"  % bootstrapVersion,
     "org.scalatest"          %% "scalatest"               % "3.2.18",
     "org.scalatestplus.play" %% "scalatestplus-play"      % "7.0.1",
-    "org.wiremock"            % "wiremock-standalone"     % "3.4.2",
+    "org.wiremock"            % "wiremock-standalone"     % "3.5.4",
     "org.mockito"             % "mockito-core"            % "5.11.0"
   ).map(_ % Test)
 

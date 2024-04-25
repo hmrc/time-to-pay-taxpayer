@@ -24,7 +24,6 @@ import timetopaytaxpayer.cor.model._
 import java.time.format.DateTimeFormatter.ISO_DATE_TIME
 import java.time.{Clock, LocalDate, LocalDateTime, ZoneId}
 
-// todo - remove as part of OPS-4581
 class TaxpayerJsonSpec extends UnitSpec {
 
   "TaxPayer" - {

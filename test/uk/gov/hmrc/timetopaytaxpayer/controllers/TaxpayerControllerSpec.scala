@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer
+package uk.gov.hmrc.timetopaytaxpayer.controllers
 
 import play.api.http.Status.UNAUTHORIZED
 import support.TdAll.saUtr
@@ -26,7 +26,6 @@ import wiremockresponses.{AuthWiremockResponses, DesWiremockResponses, SaWiremoc
 
 import java.time.LocalDate
 
-// todo - remove as part of OPS-4581
 class TaxpayerControllerSpec extends ItSpec {
   implicit val hc: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("Bearer 123")))
 

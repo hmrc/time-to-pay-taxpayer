@@ -18,7 +18,6 @@ package timetopaytaxpayer.cor.model
 
 import play.api.libs.json.{Json, OFormat}
 
-//// todo - remove as part of OPS-4581
 case class Taxpayer(customerName: String, addresses: Seq[Address], selfAssessment: SelfAssessmentDetails) {
   def obfuscate: Taxpayer = Taxpayer(
     customerName   = customerName.replaceAll("[A-Za-z]", "x"),

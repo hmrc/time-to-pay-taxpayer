@@ -25,12 +25,12 @@ import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.test.{DefaultTestServerFactory, RunningServer}
 import play.api.{Application, Configuration, Mode}
 import play.core.server.ServerConfig
-import timetopaytaxpayer.cor.TaxpayerCorModule
-import uk.gov.hmrc.http.HttpClient
+import timetopaytaxpayer.cor.{TaxpayerConnector, TaxpayerCorModule}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.time.format.DateTimeFormatter
-import java.time.{Clock, LocalDateTime, ZoneId, ZoneOffset, ZonedDateTime}
+import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
 import scala.concurrent.ExecutionContext
 
 /**
@@ -68,15 +68,12 @@ trait ItSpec
     interval = scaled(Span(300, Millis))
   )
 
-  def httpClient: HttpClient = fakeApplication().injector.instanceOf[HttpClient]
-
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule, new TaxpayerCorModule)))
     .configure(Map[String, Any](
       "microservice.services.des-services.port" -> WireMockSupport.port,
       "microservice.services.sa-services.port" -> WireMockSupport.port,
       "microservice.services.auth.port" -> WireMockSupport.port,
-
       "microservice.services.time-to-pay-taxpayer.port" -> testServerPort,
       "microservice.services.time-to-pay-taxpayer.host" -> "localhost"
 

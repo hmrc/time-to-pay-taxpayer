@@ -5,23 +5,21 @@ information for a given UTR. Below is a diagram showing where the Taxpayer servi
 
 <a href="https://github.com/hmrc/time-to-pay-taxpayer">
     <p align="center">
-        <img src="https://raw.githubusercontent.com/hmrc/time-to-pay-taxpayer/master/public/taxpayer.png" alt="TaxpayerOverview">
+        <img src="app/assets/images/ServiceOverview.png" alt="ServiceOverview">
     </p>
 </a>
 
-## Run locally
+### Run locally
 
-This app depends on 3 DES services and the SA app. Stubs for these are in:
+This app depends on 3 DES services and the `self-service-time-to-ay-frontend` app. Stubs for these are in:
 
-https://github.com/hmrc/payment-stubs-protected
+https://github.com/hmrc/payments-stubs-protected
 
-To start the app either clone this repository and the 2 stub ones and run **sbt run** or start as Play apps.
-
-Alternatively you can use Service Manager - **sm --start TIME_TO_PAY_TAX_PAYER_DEP -f**
+To start the app with Service Manager: **sm2 --start TIME_TO_PAY_TAXPAYER**
 
 The app will start by default on port 9857. Stub data should be configured for the UTR 1234567890 so you should be able to GET from http://localhost:9857/tax-payer/1234567890
 
-## GET /taxpayer/{utr}
+### GET /taxpayer/{utr}
 
 Retrieves a definition of a tax payer  
 

@@ -18,15 +18,16 @@ package timetopaytaxpayer.des
 
 import timetopaytaxpayer.cor.model.{CommunicationPreferences, SaUtr}
 import timetopaytaxpayer.des.model._
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DesConnector @Inject() (
-    httpClient: HttpClient,
+    httpClient: HttpClientV2,
     desConfig:  DesConfig
 )(implicit ec: ExecutionContext) {
 
@@ -37,18 +38,21 @@ class DesConnector @Inject() (
   private val headers: Seq[(String, String)] = desConfig.desHeaders
 
   def getReturns(utr: SaUtr): Future[DesReturns] = {
-    val serviceUrl = s"/sa/taxpayer/${utr.value}/returns"
-    httpClient.GET[DesReturns](s"$baseUrl$serviceUrl", headers = headers)
+    httpClient.get(url"$baseUrl/sa/taxpayer/${utr.value}/returns")
+      .setHeader(headers: _*)
+      .execute[DesReturns]
   }
 
   def getDebits(utr: SaUtr): Future[DesDebits] = {
-    val serviceUrl = s"/sa/taxpayer/${utr.value}/debits"
-    httpClient.GET[DesDebits](s"$baseUrl$serviceUrl", headers = headers)
+    httpClient.get(url"$baseUrl/sa/taxpayer/${utr.value}/debits")
+      .setHeader(headers: _*)
+      .execute[DesDebits]
   }
 
   def getCommunicationPreferences(utr: SaUtr): Future[CommunicationPreferences] = {
-    val serviceUrl = s"/sa/taxpayer/${utr.value}/communication-preferences"
-    httpClient.GET[CommunicationPreferences](s"$baseUrl$serviceUrl", headers = headers)
+    httpClient.get(url"$baseUrl/sa/taxpayer/${utr.value}/communication-preferences")
+      .setHeader(headers: _*)
+      .execute[CommunicationPreferences]
   }
 }
 

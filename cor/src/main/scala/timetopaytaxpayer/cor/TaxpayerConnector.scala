@@ -17,16 +17,17 @@
 package timetopaytaxpayer.cor
 
 import play.api.http.Status.NOT_FOUND
-import timetopaytaxpayer.cor.model.{ReturnsAndDebits, SaUtr, Taxpayer}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, UpstreamErrorResponse}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import timetopaytaxpayer.cor.model.{SaUtr, Taxpayer}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException, StringContextOps, UpstreamErrorResponse}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxpayerConnector(
     servicesConfig: ServicesConfig,
-    http:           HttpClient
+    httpClient:     HttpClientV2
 )(
     implicit
     ec: ExecutionContext
@@ -35,7 +36,8 @@ class TaxpayerConnector(
   val baseUrl: String = servicesConfig.baseUrl("time-to-pay-taxpayer")
 
   def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Option[Taxpayer]] = {
-    http.GET[Taxpayer](s"$baseUrl/taxpayer/${utr.value}")
+    httpClient.get(url"$baseUrl/taxpayer/${utr.value}")
+      .execute[Taxpayer]
       .map(Some(_))
       .recover {
         case e: HttpException if e.responseCode == NOT_FOUND                           => None

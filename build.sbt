@@ -10,6 +10,7 @@ lazy val microservice = Project(appName, file("."))
     SbtAutoBuildPlugin,
     SbtDistributablesPlugin
   )
+  .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .settings(commonSettings *)
   .settings(

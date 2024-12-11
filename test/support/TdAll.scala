@@ -46,7 +46,7 @@ object TdAll {
   )
 
   val returnsAndDebits = ReturnsAndDebits(
-    debits  = Vector(
+    debits  = Seq(
       Debit(
         originCode = "IN1",
         amount     = 2500,
@@ -62,9 +62,9 @@ object TdAll {
         taxYearEnd = "2019-04-05"
       )
     ),
-    returns = Vector(
+    returns = Seq(
       Return(
-        taxYearEnd   = "2019-04-05",
+        taxYearEnd   = s"${LocalDate.now().getYear.toString}-04-05",
         issuedDate   = None,
         dueDate      = "2019-01-31",
         receivedDate = None

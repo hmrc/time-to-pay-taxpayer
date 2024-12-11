@@ -18,15 +18,16 @@ package timetopaytaxpayer.cor
 
 import play.api.http.Status.NOT_FOUND
 import timetopaytaxpayer.cor.model.{ReturnsAndDebits, SaUtr, Taxpayer}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxpayerConnector(
     servicesConfig: ServicesConfig,
-    http:           HttpClient
+    http:           HttpClientV2
 )(
     implicit
     ec: ExecutionContext
@@ -34,18 +35,19 @@ class TaxpayerConnector(
 
   val baseUrl: String = servicesConfig.baseUrl("time-to-pay-taxpayer")
 
-  def getReturnsAndDebits(utr: SaUtr)(implicit hc: HeaderCarrier): Future[ReturnsAndDebits] = {
-    http.GET[ReturnsAndDebits](s"$baseUrl/taxpayer/returns-and-debits/${utr.value}")
-  }
+  def getReturnsAndDebits(utr: SaUtr)(implicit hc: HeaderCarrier): Future[ReturnsAndDebits] =
+    http
+      .get(url"$baseUrl/taxpayer/returns-and-debits/${utr.value}")
+      .execute[ReturnsAndDebits]
 
   // todo - remove as part of OPS-4581
-  def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Option[Taxpayer]] = {
-    http.GET[Taxpayer](s"$baseUrl/taxpayer/${utr.value}")
+  def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Option[Taxpayer]] =
+    http.get(url"$baseUrl/taxpayer/${utr.value}")
+      .execute[Taxpayer]
       .map(Some(_))
       .recover {
         case e: HttpException if e.responseCode == NOT_FOUND                           => None
         case UpstreamErrorResponse.Upstream4xxResponse(e) if e.statusCode == NOT_FOUND => None
       }
-  }
 
 }

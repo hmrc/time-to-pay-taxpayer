@@ -18,7 +18,7 @@ package timetopaytaxpayer.cor
 
 import com.google.inject.{AbstractModule, Provides, Singleton}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.ExecutionContext
 
@@ -30,7 +30,7 @@ class TaxpayerCorModule extends AbstractModule {
   @Singleton
   def provideTaxpayerConnector(
       servicesConfig: ServicesConfig,
-      http:           HttpClient
+      http:           HttpClientV2
   )(
       implicit
       ec: ExecutionContext

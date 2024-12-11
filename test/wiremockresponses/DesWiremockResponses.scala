@@ -21,12 +21,14 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import support.TdAll
 import timetopaytaxpayer.cor.model.SaUtr
 
+import java.time.LocalDate
+
 object DesWiremockResponses {
 
   def getReturns(
       utr:      SaUtr  = TdAll.saUtr,
       status:   Int    = 200,
-      response: String = """{"returns":[{"taxYearEnd":"2019-04-05","dueDate":"2019-01-31","issueDate":"2018-02-15"},{"taxYearEnd":"2018-04-05","dueDate":"2018-01-31","issueDate":"2017-02-15","receivedDate":"2018-03-09"}]}"""
+      response: String = s"""{"returns":[{"taxYearEnd":"${LocalDate.now().getYear.toString}-04-05","dueDate":"2019-01-31","issueDate":"2018-02-15"},{"taxYearEnd":"${LocalDate.now().minusYears(5).toString}","dueDate":"2018-01-31","issueDate":"2017-02-15","receivedDate":"2018-03-09"}]}"""
   ): StubMapping = {
     stubFor(
       get(

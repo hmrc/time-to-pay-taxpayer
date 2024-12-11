@@ -26,7 +26,7 @@ import play.api.test.{DefaultTestServerFactory, RunningServer}
 import play.api.{Application, Configuration, Mode}
 import play.core.server.ServerConfig
 import timetopaytaxpayer.cor.TaxpayerCorModule
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.time.format.DateTimeFormatter
@@ -64,7 +64,7 @@ trait ItSpec
     interval = scaled(Span(300, Millis))
   )
 
-  def httpClient: HttpClient = fakeApplication().injector.instanceOf[HttpClient]
+  def httpClient: HttpClientV2 = fakeApplication().injector.instanceOf[HttpClientV2]
 
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule, new TaxpayerCorModule)))

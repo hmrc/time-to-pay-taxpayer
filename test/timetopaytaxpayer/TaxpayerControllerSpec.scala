@@ -42,9 +42,9 @@ class TaxpayerControllerSpec extends ItSpec {
       CommunicationPreferences(
         welshLanguageIndicator = true, audioIndicator = false, largePrintIndicator = false, brailleIndicator = false
       ),
-      Vector(Debit("IN1", 2500, date20190225, None, date20190405), Debit("IN2", 2500, date20190225, None, date20190405)),
-      Vector(
-        Return(date20190405, None, Some(date20190131), None)
+      Seq(Debit("IN1", 2500, date20190225, None, date20190405), Debit("IN2", 2500, date20190225, None, date20190405)),
+      Seq(
+        Return(date20190405.withYear(LocalDate.now().getYear), None, Some(date20190131), None)
       )
     )
   )

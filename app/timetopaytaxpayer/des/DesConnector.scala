@@ -37,22 +37,20 @@ class DesConnector @Inject() (
   private implicit val emptyHc: HeaderCarrier = HeaderCarrier()
   private val headers: Seq[(String, String)] = desConfig.desHeaders
 
-  def getReturns(utr: SaUtr): Future[DesReturns] = {
+  def getReturns(utr: SaUtr): Future[DesReturns] =
     httpClient.get(url"$baseUrl/sa/taxpayer/${utr.value}/returns")
       .setHeader(headers: _*)
       .execute[DesReturns]
-  }
 
-  def getDebits(utr: SaUtr): Future[DesDebits] = {
+  def getDebits(utr: SaUtr): Future[DesDebits] =
     httpClient.get(url"$baseUrl/sa/taxpayer/${utr.value}/debits")
       .setHeader(headers: _*)
       .execute[DesDebits]
-  }
 
-  def getCommunicationPreferences(utr: SaUtr): Future[CommunicationPreferences] = {
+  def getCommunicationPreferences(utr: SaUtr): Future[CommunicationPreferences] =
     httpClient.get(url"$baseUrl/sa/taxpayer/${utr.value}/communication-preferences")
       .setHeader(headers: _*)
       .execute[CommunicationPreferences]
-  }
+
 }
 

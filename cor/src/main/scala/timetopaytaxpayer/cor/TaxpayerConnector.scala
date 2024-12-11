@@ -35,7 +35,7 @@ class TaxpayerConnector(
 
   val baseUrl: String = servicesConfig.baseUrl("time-to-pay-taxpayer")
 
-  def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Option[Taxpayer]] = {
+  def getTaxPayer(utr: SaUtr)(implicit hc: HeaderCarrier): Future[Option[Taxpayer]] =
     httpClient.get(url"$baseUrl/taxpayer/${utr.value}")
       .execute[Taxpayer]
       .map(Some(_))
@@ -43,6 +43,5 @@ class TaxpayerConnector(
         case e: HttpException if e.responseCode == NOT_FOUND                           => None
         case UpstreamErrorResponse.Upstream4xxResponse(e) if e.statusCode == NOT_FOUND => None
       }
-  }
 
 }

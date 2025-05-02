@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package timetopaytaxpayer.controllers
+package timetopaytaxpayer.testonly.controllers
 
 import com.typesafe.config.{ConfigFactory, ConfigRenderOptions}
-
-import javax.inject._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc._
-import timetopaytaxpayer.des.{DesConfig, DesConnector}
+import timetopaytaxpayer.des.DesConfig
 import timetopaytaxpayer.sa.SaConnector
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
+import javax.inject._
 
 class TestOnlyController @Inject() (
     cc:          ControllerComponents,
@@ -32,14 +32,14 @@ class TestOnlyController @Inject() (
 )
   extends BackendController(cc) {
 
-  def config() = cc.actionBuilder { r =>
+  val config = cc.actionBuilder { r =>
     val result: JsValue = Json.parse(
       ConfigFactory.load().root().render(ConfigRenderOptions.concise())
     )
     Results.Ok(result)
   }
 
-  def connectorsConfig() = cc.actionBuilder { r =>
+  val connectorsConfig = cc.actionBuilder { r =>
     Ok(Json.obj(
       "desServicesUrl" -> desConfig.baseUrl,
       "desAuthorizationToken" -> desConfig.authorisationToken, //it's test only endpoint, no worries

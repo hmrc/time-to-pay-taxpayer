@@ -12,5 +12,5 @@
 # Add all the application routes to the prod.routes file
 ->         /                                            prod.Routes
 
-GET        /taxpayer/test-only/config                   @timetopaytaxpayer.controllers.TestOnlyController.config()
-GET        /taxpayer/test-only/connectors-config        @timetopaytaxpayer.controllers.TestOnlyController.connectorsConfig()
+GET        /taxpayer/test-only/config                   @timetopaytaxpayer.testonly.controllers.TestOnlyController.config
+GET        /taxpayer/test-only/connectors-config        @timetopaytaxpayer.testonly.controllers.TestOnlyController.connectorsConfig

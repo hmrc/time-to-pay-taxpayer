@@ -23,8 +23,9 @@ import timetopaytaxpayer.des.DesConfig
 import timetopaytaxpayer.sa.SaConnector
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import javax.inject._
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class TestOnlyController @Inject() (
     cc:          ControllerComponents,
     desConfig:   DesConfig,

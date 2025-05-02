@@ -17,8 +17,8 @@ object AppDependencies {
     "uk.gov.hmrc"            %% "bootstrap-test-play-30"  % bootstrapVersion,
     "org.scalatest"          %% "scalatest"               % "3.2.19",
     "org.scalatestplus.play" %% "scalatestplus-play"      % "7.0.1",
-    "org.wiremock"            % "wiremock-standalone"     % "3.12.1",
-    "org.mockito"             % "mockito-core"            % "5.16.1"
+    "org.wiremock"            % "wiremock-standalone"     % "3.13.0",
+    "org.mockito"             % "mockito-core"            % "5.17.0"
   ).map(_ % Test)
 
   val corDependencies = List(

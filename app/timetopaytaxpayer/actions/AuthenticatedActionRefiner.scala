@@ -16,7 +16,7 @@
 
 package timetopaytaxpayer.actions
 
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc.Results.{InternalServerError, Unauthorized}
 import play.api.mvc.{ActionRefiner, MessagesControllerComponents, Request, Result}
@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendHeaderCarrierProvide
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class AuthenticatedActionRefiner @Inject() (
     val authConnector: AuthConnector,
     cc:                MessagesControllerComponents

@@ -22,14 +22,10 @@ object BuildSettings {
   )
 
   lazy val commonSettings =
-    uk.gov.hmrc.DefaultBuildSettings.scalaSettings ++
-      uk.gov.hmrc.DefaultBuildSettings.defaultSettings() ++ Seq(
+    Seq(
       scalaVersion := scalaV,
       majorVersion := 0,
       scalacOptions ++= scalaCompilerOptions,
-      resolvers ++= Seq(
-        Resolver.jcenterRepo
-      ),
       (update / evictionWarningOptions) := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
       wartremoverExcluded ++=
           (baseDirectory.value / "test").get ++

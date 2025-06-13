@@ -7,7 +7,6 @@ scalaVersion := scalaV
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(
     play.sbt.PlayScala,
-    SbtAutoBuildPlugin,
     SbtDistributablesPlugin
   )
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)

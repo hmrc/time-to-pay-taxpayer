@@ -7,7 +7,6 @@ scalaVersion := scalaV
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(
     play.sbt.PlayScala,
-    SbtAutoBuildPlugin,
     SbtDistributablesPlugin
   )
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
@@ -29,9 +28,6 @@ lazy val microservice = Project(appName, file("."))
 
 
 lazy val cor = Project(appName + "-cor", file("cor"))
-  .enablePlugins(
-    SbtAutoBuildPlugin
-  )
   .settings(commonSettings *)
   .settings(libraryDependencies ++= AppDependencies.corDependencies)
 

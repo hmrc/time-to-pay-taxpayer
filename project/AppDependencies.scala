@@ -5,7 +5,7 @@ import sbt.librarymanagement.Configurations.Provided
 
 object AppDependencies {
 
-  val bootstrapVersion = "10.5.0"
+  val bootstrapVersion = "10.7.0"
   val cryptoVersion = "7.6.0"
 
   val compile = Seq(
@@ -18,7 +18,7 @@ object AppDependencies {
     "org.scalatest"          %% "scalatest"               % "3.2.19",
     "org.scalatestplus.play" %% "scalatestplus-play"      % "7.0.2",
     "org.wiremock"            % "wiremock-standalone"     % "3.13.2",
-    "org.mockito"             % "mockito-core"            % "5.21.0"
+    "org.mockito"             % "mockito-core"            % "5.23.0"
   ).map(_ % Test)
 
   val corDependencies = List(

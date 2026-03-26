@@ -51,7 +51,7 @@ trait ItSpec
 
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
-  lazy val overridingsModule = new AbstractModule {
+  lazy val overridingsModule: AbstractModule = new AbstractModule {
     override def configure(): Unit = ()
 
     @Provides
